@@ -9,7 +9,8 @@ export function multerErrorHandler(err, req, res, next) {
   }
 
   if (err) {
-    return res.status(500).json({ error: 'Something went wrong.' });
+    console.log('Something went wrong in multer file size middleware', err);
+    return res.status(500).json({ error: 'Something went wrong in multer file size middleware' });
   }
 
   next();

@@ -54,7 +54,7 @@ const RemoveFromWishlist=async(req,res)=>{
 const getAllWishlists = async (req, res) => {
   try {
     const user = req.user._id;
-    const wishlists = await Wishlist.findOne(user).populate("products");
+    const wishlists = await Wishlist.findOne({user}).populate("products");
     return res.status(200).json({ message: "all wishlists", wishlists });
   } catch (error) {
     console.log("get all wishlists error", error);

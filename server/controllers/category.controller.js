@@ -1,4 +1,5 @@
 import { Category } from "../models/category.model.js";
+import { Product } from "../models/product.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.util.js";
 
 export const createCategory = async (req, res) => {
@@ -71,6 +72,8 @@ export const getCategoryById = async (req, res) => {
 
 export const updateCategory = async (req, res) => {
   try {
+    console.log("req.body", req.body);
+    
     const { categoryName, level, isActive } = req.body;
     const category = await Category.findById(req.params.id);
     if (!category)
@@ -119,3 +122,17 @@ export const deleteCategory = async (req, res) => {
       .json({ message: "Internal Server Error in delete category" });
   }
 };
+
+export const getProductByCategory=async(req,res)=>{
+  try {
+   
+    const category = await Product.find({category:req.params.id})
+    if (!category)
+      return res.status(404).json({ message: "Category not found" });
+
+    return res.status(200).json(category);
+  } catch (error) {
+    console.error("Get Category by ID Error:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+}

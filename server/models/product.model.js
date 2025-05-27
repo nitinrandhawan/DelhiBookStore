@@ -8,15 +8,13 @@ const productSchema = new mongoose.Schema(
     },
     images: {
       type: [String],
+    },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
       required: true,
     },
-    category: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Category",
-        required: true,
-      },
-    ],
+
     description: {
       type: String,
       required: true,
@@ -50,7 +48,7 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     language: {
-      type: String,
+      type: [String],
       required: true,
     },
     newArrival: {

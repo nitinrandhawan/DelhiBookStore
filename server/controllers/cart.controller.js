@@ -4,7 +4,7 @@ import { Cart } from "../models/cart.model.js";
 const AddToCart = async (req, res) => {
   try {
     const { items } = req.body || {};
-    const user = req.user._id;
+    const user = req.user?._id;
 
     if (!user || !items || items.length === 0) {
       return res.status(400).json({ message: "All fields are required" });
@@ -14,6 +14,12 @@ const AddToCart = async (req, res) => {
     if (existingCart) {
       for (const item of items) {
         const { productId, quantity } = item;
+
+        if (!productId || !quantity) {
+          return res
+            .status(400)
+            .json({ message: "productId and quantity are required" });
+        }
         const product = await Product.findById(productId);
         if (!product) {
           return res.status(404).json({ message: "Product not found" });
@@ -38,10 +44,15 @@ const AddToCart = async (req, res) => {
       existingCart.totalAmount = totalAmount;
       await existingCart.save();
     } else {
-      for (item of items) {
-      }
-      items.map(async (item, i) => {
-        const { productId, quantity } = item[i];
+      for (const item of items) {
+        const { productId, quantity } = item;
+
+        if (!productId || !quantity) {
+          return res
+            .status(400)
+            .json({ message: "productId and quantity are required" });
+        }
+
         const product = await Product.findById(productId);
         if (!product) {
           return res.status(404).json({ message: "Product not found" });
@@ -51,7 +62,7 @@ const AddToCart = async (req, res) => {
         }
         totalAmount += product.finalPrice * quantity;
         await product.save();
-      });
+      }
       await Cart.create({
         user,
         items,
@@ -68,7 +79,7 @@ const AddToCart = async (req, res) => {
 const RemoveFromCart = async (req, res) => {
   try {
     const { productId } = req.body || {};
-    const user = req.user._id;
+    const user = req.user?._id;
 
     if (!user || !productId) {
       return res.status(400).json({ message: "All fields are required" });
@@ -141,15 +152,15 @@ const UpdateQuantity = async (req, res) => {
   }
 };
 
-const getAllCarts=async(req,res)=>{
+const getAllCarts = async (req, res) => {
   try {
-    const user=req.user._id
-    const carts=await Cart.findOne({user}).populate("items.productId")
-    return res.status(200).json({message:"All carts",carts})
+    const user = req.user._id;
+    const carts = await Cart.findOne({ user }).populate("items.productId");
+    return res.status(200).json({ message: "All carts", carts });
   } catch (error) {
-    console.log("get all carts error",error);
-    return res.status(500).json({message:"get all carts server error"})
+    console.log("get all carts error", error);
+    return res.status(500).json({ message: "get all carts server error" });
   }
-}
+};
 
-export { AddToCart, RemoveFromCart, UpdateQuantity ,getAllCarts};
+export { AddToCart, RemoveFromCart, UpdateQuantity, getAllCarts };

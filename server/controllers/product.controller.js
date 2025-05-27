@@ -1,5 +1,7 @@
 import { Category } from "../models/category.model.js";
 import { Product } from "../models/product.model.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.util.js";
+
 const createProduct = async (req, res) => {
   try {
     const {
@@ -24,33 +26,30 @@ const createProduct = async (req, res) => {
       stock,
     } = req.body || {};
     const errorMessages = [];
-    if (!title) return errorMessages.push("title is required");
+    if (!title) errorMessages.push("title is required");
     if (req.files.length == 0 || !req.files)
-      return errorMessages.push("image is required");
-    if (!description) return errorMessages.push("description is required");
-    if (!highlights) return errorMessages.push("highlights is required");
-    if (!details) return errorMessages.push("details is required");
-    if (!author) return errorMessages.push("author is required");
-    if (!pages) return errorMessages.push("pages is required");
-    if (!ISBN) return errorMessages.push("ISBN is required");
-    if (!publisher) return errorMessages.push("publisher is required");
-    if (!publicationDate)
-      return errorMessages.push("publicationDate is required");
-    if (!language) return errorMessages.push("language is required");
-    if (!newArrival) return errorMessages.push("newArrival is required");
-    if (!featuredBooks) return errorMessages.push("featuredBooks is required");
-    if (!bestSellingBooks)
-      return errorMessages.push("bestSellingBooks is required");
-    if (!priceInDollors)
-      return errorMessages.push("priceInDollors is required");
-    if (!priceInEuros) return errorMessages.push("priceInEuros is required");
-    if (!price) return errorMessages.push("price is required");
-    if (!discount) return errorMessages.push("discount is required");
-    if (!category) return errorMessages.push("category is required");
-    if (!stock) return errorMessages.push("stock is required");
+      errorMessages.push("image is required");
+    if (!description) errorMessages.push("description is required");
+    if (!highlights) errorMessages.push("highlights is required");
+    if (!details) errorMessages.push("details is required");
+    if (!author) errorMessages.push("author is required");
+    if (!pages) errorMessages.push("pages is required");
+    if (!ISBN) errorMessages.push("ISBN is required");
+    if (!publisher) errorMessages.push("publisher is required");
+    if (!publicationDate) errorMessages.push("publicationDate is required");
+    if (!Array.isArray(language)) errorMessages.push("language is required");
+    if (!priceInDollors) errorMessages.push("priceInDollors is required");
+    if (!priceInEuros) errorMessages.push("priceInEuros is required");
+    if (!price) errorMessages.push("price is required");
+    if (!discount) errorMessages.push("discount is required");
+    if (!category) errorMessages.push("category is required");
+    if (!stock) errorMessages.push("stock is required");
     if (errorMessages.length > 0) {
       return res.status(400).json({ message: errorMessages });
     }
+    const newArrivalBool = newArrival === "true";
+    const featuredBooksBool = featuredBooks === "true";
+    const bestSellingBooksBool = bestSellingBooks === "true";
 
     const isCategoryExists = await Category.findById(category);
 
@@ -60,9 +59,10 @@ const createProduct = async (req, res) => {
 
     const imagesPromises = req.files.map((file) => {
       let localPath = file.path;
-      uploadOnCloudinary(localPath);
+      return uploadOnCloudinary(localPath);
     });
     const images = await Promise.all(imagesPromises);
+    const finalPrice = Number(price) - (Number(price) * Number(discount)) / 100;
 
     const product = await Product.create({
       title,
@@ -75,16 +75,17 @@ const createProduct = async (req, res) => {
       publisher,
       publicationDate,
       language,
-      newArrival,
-      featuredBooks,
-      bestSellingBooks,
-      priceInDollors,
-      priceInEuros,
-      price,
-      discount,
+      newArrival: newArrivalBool,
+      featuredBooks: featuredBooksBool,
+      bestSellingBooks: bestSellingBooksBool,
+      priceInDollors: Number(priceInDollors),
+      priceInEuros: Number(priceInEuros),
+      price: Number(price),
+      discount: Number(discount),
       category,
       stock,
       images,
+      finalPrice,
     });
 
     return res.status(201).json({ message: "product created", product });
@@ -107,26 +108,26 @@ const updateProduct = async (req, res) => {
       publisher,
       publicationDate,
       language,
-      newArrival,
-      featuredBooks,
-      bestSellingBooks,
-      priceInDollors,
-      priceInEuros,
-      price,
-      discount,
       category,
-      stock,
     } = req.body || {};
-  const product = await  Product.findById(req.params.id);
-  if(!product) return res.status(404).json({message:"Product not found"});
-    if(req.files){
+    let priceInDollors = Number(req.body.priceInDollors);
+    let priceInEuros = Number(req.body.priceInEuros);
+    let price = Number(req.body.price);
+    let stock = Number(req.body.stock);
+    let discount = Number(req.body.discount);
+    let newArrival = req.body.newArrival === "true";
+    let featuredBooks = req.body.featuredBooks === "true";
+    let bestSellingBooks = req.body.bestSellingBooks === "true";
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+    if (req.files) {
       const imagesPromises = req.files.map((file) => {
         let localPath = file.path;
         uploadOnCloudinary(localPath);
       });
       const images = await Promise.all(imagesPromises);
-     product.images = images;
-    }else{
+      product.images = images;
+    } else {
       product.images = product.images;
     }
     product.title = title ?? product.title;
@@ -146,18 +147,18 @@ const updateProduct = async (req, res) => {
     product.priceInEuros = priceInEuros ?? product.priceInEuros;
     product.price = price ?? product.price;
     product.discount = discount ?? product.discount;
-    if(category){
-      let isCategoryExists =  await Category.findById(category);
+    if (category) {
+      let isCategoryExists = await Category.findById(category);
       if (!isCategoryExists) {
         return res.status(400).json({ message: "category not found" });
       }
       product.category = category;
-    }else{
+    } else {
       product.category = product.category;
     }
     product.stock = stock ?? product.stock;
     await product.save();
-    return res.status(200).json({message:"Product updated",product});
+    return res.status(200).json({ message: "Product updated", product });
   } catch (error) {
     console.log("update product error", error);
     return res.status(500).json({ message: "update product server error" });
@@ -166,8 +167,24 @@ const updateProduct = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find({}).populate("category");
-    return res.status(200).json({ message: "all products", products });
+    const page = parseInt(req?.query?.page) || 1;
+    const limit = parseInt(req?.query?.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const products = await Product.find({})
+      .populate("category")
+      .skip(skip)
+      .limit(limit);
+
+    const totalCount = await Product.countDocuments();
+
+    return res.status(200).json({
+      message: "all products",
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page,
+      products,
+    });
   } catch (error) {
     console.log("get all products error", error);
     return res.status(500).json({ message: "get all products server error" });
@@ -194,5 +211,11 @@ const deleteProduct = async (req, res) => {
     console.log("delete product error", error);
     return res.status(500).json({ message: "delete product server error" });
   }
-}
-export { createProduct,updateProduct,getAllProducts,getSingleProduct,deleteProduct };
+};
+export {
+  createProduct,
+  updateProduct,
+  getAllProducts,
+  getSingleProduct,
+  deleteProduct,
+};
