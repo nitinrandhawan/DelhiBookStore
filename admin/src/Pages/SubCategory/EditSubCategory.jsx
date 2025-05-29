@@ -13,7 +13,7 @@ const EditSubCategory = () => {
     image: null,
     status: false,
     collection: "",
-    Parent_name: "",
+    category: "",
      level: 0,
   });
 
@@ -31,7 +31,7 @@ const EditSubCategory = () => {
           image: null,
           status: data.isActive,
           collection: null,
-          Parent_name: data.Parent_name._id,
+          category: data.Parent_name._id,
         });
       }
     } catch (error) {
@@ -116,8 +116,8 @@ const EditSubCategory = () => {
             <label className="form-label">Select Category</label>
             <select
               className="form-control"
-              name="Parent_name"
-              value={formData.Parent_name}
+              name="category"
+              value={formData.category}
               onChange={handleChange}
               required
             >
