@@ -105,9 +105,9 @@ const Home = () => {
               <Route path={"/all-category"} element={<AllDieses />} />
               <Route path={"/add-category"} element={<AddCategory />} />
               <Route path={"/edit-category/:id"} element={<EditCategory />} />
-              {/* <Route path={"/all-subCategory"} element={<AllSubCategory />} />
+              <Route path={"/all-subCategory"} element={<AllSubCategory />} />
               <Route path={"/add-subCategory"} element={<AddSubCategory />} />
-              <Route path={"/edit-subCategory/:id"} element={<EditSubCategory />} /> */}
+              <Route path={"/edit-subCategory/:id"} element={<EditSubCategory />} />
               {/* --- Orders --- */}
               <Route path={"/all-users"} element={<AllUsers />} />
               <Route path={"/add-multiproduct"} element={<ExcelProductUploader/>}/>

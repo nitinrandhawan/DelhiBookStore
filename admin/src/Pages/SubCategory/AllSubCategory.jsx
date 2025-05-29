@@ -14,9 +14,9 @@ const AllSubCategory = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axiosInstance.get('/api/v1/sub-category/get-all-sub-categories');
+                const response = await axiosInstance.get('/api/v1/category/get-all-categories');
               if(response){
-                setCategories(response.data.data);
+                setCategories(response.data?.reverse());
               }
       
             } catch (error) {
@@ -128,10 +128,10 @@ const AllSubCategory = () => {
                             categories?.map((category, index) => (
                                 <tr key={category._id}>
                                     <th scope="row">{index + 1}</th>
-                                    <td>{category?.subCategoryName}</td>
-                                    <td>{category?.Category?.categoryName}</td>
+                                    <td>{category?.categoryName}</td>
+                                    <td>{category?.Parent_name?.Parent_name}</td>
                                     <td>
-                                        <img src={`${category?.subCategoryImage}`} alt={category?.categoryName} style={{ width: '50px', height: '50px' }} />
+                                        <img src={`${category?.categoryImage}`} alt={category?.categoryName} style={{ width: '50px', height: '50px' }} />
                                     </td>
                                     <td>
                                         <input

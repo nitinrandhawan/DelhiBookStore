@@ -20,6 +20,7 @@ const AddSubCategory = () => {
     description: "",
     collection: "",
     category: "",
+    level: 0,
   });
   // const [productList, setProductList] = useState([]);
   const navigate = useNavigate();
@@ -31,10 +32,10 @@ const AddSubCategory = () => {
   const fetchCategories = async () => {
     try {
       const response = await axiosInstance.get(
-        "/api/v1/category/get-all-categories"
+        "/api/mainCategory/get-all-mainCategories"
       );
       if (response.status === 200) {
-        setCategories(response?.data?.data);
+        setCategories(response?.data);
       }
     } catch (error) {
       toast.error("Error fetching categories");
@@ -64,16 +65,17 @@ const AddSubCategory = () => {
     setIsLoading(true);
     if (!fileLimit(formData?.image)) return;
     const payload = new FormData();
-    payload.append("subCategoryName", formData.name);
+    payload.append("categoryName", formData.name);
     payload.append("image", formData.image);
     if (formData.collection)
-      payload.append("collection", formData.collection);
-    payload.append("isCollection", formData.status);
-    payload.append("category", formData.category);
+      payload.append("levelImage", formData.collection);
+    payload.append("isActive", formData.status);
+    payload.append("Parent_name", formData.category);
+    payload.append("level", formData.level);
   
     try {
       const response = await axiosInstance.post(
-        "/api/v1/sub-category/create-sub-category",
+        "/api/v1/category/create-category",
         payload,
         {
           headers: {
@@ -128,7 +130,7 @@ const AddSubCategory = () => {
               <option value="">Select Category</option>
               {categories.map((category) => (
                 <option key={category._id} value={category._id}>
-                  {category.categoryName}
+                  {category.Parent_name}
                 </option>
               ))}
             </select>
@@ -185,29 +187,52 @@ const AddSubCategory = () => {
               </label>
             </div>
           </div>
-          {formData.status && (
-            <div className="col-md-4">
-              <label htmlFor="collection" className="form-label">
-                Sub Category Collection Image
-              </label>
-              <input
-                type="file"
-                name="collection"
-                className="form-control"
-                id="collection"
-                accept="image/*"
-                onChange={handleChange}
-                required
-              />
-              {formData.collection && (
-                <img
-                  src={URL.createObjectURL(formData.collection)}
-                  alt="Preview"
-                  width="100"
-                />
-              )}
-            </div>
-          )}
+        {formData.status && (
+  <>
+  
+
+    <div className="col-md-4">
+      <label htmlFor="level" className="form-label">
+        Level
+      </label>
+      <select
+        className="form-select"
+        id="level"
+        name="level"
+        value={formData.level || ''}
+        onChange={handleChange}
+        required
+      >
+        <option value="">Select Level</option>
+        <option value="1">Level 1</option>
+        <option value="2">Level 2</option>
+        <option value="3">Level 3</option>
+      </select>
+    </div>
+      <div className="col-md-4">
+      <label htmlFor="collection" className="form-label">
+        Sub Category Collection Image
+      </label>
+      <input
+        type="file"
+        name="collection"
+        className="form-control"
+        id="collection"
+        accept="image/*"
+        onChange={handleChange}
+        required
+      />
+      {formData.collection && (
+        <img
+          src={URL.createObjectURL(formData.collection)}
+          alt="Preview"
+          width="100"
+        />
+      )}
+    </div>
+  </>
+)}
+
           <hr />
           {/* <div className="col-md-12">
             <label className="form-label">Category Details</label>

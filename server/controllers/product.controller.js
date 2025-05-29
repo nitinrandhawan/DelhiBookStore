@@ -239,6 +239,45 @@ const getSingleProduct = async (req, res) => {
   }
 };
 
+const getNewArrival=async(req,res)=>{
+  try {
+    const products=await Product.find({newArrival:true})
+    return res.status(200).json({message:"new arrival",products})
+  } catch (error) {
+    console.log("get new arrival error", error);
+    return res.status(500).json({ message: "get new arrival server error" });
+  }
+}
+const getFeaturedBooks=async(req,res)=>{
+  try {
+    const products=await Product.find({featuredBooks:true})
+    return res.status(200).json({message:"featured books",products})
+  } catch (error) {
+    console.log("get featured books error", error);
+    return res.status(500).json({ message: "get featured books server error" });
+  }
+}
+const getBestSellingBooks=async(req,res)=>{
+  try {
+    const products=await Product.find({bestSellingBooks:true})
+    return res.status(200).json({message:"best selling books",products})
+  } catch (error) {
+    console.log("get best selling books error", error);
+    return res.status(500).json({ message: "get best selling books server error" });
+  }
+}
+ const getProductByCategory = async (req, res) => {
+  try {
+    const category = await Product.find({ category: req.params.id });
+    if (!category)
+      return res.status(404).json({ message: "Category not found" });
+
+    return res.status(200).json(category);
+  } catch (error) {
+    console.error("Get Category by ID Error:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
@@ -256,4 +295,8 @@ export {
   getSingleProduct,
   deleteProduct,
   multipleProducts,
+  getNewArrival,
+  getFeaturedBooks,
+  getBestSellingBooks,
+  getProductByCategory
 };

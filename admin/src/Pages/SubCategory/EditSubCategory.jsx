@@ -13,7 +13,8 @@ const EditSubCategory = () => {
     image: null,
     status: false,
     collection: "",
-    category: "",
+    Parent_name: "",
+     level: 0,
   });
 
   const navigate = useNavigate();
@@ -21,16 +22,16 @@ const EditSubCategory = () => {
 
   const fetchSubCategoryDetails = async () => {
     try {
-      const res = await axiosInstance.get(`/api/v1/sub-category/get-single-sub-category/${id}`);
+      const res = await axiosInstance.get(`/api/v1/category/get-single-category/${id}`);
     
       if (res.status === 200) {
-        const data = res.data.data;
+        const data = res.data;
         setFormData({
-          name: data.subCategoryName,
+          name: data.categoryName,
           image: null,
-          status: data.isCollection,
+          status: data.isActive,
           collection: null,
-          category: data.Category._id,
+          Parent_name: data.Parent_name._id,
         });
       }
     } catch (error) {
@@ -40,9 +41,9 @@ const EditSubCategory = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axiosInstance.get("/api/v1/category/get-all-categories");
+      const response = await axiosInstance.get("/api/mainCategory/get-all-mainCategories");
       if (response.status === 200) {
-        setCategories(response.data.data);
+        setCategories(response.data);
       }
     } catch (error) {
       toast.error("Error fetching categories");
@@ -115,15 +116,15 @@ const EditSubCategory = () => {
             <label className="form-label">Select Category</label>
             <select
               className="form-control"
-              name="category"
-              value={formData.category}
+              name="Parent_name"
+              value={formData.Parent_name}
               onChange={handleChange}
               required
             >
               <option value="">Select Category</option>
               {categories.map((cat) => (
                 <option key={cat._id} value={cat._id}>
-                  {cat.categoryName}
+                  {cat.Parent_name}
                 </option>
               ))}
             </select>
@@ -166,19 +167,51 @@ const EditSubCategory = () => {
               </label>
             </div>
           </div>
+      {formData.status && (
+  <>
+  
 
-          {formData.status && (
-            <div className="col-md-4">
-              <label className="form-label">Collection Image</label>
-              <input
-                type="file"
-                name="collection"
-                className="form-control"
-                accept="image/*"
-                onChange={handleChange}
-              />
-            </div>
-          )}
+    <div className="col-md-4">
+      <label htmlFor="level" className="form-label">
+        Level
+      </label>
+      <select
+        className="form-select"
+        id="level"
+        name="level"
+        value={formData.level || ''}
+        onChange={handleChange}
+        required
+      >
+        <option value="">Select Level</option>
+        <option value="1">Level 1</option>
+        <option value="2">Level 2</option>
+        <option value="3">Level 3</option>
+      </select>
+    </div>
+      <div className="col-md-4">
+      <label htmlFor="collection" className="form-label">
+        Sub Category Collection Image
+      </label>
+      <input
+        type="file"
+        name="collection"
+        className="form-control"
+        id="collection"
+        accept="image/*"
+        onChange={handleChange}
+        required
+      />
+      {formData.collection && (
+        <img
+          src={URL.createObjectURL(formData.collection)}
+          alt="Preview"
+          width="100"
+        />
+      )}
+    </div>
+  </>
+)}
 
           <div className="col-md-12 mt-3">
             <button

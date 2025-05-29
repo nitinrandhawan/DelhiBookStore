@@ -5,7 +5,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.util.js";
 
 export const createCategory = async (req, res) => {
   try {
-    const { categoryName, level, isActive } = req.body;
+    const { categoryName, level, isActive,Parent_name } = req.body;
 
     if (!categoryName) {
       return res.status(400).json({ message: "Category name is required" });
@@ -33,6 +33,7 @@ export const createCategory = async (req, res) => {
       level,
       isActive,
       levelImage: levelImageUrl,
+      Parent_name
     });
 
     return res
@@ -77,7 +78,7 @@ export const multipleCategory = async (req, res) => {
 };
 export const getAllCategories = async (req, res) => {
   try {
-    const categories = await Category.find();
+    const categories = await Category.find().populate("Parent_name");
     return res.status(200).json(categories);
   } catch (error) {
     console.error("Get All Categories Error:", error);
@@ -153,12 +154,10 @@ export const deleteCategory = async (req, res) => {
   }
 };
 
-export const getProductByCategory = async (req, res) => {
-  try {
-    const category = await Product.find({ category: req.params.id });
-    if (!category)
-      return res.status(404).json({ message: "Category not found" });
 
+export const getCategoryByMainCategory = async (req, res) => {
+  try {
+    const category = await Category.find({ Parent_name: req.params.id });
     return res.status(200).json(category);
   } catch (error) {
     console.error("Get Category by ID Error:", error);
