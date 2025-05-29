@@ -5,9 +5,13 @@ const categorySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  Parent_name: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "MainCategory",
+  },
   categoryImage: {
     type: String,
-    required: true,
+    // required: true,
   },
   isActive: {
     type: Boolean,

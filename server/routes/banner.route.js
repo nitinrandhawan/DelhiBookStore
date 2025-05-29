@@ -13,7 +13,7 @@ import {multerErrorHandler} from "../middlewares/multerErrorHadler.middleware.js
 const router = express.Router();
 
 router.post("/create-banner", verifyAdmin, upload.single("image"),multerErrorHandler, createBanner);
-router.post("/update-banner/:id", verifyAdmin, upload.single("image"),multerErrorHandler, updateBanner);
+router.put("/update-banner/:id", verifyAdmin, upload.single("image"),multerErrorHandler, updateBanner);
 router.get("/get-all-banners", getAllBanners);
 router.get("/get-banner/:id", getBannerById);
 router.delete("/delete-banner/:id", verifyAdmin, deleteBanner);

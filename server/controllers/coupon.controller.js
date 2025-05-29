@@ -9,8 +9,7 @@ const createCoupon = async (req, res) => {
       !title ||
       !discount ||
       !minAmount ||
-      !maxAmount ||
-      !isActive
+      !maxAmount
     ) {
       return res.status(400).json({ message: "All fields are required" });
     }

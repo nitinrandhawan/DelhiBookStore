@@ -12,9 +12,9 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan.default("dev"));
 }
 
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser())
+app.use(cookieParser());
 
 const allowedOrigins = ["http://localhost:3000"];
 app.use(
@@ -39,16 +39,20 @@ import productRoute from "./routes/product.route.js";
 import wishlistRoute from "./routes/wishlist.route.js";
 import couponRoute from "./routes/coupon.route.js";
 import cartRoute from "./routes/cart.route.js";
-import orderRoute from "./routes/order.route.js"
+import orderRoute from "./routes/order.route.js";
+import contactFormRoute from "./routes/contactForm.route.js";
+import mainCategoryRoute from "./routes/mainCategory.route.js"
 
 app.use("/api/v1/auth", userRouter);
 app.use("/api/v1/banner", bannerRoute);
+app.use("/api/mainCategory",mainCategoryRoute)
 app.use("/api/v1/category", categoryRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/wishlist", wishlistRoute);
 app.use("/api/v1/coupon", couponRoute);
 app.use("/api/v1/cart", cartRoute);
-app.use("/api/v1/order", orderRoute)
+app.use("/api/v1/order", orderRoute);
+app.use("/api/v1/contact-form", contactFormRoute);
 
 app.get("/", (req, res) => {
   res.send("Server is running");

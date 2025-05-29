@@ -1,4 +1,5 @@
 import { Category } from "../models/category.model.js";
+import { MainCategory } from "../models/mainCategory.model.js";
 import { Product } from "../models/product.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.util.js";
 
@@ -6,17 +7,17 @@ export const createCategory = async (req, res) => {
   try {
     const { categoryName, level, isActive } = req.body;
 
-    if (!categoryName ) {
+    if (!categoryName) {
       return res.status(400).json({ message: "Category name is required" });
     }
 
     const localPath = req.files?.["image"]?.[0]?.path;
-    if(!localPath){
+    if (!localPath) {
       return res.status(400).json({ message: "Image is required" });
     }
     const imageUrl = await uploadOnCloudinary(localPath);
 
-    if (!imageUrl){
+    if (!imageUrl) {
       return res.status(500).json({ message: "Image upload failed" });
     }
     let levelImageUrl;
@@ -45,6 +46,35 @@ export const createCategory = async (req, res) => {
   }
 };
 
+export const multipleCategory = async (req, res) => {
+  try {
+    const { categories } = req.body || {};
+    if (!Array.isArray(categories) || categories.length === 0) {
+      return res.status(400).json({ message: "Categories are required" });
+    }
+    const AllCategories = await Promise.all(
+      categories.map(async (category) => {
+        const mainCategory = await MainCategory.findOne({
+          Parent_name: category.Parent_name,
+        });
+        if (mainCategory) {
+          category.Parent_name = mainCategory._id;
+        }
+        return category;
+      })
+    );
+    const result = await Category.insertMany(AllCategories);
+    return res.status(201).json({
+      message: "Multiple categories created successfully",
+      categories: result,
+    });
+  } catch (error) {
+    console.log("Multiple Category Error:", error);
+    return res.status(500).json({
+      message: "Internal Server Error in multiple category creation",
+    });
+  }
+};
 export const getAllCategories = async (req, res) => {
   try {
     const categories = await Category.find();
@@ -73,7 +103,7 @@ export const getCategoryById = async (req, res) => {
 export const updateCategory = async (req, res) => {
   try {
     console.log("req.body", req.body);
-    
+
     const { categoryName, level, isActive } = req.body;
     const category = await Category.findById(req.params.id);
     if (!category)
@@ -87,7 +117,7 @@ export const updateCategory = async (req, res) => {
       category.categoryImage = category.categoryImage;
     }
 
-    if(req.files?.["levelImage"]?.[0]?.path && isActive && level) {
+    if (req.files?.["levelImage"]?.[0]?.path && isActive && level) {
       const levelImageLocalPath = req.files?.["levelImage"]?.[0]?.path;
       const levelImageUrl = await uploadOnCloudinary(levelImageLocalPath);
       if (levelImageUrl) category.levelImage = levelImageUrl;
@@ -123,10 +153,9 @@ export const deleteCategory = async (req, res) => {
   }
 };
 
-export const getProductByCategory=async(req,res)=>{
+export const getProductByCategory = async (req, res) => {
   try {
-   
-    const category = await Product.find({category:req.params.id})
+    const category = await Product.find({ category: req.params.id });
     if (!category)
       return res.status(404).json({ message: "Category not found" });
 
@@ -135,4 +164,4 @@ export const getProductByCategory=async(req,res)=>{
     console.error("Get Category by ID Error:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};

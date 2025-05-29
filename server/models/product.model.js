@@ -12,7 +12,7 @@ const productSchema = new mongoose.Schema(
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
-      required: true,
+      // required: true,
     },
 
     description: {
@@ -21,11 +21,11 @@ const productSchema = new mongoose.Schema(
     },
     highlights: {
       type: String,
-      required: true,
+      // required: true,
     },
     details: {
       type: String,
-      required: true,
+      // required: true,
     },
     author: {
       type: String,
@@ -49,27 +49,30 @@ const productSchema = new mongoose.Schema(
     },
     language: {
       type: [String],
-      required: true,
+      // required: true,
     },
     newArrival: {
       type: Boolean,
       required: true,
+      default: false,
     },
     featuredBooks: {
       type: Boolean,
       required: true,
+      default: false,
     },
     bestSellingBooks: {
       type: Boolean,
       required: true,
+      default: false,
     },
     priceInDollors: {
       type: Number,
-      required: true,
+      // required: true,
     },
     priceInEuros: {
       type: Number,
-      required: true,
+      // required: true,
     },
     price: {
       type: Number,
@@ -77,7 +80,7 @@ const productSchema = new mongoose.Schema(
     },
     finalPrice: {
       type: Number,
-      required: true,
+      // required: true,
     },
     discount: {
       type: Number,
@@ -85,7 +88,7 @@ const productSchema = new mongoose.Schema(
     },
     stock: {
       type: Number,
-      required: true,
+      // required: true,
     },
   },
   {

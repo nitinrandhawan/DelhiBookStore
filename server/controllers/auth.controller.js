@@ -315,6 +315,22 @@ const adminLogin = async (req, res) => {
   }
 };
 
+
+const verifyAdminLoggedIn = async (req, res) => {
+  try {
+    const user = req?.user;
+    if (user.role !== "admin") {
+      return res.status(403).json({
+        message: "Unauthorized ! Don't try to be smart you are not admin",
+      });
+    }
+    return res.status(200).json({ message: "Admin logged in", user });
+  } catch (error) {
+    console.log("verify admin logged in error", error);
+    res.status(500).json({ message: "verify admin logged in server error" });
+  }
+};
+
 const GetAllUsers = async (req, res) => {
   try {
     const users = await User.find();
@@ -357,4 +373,5 @@ export {
   verifyLoggedIn,
   updateProfile,
   GetAllUsers,
+  verifyAdminLoggedIn
 };

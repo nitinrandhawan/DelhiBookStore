@@ -95,6 +95,43 @@ const createProduct = async (req, res) => {
   }
 };
 
+const multipleProducts = async (req, res) => {
+  try {
+    const { products } = req.body || {};
+    if (!products || !Array.isArray(products) || products.length === 0) {
+      return res.status(400).json({ message: "No products provided" });
+    }
+  
+    const updatedProducts = await Promise.all(products.map(async (product) => {
+      if (product.images) {
+        if (typeof product.images === "string") {
+          product.images = [product.images];
+        } else {
+          product.images = [];
+        }
+        if (product.category) {
+          const existedCategory = await Category.findOne({
+            category: product.categoryName,
+          });
+          if (existedCategory) {
+            product.category = existedCategory._id;
+          }
+        }
+      }
+      return product;
+    }));
+    console.log("updatedProducts", updatedProducts.slice(0, 5));
+    
+    const insertedProducts = await Product.insertMany(updatedProducts);
+
+    return res
+      .status(201)
+      .json({ message: "Products created", products: insertedProducts });
+  } catch (error) {
+    console.log("create product error", error);
+    return res.status(500).json({ message: "create product server error" , error});
+  }
+};
 const updateProduct = async (req, res) => {
   try {
     const {
@@ -218,4 +255,5 @@ export {
   getAllProducts,
   getSingleProduct,
   deleteProduct,
+  multipleProducts,
 };

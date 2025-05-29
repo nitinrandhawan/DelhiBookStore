@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { adminLogin, ForgotPassword, login, ResetPassword, signUp, updateProfile, GetSingleUser, GetAllUsers, logout, verifyLoggedIn } from "../controllers/auth.controller.js";
+import { adminLogin, ForgotPassword, login, ResetPassword, signUp, updateProfile, GetSingleUser, GetAllUsers, logout, verifyLoggedIn, verifyAdminLoggedIn } from "../controllers/auth.controller.js";
 import { verifyToken } from "../middlewares/verifyToken.middleware.js";
 import { verifyAdmin } from "../middlewares/verifyAdmin.middleware.js";
 import { multerErrorHandler } from "../middlewares/multerErrorHadler.middleware.js";
@@ -19,5 +19,5 @@ router.put("/update-profile",verifyToken,upload.single("image"),multerErrorHandl
 //admin route
 router.get("/get-all-users",verifyAdmin,GetAllUsers)
 router.post("/admin-login", adminLogin);
-
+router.get("/admin/verify-admin",verifyToken,verifyAdminLoggedIn)
 export default router;
