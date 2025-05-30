@@ -16,9 +16,9 @@ const AllProduct = () => {
         const fetchProducts = async () => {
             setIsLoading(true);
             try {
-                const response = await axiosInstance.get(`api/v1/product/get-all-products`);
+                const response = await axiosInstance.get(`/api/v1/product/get-all-products`);
                if(response){
-                setProducts(response.data.data);
+                setProducts(response?.data?.products?.reverse());
                }
             } catch (error) {
                 console.error("Error fetching products:", error);
@@ -119,9 +119,9 @@ const AllProduct = () => {
         }
     };
 
-    const filteredProducts = products?.filter(product =>
-        product.productName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // const filteredProducts = products?.filter(product =>
+    //     product.productName.toLowerCase().includes(searchQuery.toLowerCase())
+    // );
 
     const typeOptions = [
         { _id: 'new', type: 'New Arrival' },
@@ -155,12 +155,11 @@ const AllProduct = () => {
                         <tr>
                             <th>S No.</th>
                             <th>Product Name</th>
-                            <th>Sub Category Name</th>
+                            <th>Category Name</th>
                             <th>Product Image</th>
                             <th>Product Description</th>
-                            
-                            <th>Material</th>
-                            <th>Weight</th>
+                            <th>Author</th>
+                            <th>ISBN</th>
                             <th>Price</th>
                             <th>Stock</th>
                             <th>Discount</th>
@@ -182,8 +181,8 @@ const AllProduct = () => {
                             products?.map((product, index) => (
                                 <tr key={product._id}>
                                     <td>{index + 1}</td>
-                                    <td>{product.productName}</td>
-                                    <td>{product?.subCategory?.subCategoryName}</td>
+                                    <td>{product?.title}</td>
+                                    <td>{product?.category?.categoryName}</td>
                                     <td>
                                        <img src={product?.images?.[0]}/>
                                     </td>
@@ -200,10 +199,10 @@ const AllProduct = () => {
                                        
                                         {product?.type?.map((t) => <div>{t} ,</div>)}
                                     </td> */}
-                                    <td>{product?.material}</td>
-                                    <td>{product?.weight}</td>
+                                    <td>{product?.author}</td>
+                                    <td>{product?.ISBN}</td>
                                     <td>{product?.price}</td>
-                                    <td>{product?.stock}</td>
+                                    <td>{product?.stock || "-"}</td>
                                     <td>{product?.discount}{product?.discount > 100 ? " ₹" : "%"}</td>
                                     <td>{product?.finalPrice?.toFixed(0)}</td>
                                     {/* <td>{product?.Variant?.map((v, i) => <div key={i}>{v?.tax}</div>)}</td> */}

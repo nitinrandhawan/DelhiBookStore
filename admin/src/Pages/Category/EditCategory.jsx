@@ -22,14 +22,14 @@ const EditCategory = () => {
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const response = await axiosInstance.get(`/api/v1/category/get-single-category/${id}`);
+        const response = await axiosInstance.get(`/api/v1/mainCategory/get-single-mainCategory/${id}`);
  
         if (response?.status === 200) {
           setFormData({
-            name: response?.data?.categoryName || "",
-            status: response?.data?.isActive || false,
-            oldImage: response?.data?.categoryImage || null,
-            image: null,
+            name: response?.data?.Parent_name || "",
+            // status: response?.data?.isActive || false,
+            // oldImage: response?.data?.categoryImage || null,
+            // image: null,
           });
         }
       } catch (error) {
@@ -58,23 +58,17 @@ const EditCategory = () => {
     setBtnLoading(true);
 if(!fileLimit(formData?.image)) return;
     const payload = new FormData();
-    payload.append("categoryName", formData.name);
-    if (formData.image) {
-      payload.append("image", formData.image);
-    }
-    payload.append("isActive", formData.status);
+    payload.append("Parent_name", formData.name);
+    // if (formData.image) {
+    //   payload.append("image", formData.image);
+    // }
+    // payload.append("isActive", formData.status);
       const hasImage = !!formData.image;
     try {
-      const response = await axiosInstance.put(`/api/v1/category/update-category/${id}`, payload,hasImage
-        ? {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        : undefined);
+      const response = await axiosInstance.put(`/api/v1/mainCategory/update-mainCategory/${id}`, payload);
      if(response.status===200){
       toast.success(response?.data?.message || "Category updated successfully");
-      navigate("/all-category");
+      navigate("/all-parent-category");
      }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Error updating category");
@@ -89,7 +83,7 @@ if(!fileLimit(formData?.image)) return;
       <ToastContainer />
       <div className="bread">
         <div className="head">
-          <h4>Edit Category</h4>
+          <h4>Edit Parent Category</h4>
         </div>
         <div className="links">
           <Link to="/all-dieses" className="add-new">
@@ -101,7 +95,7 @@ if(!fileLimit(formData?.image)) return;
       <div className="d-form">
         <form className="row g-3" onSubmit={handleSubmit}>
           <div className="col-md-4">
-            <label className="form-label">Category Name</label>
+            <label className="form-label">Parent Category Name</label>
             <input
               type="text"
               name="name"
@@ -111,50 +105,50 @@ if(!fileLimit(formData?.image)) return;
               required
             />
           </div>
-
-          <div className="col-md-4">
-            <label className="form-label">Category Image</label>
-            <input
-              type="file"
-              name="image"
-              className="form-control"
-              onChange={handleChange}
-            />
-            {formData.oldImage && (
-              <img
-                src={`${formData.oldImage}`}
-                alt="Old"
-                width="100"
-                style={{ marginTop: "10px" }}
-              />
-            )}
-          </div>
-
-          <div className="col-12">
-            <div className="form-check">
+{/* 
+            <div className="col-md-4">
+              <label className="form-label">Category Image</label>
               <input
-                className="form-check-input"
-                type="checkbox"
-                name="status"
-                id="status"
-                checked={formData.status}
+                type="file"
+                name="image"
+                className="form-control"
                 onChange={handleChange}
               />
-              <label className="form-check-label" htmlFor="status">
-                Active on Homepage
-              </label>
+              {formData.oldImage && (
+                <img
+                  src={`${formData.oldImage}`}
+                  alt="Old"
+                  width="100"
+                  style={{ marginTop: "10px" }}
+                />
+              )}
             </div>
-          </div>
 
-          <div className="col-12 text-center">
-            <button
-              type="submit"
-              className="btn "
-              disabled={btnLoading}
-            >
-              {btnLoading ? "Please Wait..." : "Update Category"}
-            </button>
-          </div>
+            <div className="col-12">
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  name="status"
+                  id="status"
+                  checked={formData.status}
+                  onChange={handleChange}
+                />
+                <label className="form-check-label" htmlFor="status">
+                  Active on Homepage
+                </label>
+              </div>
+            </div> */}
+
+            <div className="col-12 text-center">
+              <button
+                type="submit"
+                className="btn "
+                disabled={btnLoading}
+              >
+                {btnLoading ? "Please Wait..." : "Update Parent Category"}
+              </button>
+            </div>
         </form>
       </div>
     </>

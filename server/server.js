@@ -45,7 +45,7 @@ import mainCategoryRoute from "./routes/mainCategory.route.js"
 
 app.use("/api/v1/auth", userRouter);
 app.use("/api/v1/banner", bannerRoute);
-app.use("/api/mainCategory",mainCategoryRoute)
+app.use("/api/v1/mainCategory",mainCategoryRoute)
 app.use("/api/v1/category", categoryRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/wishlist", wishlistRoute);

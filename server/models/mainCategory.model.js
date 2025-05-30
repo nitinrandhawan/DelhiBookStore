@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const mainCategorySchema = new mongoose.Schema({
   Parent_id: {
     type: String,
-    required: true,
   },
 
   Parent_name: {

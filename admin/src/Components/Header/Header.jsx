@@ -32,8 +32,8 @@ const Header = () => {
   const navItems = [
     { to: "/", label: "Dashboard", icon: "fa-solid fa-gauge" },
     { to: "/all-orders", label: "Manage Orders", icon: "fa-solid fa-truck" },
+    { to: "/all-parent-category", label: "All Parent Category", icon: "fa-solid fa-sitemap" },
     { to: "/all-category", label: "All Category", icon: "fa-solid fa-layer-group" },
-    // { to: "/all-subCategory", label: "All SubCategory", icon: "fa-solid fa-sitemap" },
     { to: "/all-products", label: "All Products", icon: "fa-solid fa-cubes" },
     // { to: "/all-videos", label: "All Videos", icon: "fa-solid fa-video" },
     { to: "/all-banners", label: "Manage Banners", icon: "fa-solid fa-images" },

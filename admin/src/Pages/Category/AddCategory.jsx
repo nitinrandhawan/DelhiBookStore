@@ -55,20 +55,15 @@ const AddCategory = () => {
     setIsLoading(true);
 if(!fileLimit(formData?.image)) return;
     const uploadData = new FormData();
-    uploadData.append("categoryName", formData.name);
-    uploadData.append("image", formData.image);
-    uploadData.append("isCollection", formData.status);
+    uploadData.append("Parent_name", formData.name);
+    // uploadData.append("image", formData.image);
+    // uploadData.append("isCollection", formData.status);
   
     try {
-    const response = await axiosInstance.post("/api/v1/category/create-category", uploadData,{
-        headers: {
-          "Content-Type": "multipart/form-data",
-
-        },
-      });
+    const response = await axiosInstance.post("/api/v1/mainCategory/create-mainCategory", uploadData);
       if (response.status === 201) {
         toast.success(response?.message || "Category created successfully");
-        navigate("/all-category");
+        navigate("/all-parent-category");
       } else {
         toast.error(response?.message || "Error adding category");
       }
@@ -85,10 +80,10 @@ if(!fileLimit(formData?.image)) return;
       <ToastContainer />
       <div className="bread">
         <div className="head">
-          <h4>Add Category</h4>
+          <h4>Add Parent Category</h4>
         </div>
         <div className="links">
-          <Link to="/all-category" className="add-new">
+          <Link to="/all-parent-category" className="add-new">
             Back <i className="fa-regular fa-circle-left"></i>
           </Link>
         </div>
@@ -96,7 +91,7 @@ if(!fileLimit(formData?.image)) return;
 
       <div className="d-form">
         <form className="row g-3" onSubmit={handleSubmit}>
-          <div className="col-md-4">
+          {/* <div className="col-md-4">
             <label htmlFor="image" className="form-label">
               Category Image
             </label>
@@ -105,7 +100,7 @@ if(!fileLimit(formData?.image)) return;
             {formData.image && (
               <img src={URL.createObjectURL(formData.image)} alt="Preview" width="100" />
             )}
-          </div>
+          </div> */}
 
           <div className="col-md-4">
             <label htmlFor="name" className="form-label">
@@ -126,7 +121,7 @@ if(!fileLimit(formData?.image)) return;
               renderInput={(params) => <TextField {...params} label="Select Product" />}
             />
           </div> */}
-
+{/* 
           <div className="col-12">
             <div className="form-check">
               <input className="form-check-input" type="checkbox" id="status" checked={formData.status} onChange={handleCheckboxChange} />
@@ -134,7 +129,7 @@ if(!fileLimit(formData?.image)) return;
                 Active on Collection
               </label>
             </div>
-          </div>
+          </div> */}
 
           <hr />
           {/* <div className="col-md-12">

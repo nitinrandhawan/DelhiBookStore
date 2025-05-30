@@ -23,11 +23,11 @@ const AllInquiries = () => {
         );
         if (response.status === 200) {
           setInquiries(inquiries?.filter((inquiry) => inquiry?._id !== id));
-          Swal.fire("Deleted!", "Video has been deleted.", "success");
+          Swal.fire("Deleted!", "Inquiry has been deleted.", "success");
         }
       } catch (error) {
-        Swal.fire("Error!", "Error deleting the video.", "error");
-        console.error("Error deleting video:", error);
+        Swal.fire("Error!", "Error deleting the inquiry.", "error");
+        console.error("Error deleting inquiry:", error);
       }
     }
   };
