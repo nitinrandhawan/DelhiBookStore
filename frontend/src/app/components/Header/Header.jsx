@@ -62,7 +62,9 @@ const Header = () => {
 
   if (error) {
     return (
-      <div className="text-center py-6 text-red-500">Error loading banners</div>
+      <div className="text-center py-6 text-red-500">
+        Error loading Categories
+      </div>
     );
   }
 
@@ -375,7 +377,6 @@ const Header = () => {
                   { label: "Categories", url: "/pages/categories" },
                   { label: "Featured Books", url: "/pages/featurebook" },
                   { label: "Best Sellers", url: "/pages/bestSellerbook" },
-                  { label: "Blog", url: "/pages/blog" },
                   { label: "Contact Us", url: "/pages/contact" },
                 ].map((item, index) => (
                   <motion.li
@@ -497,20 +498,34 @@ const Header = () => {
               </Link>
             </li>
             <li className="border-b-1 border-gray-300 font-medium">
-              <Link href="/" onClick={() => setIsSidebarOpen(false)}>
-                New Arrivals
+              <Link
+                href="/pages/categories"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                Categories
               </Link>
             </li>
             <li className="border-b-1 border-gray-300 font-medium">
-              <Link href="/" onClick={() => setIsSidebarOpen(false)}>
+              <Link
+                href="/pages/featurebook"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                Featured Books
+              </Link>
+            </li>
+            <li className="border-b-1 border-gray-300 font-medium">
+              <Link
+                href="/pages/bestSellerbook"
+                onClick={() => setIsSidebarOpen(false)}
+              >
                 Best Sellers
               </Link>
             </li>
-            <li className="border-b-1 border-gray-300 font-medium">
+            {/* <li className="border-b-1 border-gray-300 font-medium">
               <Link href="/pages/blog" onClick={() => setIsSidebarOpen(false)}>
                 Blog
               </Link>
-            </li>
+            </li> */}
 
             <li className="border-b-1 border-gray-300 font-medium">
               <a href="/DBSCatalog.pdf" download={true}>
@@ -523,67 +538,19 @@ const Header = () => {
           <div className="mt-4">
             <p className="font-bold text-gray-400">Category</p>
             <ul className="space-y-4 text-gray-800 max-h-50 overflow-y-auto">
-              <li className="border-b border-gray-300 font-medium">
-                <Link href="/" onClick={() => setIsSidebarOpen(false)}>
-                  Love
-                </Link>
-              </li>
-              <li className="border-b border-gray-300 font-medium">
-                <Link
-                  href="/pages/shop"
-                  onClick={() => setIsSidebarOpen(false)}
+              {categories.map((item) => (
+                <li
+                  className="border-b border-gray-300 font-medium"
+                  key={item._id}
                 >
-                  Horror
-                </Link>
-              </li>
-              <li className="border-b border-gray-300 font-medium">
-                <Link
-                  href="/categories/new-arrivals"
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  Drama
-                </Link>
-              </li>
-              <li className="border-b border-gray-300 font-medium">
-                <Link
-                  href="/categories/best-sellers"
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  Romantic
-                </Link>
-              </li>
-              <li className="border-b border-gray-300 font-medium">
-                <Link
-                  href="/categories/fiction"
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  Fiction
-                </Link>
-              </li>
-              <li className="border-b border-gray-300 font-medium">
-                <Link
-                  href="/categories/non-fiction"
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  Non-Fiction
-                </Link>
-              </li>
-              <li className="border-b border-gray-300 font-medium">
-                <Link
-                  href="/categories/self-help"
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  Self-Help
-                </Link>
-              </li>
-              <li className="border-b border-gray-300 font-medium">
-                <Link
-                  href="/pages/blog"
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  Cooking
-                </Link>
-              </li>
+                  <Link
+                    href={`/pages/categories/${item._id}`}
+                    onClick={() => setIsSidebarOpen(false)}
+                  >
+                    {item.Parent_name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
           <div className="mt-4">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Home,
@@ -8,7 +8,8 @@ import {
   BadgeX,
   ShoppingCart,
 } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { verifyUser } from "@/app/redux/features/auth/loginSlice";
 
 export default function BottomNavBar() {
   const [bottombar, setBottomBar] = useState("home");
@@ -19,6 +20,14 @@ export default function BottomNavBar() {
   const wishlistCount = useSelector(
     (state) => state.wishlist.wishlistItems.length
   );
+
+  const user = useSelector((state) => state.login.user);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(verifyUser());
+  }, [dispatch]);
 
   const navItems = [
     {
@@ -43,11 +52,18 @@ export default function BottomNavBar() {
       href: "/pages/wishlist",
       count: wishlistCount,
     },
-    {
-      icon: <UserPlus className="h-6 w-6" />,
-      label: "Login",
-      href: "/pages/login",
-    },
+    // Conditional last item for Login or Profile
+    user && user.email
+      ? {
+          icon: <UserPlus className="h-6 w-6" />,
+          label: "Profile",
+          href: "/pages/userprofile",
+        }
+      : {
+          icon: <UserPlus className="h-6 w-6" />,
+          label: "Login",
+          href: "/pages/login",
+        },
   ];
 
   return (
