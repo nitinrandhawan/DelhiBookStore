@@ -351,9 +351,9 @@ const Header = () => {
                           animate={{ opacity: 1 }}
                           transition={{ delay: 0.3 }}
                         >
-                          <Link href="#">
+                          <Link href={`/pages/categories/${item._id}`}>
                             <p className="font-medium w-full">
-                              {item.categoryName}
+                              {item.Parent_name}
                             </p>
                           </Link>
                         </motion.li>

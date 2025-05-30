@@ -1,22 +1,23 @@
 "use client";
-import { fetchCategories } from "@/app/redux/features/getAllCategory/categorySlice";
+import { fetchSubCategories } from "@/app/redux/features/getAllCategory/categorySlice";
 import Image from "next/image";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 export default function AllSubCategory() {
   const dispatch = useDispatch();
-  const { categories, loading, error } = useSelector((state) => state.category);
-  console.log("categories", categories);
-  console.log(
-    "category",
-    categories.map((category) => category.categoryImage)
+  const param = useParams();
+  const categoryId = param.id;
+  const { subCategories, loading, error } = useSelector(
+    (state) => state.category
   );
 
   useEffect(() => {
-    dispatch(fetchCategories());
+    dispatch(fetchSubCategories(categoryId));
   }, [dispatch]);
+
+  console.log("SubCategories:", categoryId);
 
   if (loading) {
     return (
@@ -37,7 +38,9 @@ export default function AllSubCategory() {
 
   if (error) {
     return (
-      <div className="text-center py-6 text-red-500">Error loading banners</div>
+      <div className="text-center py-6 text-red-500">
+        Error loading SubCategories
+      </div>
     );
   }
 
@@ -47,18 +50,18 @@ export default function AllSubCategory() {
         {/* Header */}
         <div className="text-center mb-8">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Shop by Category
+            Shop by {subCategories[0]?.Parent_name?.Parent_name}
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover our wide range of books across different categories
+            Discover our wide range of books across different SubCategories
           </p>
         </div>
 
         {/* Categories Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-          {categories.map((category) => (
+          {subCategories.map((category) => (
             <Link
-              key={category.id}
+              key={category._id}
               href={"#"}
               passHref
               className="group block bg-purple-700 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
@@ -66,7 +69,12 @@ export default function AllSubCategory() {
               {/* Image Container */}
               <div className="relative overflow-hidden">
                 <Image
-                  src={category.categoryImage ?? "/placeholder.svg"}
+                  src={
+                    category.categoryImage &&
+                    category.categoryImage.trim() !== ""
+                      ? category.categoryImage
+                      : "/placeholder.svg"
+                  }
                   alt={category.categoryName}
                   width={400}
                   height={300}
@@ -76,7 +84,7 @@ export default function AllSubCategory() {
 
               {/* Category Name */}
               <div className="p-4">
-                <h3 className="text-lg font-semibold text-white text-center">
+                <h3 className="text-sm md:text-md font-semibold text-white text-center">
                   {category.categoryName}
                 </h3>
               </div>
