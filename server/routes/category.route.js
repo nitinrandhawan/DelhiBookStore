@@ -30,7 +30,6 @@ router.get("/get-single-category/:id", getCategoryById);
 router.put(
   "/update-category/:id",
   verifyAdmin,
-  upload.single("image"),
   upload.fields([
     { name: "image", maxCount: 1 },
     { name: "levelImage", maxCount: 1 },
