@@ -1,5 +1,6 @@
 "use client";
 import { fetchCategories } from "@/app/redux/features/getAllCategory/categorySlice";
+import Link from "next/link";
 import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -60,18 +61,19 @@ const AllCategory = () => {
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {categories.map((cat) => (
-          <div
-            key={cat._id}
-            className="shadow-md border p-4 rounded-lg hover:shadow-lg transition"
-            style={{
-              backgroundColor: categoryColors[cat._id],
-              color: "#333",
-            }}
-          >
-            <p className="text-center font-semibold text-sm md:text-lg">
-              {cat.categoryName}
-            </p>
-          </div>
+          <Link href={`/pages/categories/${cat._id}`} key={cat._id}>
+            <div
+              className="shadow-md border border-purple-400 p-4 rounded-lg hover:shadow-lg transition"
+              style={{
+                backgroundColor: categoryColors[cat._id],
+                color: "#333",
+              }}
+            >
+              <p className="text-center font-semibold text-sm md:text-lg break-words">
+                {cat.Parent_name}
+              </p>
+            </div>
+          </Link>
         ))}
       </div>
     </div>

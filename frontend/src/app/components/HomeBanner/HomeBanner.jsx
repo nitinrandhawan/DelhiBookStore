@@ -50,24 +50,26 @@ const HomeBanner = () => {
             loop
             className="rounded-2xl overflow-hidden"
           >
-            {items.map((slide) => (
-              <SwiperSlide key={slide.id}>
-                <motion.div
-                  className="relative w-full h-[220px] sm:h-[320px] md:h-[400px] lg:h-[450px]"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3, duration: 0.8 }}
-                >
-                  <Image
-                    src={slide.bannerImage}
-                    alt={"banners"}
-                    fill
-                    className="object-fill md:object-cover"
-                    priority
-                  />
-                </motion.div>
-              </SwiperSlide>
-            ))}
+            {items
+              ?.filter((item) => item.isActive === true)
+              .map((slide) => (
+                <SwiperSlide key={slide.id}>
+                  <motion.div
+                    className="relative w-full h-[220px] sm:h-[320px] md:h-[400px] lg:h-[450px]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3, duration: 0.8 }}
+                  >
+                    <Image
+                      src={slide.bannerImage}
+                      alt={"banners"}
+                      fill
+                      className="object-fill md:object-cover"
+                      priority
+                    />
+                  </motion.div>
+                </SwiperSlide>
+              ))}
           </Swiper>
         </motion.div>
       </div>
