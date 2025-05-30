@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Heart, ArrowRight } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -7,121 +7,119 @@ import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import book1 from "../../Images/DBS/1.jpg";
+import product1 from "../../Images/DBS/1.jpg";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "@/app/redux/cartSlice";
 import { addToWishlist, removeFromWishlist } from "@/app/redux/wishlistSlice";
+import axiosInstance from "@/app/redux/features/axiosInstance";
 
 const NewArrival = () => {
-  const products = [
-    {
-      id: 1,
-      img: book1,
-      name: "Introduction to Algorithms",
-      oldPrice: "8500",
-      newPrice: "7995",
-      discount: "6%",
-    },
-    {
-      id: 2,
-      img: book1,
-      name: "Data Structures in C",
-      oldPrice: "8500",
-      newPrice: "7995",
-      discount: "6%",
-    },
-    {
-      id: 3,
-      img: book1,
-      name: "Operating Systems Concepts",
-      oldPrice: "8500",
-      newPrice: "7995",
-      discount: "6%",
-    },
-    {
-      id: 4,
-      img: book1,
-      name: "Database System Design",
-      oldPrice: "8500",
-      newPrice: "7995",
-      discount: "6%",
-    },
-    {
-      id: 5,
-      img: book1,
-      name: "Computer Networks",
-      oldPrice: "8500",
-      newPrice: "7995",
-      discount: "6%",
-    },
-    {
-      id: 6,
-      img: book1,
-      name: "Artificial Intelligence Basics",
-      oldPrice: "8500",
-      newPrice: "7995",
-      discount: "6%",
-    },
-    {
-      id: 7,
-      img: book1,
-      name: "Web Development with React",
-      oldPrice: "8500",
-      newPrice: "7995",
-      discount: "6%",
-    },
-  ];
-
   const dispatch = useDispatch();
 
   const { cartItems } = useSelector((state) => state.cart);
   const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
 
-  const handleAddToCart = (id, name, img, newPrice) => {
+  const handleAddToCart = (_id, title, img, finalPrice) => {
     dispatch(
       addToCart({
-        id: id,
-        name: name,
+        id: _id,
+        name: title,
         image: img,
-        price: newPrice,
-        totalPrice: newPrice,
+        price: finalPrice,
+        totalPrice: finalPrice,
       })
     );
-    if (cartItems.some((item) => item.id === id)) {
+    if (cartItems.some((item) => item.id === _id)) {
       toast.success("Quantity updated in your cart!");
     } else {
-      toast.success(`"Great choice! ${name} added."`);
+      toast.success(`"Great choice! ${title} added."`);
     }
   };
 
-  const handleAddToWishlist = (id, name, img, price, oldPrice) => {
-    const isAlreadyInWishlist = wishlistItems.some((item) => item.id === id);
+  const handleAddToWishlist = (_id, title, img, finalPrice, price) => {
+    const isAlreadyInWishlist = wishlistItems.some((item) => item.id === _id);
 
     if (isAlreadyInWishlist) {
-      dispatch(removeFromWishlist(id));
-      toast.error(`"${name}" removed from wishlist.`);
+      dispatch(removeFromWishlist(_id));
+      toast.error(`"${title}" removed from wishlist.`);
     } else {
       dispatch(
         addToWishlist({
-          id,
-          name,
+          id: _id,
+          name: title,
           image: img,
-          price,
-          oldPrice,
+          price: finalPrice,
+          oldPrice: price,
         })
       );
-      toast.success(`"${name}" added to wishlist.`);
+      toast.success(`"${title}" added to wishlist.`);
     }
   };
-
   const swiperRef = useRef(null);
+
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  console.log("Product data:", product);
+
+  useEffect(() => {
+    const newArrivals = async () => {
+      try {
+        const response = await axiosInstance.get("/product/get-new-arrival");
+        setProduct(response.data.products);
+      } catch (err) {
+        setError("Failed to load New Arrival product. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    newArrivals();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div
+            key={index}
+            className="animate-pulse space-y-3 border border-gray-200 rounded-lg shadow p-4"
+          >
+            {/* Image skeleton */}
+            <div className="w-full h-40 bg-gray-300 rounded-md"></div>
+
+            {/* Title skeleton */}
+            <div className="h-4 bg-gray-300 rounded w-3/4 mx-auto"></div>
+
+            {/* Price skeleton */}
+            <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
+
+  if (!product) {
+    return (
+      <div className="text-center text-gray-500">
+        {loading ? "Loading..." : "Product not found."}
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-800">New Arrival Books</h2>
+        <h2 className="text-xl font-bold text-gray-800">
+          New Arrival products
+        </h2>
         <Link href="/">
           <button className="view-all-btn">
             View All
@@ -149,45 +147,45 @@ const NewArrival = () => {
             1280: { slidesPerView: 5 },
           }}
         >
-          {products.map((product) => (
-            <SwiperSlide key={product.id}>
+          {product.map((pro) => (
+            <SwiperSlide key={pro._id}>
               <div className="border border-gray-300 p-2 rounded-lg relative bg-white">
                 <div className="absolute top-2 left-0 bg-red-500 text-white text-xs px-2 py-1 rounded-e-2xl z-10">
-                  {product.discount}
+                  {pro.discount}%
                 </div>
 
                 <div
                   className="bg-white text-black absolute top-2 right-3 shadow-md rounded-2xl p-1 cursor-pointer"
                   onClick={() =>
                     handleAddToWishlist(
-                      product.id,
-                      product.name,
-                      product.img,
-                      product.newPrice,
-                      product.oldPrice
+                      pro._id,
+                      pro.title,
+                      pro.img,
+                      pro.finalPrice,
+                      pro.oldPrice
                     )
                   }
                 >
-                  {wishlistItems.some((item) => item.id === product.id) ? (
+                  {wishlistItems.some((item) => item.id === pro._id) ? (
                     "❤️"
                   ) : (
                     <Heart size={16} />
                   )}
                 </div>
 
-                <Link href={`/pages/shop/${product.id}`}>
+                <Link href={`/pages/shop/${pro._id}`}>
                   <div className="w-50 h-60 flex justify-center m-auto items-center mb-2">
                     <Image
-                      src={product.img}
-                      alt={product.name}
+                      src={product1}
+                      alt={pro.title}
                       className="object-contain h-full"
                     />
                   </div>
                 </Link>
 
-                <Link href={`/pages/shop/${product.id}`}>
-                  <h3 className="mt-2 text-sm md:text-md font-normal md:font-semibold line-clamp-2 hover:underline">
-                    {product.name}
+                <Link href={`/pages/shop/${pro._id}`}>
+                  <h3 className="mt-2 text-sm md:text-md font-normal md:font-semibold line-clamp-1 hover:underline">
+                    {pro.title}
                   </h3>
                 </Link>
                 <div className="flex items-center text-sm gap-1 mb-1">
@@ -196,28 +194,23 @@ const NewArrival = () => {
                 </div>
 
                 <div className="text-md md:text-lg font-bold text-red-600">
-                  ₹{product.newPrice}
+                  ₹{pro.finalPrice}
                 </div>
                 <div className="text-sm text-gray-400 line-through">
-                  ₹{product.oldPrice}
+                  ₹{pro.price}
                 </div>
 
                 <button
                   className={`${
-                    cartItems.some((item) => item.id === product.id)
+                    cartItems.some((item) => item.id === pro._id)
                       ? "added-to-cart-btn"
                       : "add-to-cart-btn"
                   }`}
                   onClick={() =>
-                    handleAddToCart(
-                      product.id,
-                      product.name,
-                      product.img,
-                      product.newPrice
-                    )
+                    handleAddToCart(pro._id, pro.title, pro.img, pro.finalPrice)
                   }
                 >
-                  {cartItems.some((item) => item.id === product.id)
+                  {cartItems.some((item) => item.id === pro._id)
                     ? "Added"
                     : "Add to cart 🛒"}
                 </button>

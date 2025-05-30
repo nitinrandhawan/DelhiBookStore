@@ -3,11 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import userImage from "../../Images/DowloadImage/testi6.jpg";
-import bookimage1 from "../../Images/DBS/3.jpg";
-import bookimage2 from "../../Images/DBS/4.jpg";
-import bookimage3 from "../../Images/DBS/5.jpg";
-import bookimage4 from "../../Images/DBS/6.jpg";
-import bookimage5 from "../../Images/DBS/7.jpg";
+import bookimage1 from "../../Images/DBS/1.jpg";
 import {
   ArrowLeft,
   ChevronDown,
@@ -69,7 +65,7 @@ export default function UserProfile() {
           name: "AI in Everyday Life",
           price: "₹7995",
           quantity: 1,
-          image: bookimage2,
+          image: bookimage1,
         },
       ],
       deliveryAddress:
@@ -99,14 +95,14 @@ export default function UserProfile() {
           name: "The Art of Focus",
           price: "₹7995",
           quantity: 1,
-          image: bookimage3,
+          image: bookimage1,
         },
         {
           id: 4,
           name: "Mindful Living",
           price: "₹7995",
           quantity: 1,
-          image: bookimage4,
+          image: bookimage1,
         },
       ],
       deliveryAddress:
@@ -141,7 +137,7 @@ export default function UserProfile() {
           name: "The Future of Imagination",
           price: "₹7995",
           quantity: 1,
-          image: bookimage5,
+          image: bookimage1,
         },
       ],
       deliveryAddress:

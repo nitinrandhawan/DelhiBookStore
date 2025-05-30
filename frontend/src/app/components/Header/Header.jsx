@@ -373,8 +373,8 @@ const Header = () => {
                   { label: "Home", url: "/" },
                   { label: "Shop Books", url: "/pages/shop" },
                   { label: "Categories", url: "/pages/categories" },
-                  { label: "New Arrivals", url: "/new-arrivals" },
-                  { label: "Best Sellers", url: "/best-sellers" },
+                  { label: "Featured Books", url: "/pages/featurebook" },
+                  { label: "Best Sellers", url: "/pages/bestSellerbook" },
                   { label: "Blog", url: "/pages/blog" },
                   { label: "Contact Us", url: "/pages/contact" },
                 ].map((item, index) => (
@@ -392,7 +392,7 @@ const Header = () => {
                 ))}
 
                 {/* Trending Dropdown */}
-                <motion.li
+                {/* <motion.li
                   className="relative"
                   onMouseEnter={() => setOpen(true)}
                   onMouseLeave={() => setOpen(false)}
@@ -432,7 +432,7 @@ const Header = () => {
                       </motion.li>
                     ))}
                   </motion.ul>
-                </motion.li>
+                </motion.li> */}
               </motion.ul>
             </div>
           </motion.nav>

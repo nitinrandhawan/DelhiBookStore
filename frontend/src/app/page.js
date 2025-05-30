@@ -21,9 +21,9 @@ const page = () => {
       <FilterCatgory1 />
       <NewArrival />
       <FilterCatgory2 />
-      <Featureproduct />
+      <Featureproduct productlength={9} btnlength={9} />
       <FilterCatgory3 />
-      <BestSeller />
+      <BestSeller productlength={12} btnlength={12} />
       <StyleBanner1 />
       <Testimonail />
     </>

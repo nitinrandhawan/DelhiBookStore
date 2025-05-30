@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-export default function CategoryShow() {
+export default function AllSubCategory() {
   const dispatch = useDispatch();
   const { categories, loading, error } = useSelector((state) => state.category);
   console.log("categories", categories);

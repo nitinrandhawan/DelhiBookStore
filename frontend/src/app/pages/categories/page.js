@@ -1,10 +1,8 @@
-import CategoryShow from '@/app/components/AllCategory/AllCategory'
-import React from 'react'
+import AllCategory from "@/app/components/Category/AllCategory";
+import React from "react";
 
 const page = () => {
-  return (
-   <CategoryShow />
-  )
-}
+  return <AllCategory />;
+};
 
-export default page
+export default page;
