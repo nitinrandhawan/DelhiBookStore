@@ -15,13 +15,13 @@ export default function AllSubCategory() {
 
   useEffect(() => {
     dispatch(fetchSubCategories(categoryId));
-  }, [dispatch]);
+  }, [dispatch, categoryId]);
 
   console.log("SubCategories:", categoryId);
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
+      <div className="max-w-7xl mx-autogrid grid-cols-2 md:grid-cols-4 gap-4 p-4">
         {Array.from({ length: 8 }).map((_, index) => (
           <div
             key={index}
@@ -44,6 +44,8 @@ export default function AllSubCategory() {
     );
   }
 
+  console.log("SubCategories:", subCategories);
+
   return (
     <section className="w-full py-8 px-4 bg-gray-50">
       <div className="max-w-7xl mx-auto">
@@ -62,7 +64,7 @@ export default function AllSubCategory() {
           {subCategories.map((category) => (
             <Link
               key={category._id}
-              href={"#"}
+              href={`/pages/shop/productBysubcategory/${category._id}`}
               passHref
               className="group block bg-purple-700 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
             >

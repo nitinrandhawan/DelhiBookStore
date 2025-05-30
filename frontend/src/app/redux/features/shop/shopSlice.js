@@ -2,24 +2,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../axiosInstance";
 
-// Async thunk to fetch products
-// export const fetchProducts = createAsyncThunk(
-//   "products/fetchProducts",
-//   async (_, { rejectWithValue }) => {
-//     try {
-//       const response = await axiosInstance.get("/product/get-all-products");
-//       return response.data.products;
-//     } catch (err) {
-//       return rejectWithValue(err.response?.data || err.message);
-//     }
-//   }
-// );
-
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async ({ limit = 12, page = 1 }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/product/get-all-products?limit=${limit}&page=${page}`);
+      const response = await axiosInstance.get(
+        `/product/get-all-products?limit=${limit}&page=${page}`
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data || "Error fetching products");
@@ -32,7 +21,7 @@ const productSlice = createSlice({
   initialState: {
     loading: false,
     products: [],
-    totalPages:0,
+    totalPages: 0,
     error: null,
   },
   reducers: {},
@@ -45,7 +34,7 @@ const productSlice = createSlice({
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
         state.products = action.payload.products;
-        state.totalPages = action.payload.totalPages; 
+        state.totalPages = action.payload.totalPages;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
