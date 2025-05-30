@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { ShoppingBag, Trash2, Minus, Plus } from "lucide-react";
+import { Trash2, Minus, Plus } from "lucide-react";
+import EmptyCart from "../../Images/DowloadImage/EmptyCart.png";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import { useSelector, useDispatch } from "react-redux";
@@ -25,18 +26,18 @@ export default function Cart() {
   if (cartItems.length === 0) {
     return (
       <div className="mx-auto px-4 py-12 max-w-7xl">
-        <div className="flex flex-col items-center justify-center h-64">
-          <ShoppingBag className="h-16 w-16 text-gray-300" />
-          <h2 className="mt-4 text-2xl font-semibold text-gray-600">
-            Your cart is empty
-          </h2>
-          <p className="mt-2 text-gray-500">
-            Add items to your cart to see them here.
+        <div className="flex flex-col items-center justify-center">
+          <Image
+            src={EmptyCart} // ✅ Replace with your image path
+            alt="Empty Wishlist"
+            className="w-60 h-60 object-contain opacity-100"
+          />
+          <p className="text-purple-800 text-lg font-bold">Your Cart is empty.</p>
+          <p className="text-sm text-black font-semibold">
+            Start exploring and add items you like!
           </p>
           <Link href="/">
-            <button className="mt-6 px-6 py-2 bg-black text-white rounded ">
-              Continue Shopping
-            </button>
+            <button className="mt-4 black-btn">Contineu to Shopping</button>
           </Link>
         </div>
       </div>
@@ -80,9 +81,7 @@ export default function Cart() {
                       className="rounded-md object-contain"
                     />
                   </div>
-                  <div className="font-medium line-clamp-1">
-                    {item.name}
-                  </div>
+                  <div className="font-medium line-clamp-1">{item.name}</div>
                   <div className="text-center">₹{item.price}</div>
                   <div className="flex items-center justify-center space-x-2">
                     <button

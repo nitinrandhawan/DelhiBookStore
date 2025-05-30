@@ -6,7 +6,9 @@ import { removeFromWishlist } from "@/app/redux/wishlistSlice";
 import { BadgeX } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import EmptywishList from "../../Images/DowloadImage/EmptyWishList.jpg";
 import { addToCart } from "@/app/redux/cartSlice";
+import Link from "next/link";
 
 const Wishlist = () => {
   const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
@@ -52,8 +54,25 @@ const Wishlist = () => {
         {wishlistItems.length === 0 ? (
           <tbody>
             <tr>
-              <td colSpan="4" className="text-center py-8 text-gray-500">
-                Your wishlist is empty.
+              <td colSpan="4" className="text-center py-8">
+                <div className="flex flex-col items-center justify-center">
+                  <Image
+                    src={EmptywishList} // ✅ Replace with your image path
+                    alt="Empty Wishlist"
+                    className="w-45 h-45 object-contain mb-2 opacity-100"
+                  />
+                  <p className="text-purple-800 text-lg font-bold">
+                    Your wishlist is empty.
+                  </p>
+                  <p className="text-sm text-black font-semibold">
+                    Start exploring and add items you love!
+                  </p>
+                  <Link href="/">
+                    <button className="mt-4 purple-btn">
+                      Back to Shopping
+                    </button>
+                  </Link>
+                </div>
               </td>
             </tr>
           </tbody>
