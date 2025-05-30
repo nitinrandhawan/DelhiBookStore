@@ -19,10 +19,10 @@ const AllDieses = () => {
     const fetchCategories = async () => {
       try {
         const response = await axiosInstance.get(
-          "/api/v1/category/get-all-categories"
+          "/api/v1/mainCategory/get-all-mainCategories"
         );
         if (response) {
-          setCategories(response.data);
+          setCategories(response.data?.reverse());
         }
       } catch (error) {
         toast.error("Error fetching categories");
@@ -50,7 +50,7 @@ const AllDieses = () => {
     if (confirmDelete.isConfirmed) {
       try {
         const data = await axiosInstance.delete(
-          `/api/v1/category/delete-category/${id}`
+          `/api/v1/mainCategory/delete-mainCategory/${id}`
         );
 
         if (data.status === 200) {
@@ -105,10 +105,10 @@ const AllDieses = () => {
       <ToastContainer />
       <div className="bread">
         <div className="head">
-          <h4>All Category</h4>
+          <h4>All Parent Category</h4>
         </div>
         <div className="links">
-          <Link to="/add-category" className="add-new">
+          <Link to="/add-parent-category" className="add-new">
             Add New <i className="fa-solid fa-plus"></i>
           </Link>
           <Link
@@ -136,8 +136,8 @@ const AllDieses = () => {
             <tr>
               <th scope="col">Sr.No.</th>
               <th scope="col">Name</th>
-              <th scope="col">Image</th>
-              <th scope="col">Show in Collection</th>
+              {/* <th scope="col">Image</th> */}
+              {/* <th scope="col">Show in Collection</th> */}
               <th scope="col">Edit</th>
               <th scope="col">Delete</th>
             </tr>
@@ -147,24 +147,24 @@ const AllDieses = () => {
               categories?.map((category, index) => (
                 <tr key={category._id}>
                   <th scope="row">{index + 1}</th>
-                  <td>{category?.categoryName}</td>
-                  <td>
+                  <td>{category?.Parent_name}</td>
+                  {/* <td>
                     <img
                       src={`${category?.categoryImage}`}
                       alt={category?.categoryName}
                       style={{ width: "50px", height: "50px" }}
                     />
-                  </td>
-                  <td>
+                  </td> */}
+                  {/* <td>
                     <input
                       type="checkbox"
                       checked={category?.isCollection}
                       onChange={(e) => handleCheckboxChange(e, category._id)}
                     />
-                  </td>
+                  </td> */}
                   <td>
                     <Link
-                      to={`/edit-category/${category?._id}`}
+                      to={`/edit-parent-category/${category?._id}`}
                       className="bt edit"
                     >
                       Edit <i className="fa-solid fa-pen-to-square"></i>

@@ -16,26 +16,23 @@ const AddProduct = () => {
   const [categoryList, setCategoryList] = useState([]);
   const [subcategoryList, setSubcategoryList] = useState([]);
   const [formData, setFormData] = useState({
-    productName: "",
+    title: "",
     images: [],
+    category: "",
     price: 0,
     discount: 0,
     stock: 0,
     finalPrice: 0,
-    brand: "",
     description: "",
-    isFeatured: "",
-    material: "",
-    weight: "",
-    sku: "",
-    dimensionsInch: "",
-    dimensionsCm: "",
-    subCategory: "",
-    Specifications: "",
-    BrandCollectionOverview: "",
-    CareMaintenance: "",
-    seller: "",
-    Warranty: "",
+    newArrival: "",
+    featuredBooks: "",
+    bestSellingBooks: "",
+    author: "",
+    pages: 0,
+    ISBN: "",
+    publisher: "",
+    publicationDate: "",
+    language: "",
   });
 
   const navigate = useNavigate();
@@ -46,7 +43,9 @@ const AddProduct = () => {
         "/api/v1/category/get-all-categories"
       );
       if (response?.status === 200) {
-        setCategoryList(response.data.data);
+        console.log("response", response.data);
+        
+        setCategoryList(response.data);
       }
     } catch (error) {
       toast.error(
@@ -73,8 +72,8 @@ const AddProduct = () => {
       const res = await axiosInstance.get(
         `/api/v1/category/get-subcategories-by-category/${value}`
       );
-      console.log('res', res.data.data);
-      
+      console.log("res", res.data.data);
+
       setSubcategoryList(res?.data?.data);
     } catch (error) {
       console.log("fetching subcategory error", error);
@@ -88,7 +87,7 @@ const AddProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    if (!formData.categoryId) {
+    if (!formData.category) {
       toast.error("category is required");
       return;
     }
@@ -112,7 +111,6 @@ const AddProduct = () => {
         payload.append(key, value);
       }
     });
-    payload.append("category", formData.categoryId);
     try {
       const response = await axiosInstance.post(
         "/api/v1/product/create-product",
@@ -182,78 +180,116 @@ const AddProduct = () => {
             <label className="form-label">Product Name*</label>
             <input
               type="text"
-              name="productName"
+              name="title"
               className="form-control"
-              value={formData.productName}
+              value={formData.title}
               onChange={handleChange}
               required
             />
           </div>
-          <div className="col-md-3">
-            <label className="form-label">material*</label>
-            <input
-              type="text"
-              name="material"
-              className="form-control"
-              value={formData.material}
-              onChange={handleChange}
+          {/* <div className="col-md-3">
+            <label className="form-label">Select Category</label>
+            <select
+              name="categoryId"
+              id=""
               required
-            />
-          </div>
-          
+              onChange={handleCategoryChange}
+              value={formData.categoryId}
+            >
+              <option value="">Select Category</option>
+              {categoryList.map((category) => (
+                <option key={category._id} value={category._id}>
+                  {category.categoryName}
+                </option>
+              ))}
+            </select>
+          </div> */}
           <div className="col-md-3">
-            <label className="form-label">weight*</label>
+            <label className="form-label">author*</label>
             <input
               type="text"
-              name="weight"
+              name="author"
               className="form-control"
-              value={formData.weight}
+              value={formData.author}
               onChange={handleChange}
               required
             />
           </div>
 
           <div className="col-md-3">
-            <label className="form-label">sku*</label>
+            <label className="form-label">pages*</label>
+            <input
+              type="number"
+              name="pages"
+              className="form-control"
+              value={formData.pages}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="col-md-3">
+            <label className="form-label">ISBN*</label>
             <input
               type="text"
-              name="sku"
+              name="ISBN"
               className="form-control"
-              value={formData.sku}
+              value={formData.ISBN}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+
+     
+          <div className="col-md-3">
+            <label className="form-label">Select Category</label>
+            <select
+              name="category"
+              id=""
+              required
+              onChange={handleChange}
+              value={formData.category}
+            >
+              <option value="">Select Category</option>
+              {categoryList?.map((category) => (
+                <option key={category?._id} value={category?._id}>
+                  {category?.categoryName}
+                </option>
+              ))}
+            </select>
+          </div>
+               </div>
+          <div className="col-md-3">
+            <label className="form-label">publisher*</label>
+            <input
+              type="text"
+              name="publisher"
+              className="form-control"
+              value={formData.publisher}
               onChange={handleChange}
               required
             />
           </div>
           <div className="col-md-3">
-            <label className="form-label">dimensionsInch*</label>
+            <label className="form-label">Publication Date*</label>
             <input
-              type="text"
-              name="dimensionsInch"
+              type="date"
+              name="publicationDate"
               className="form-control"
-              value={formData.dimensionsInch}
+              value={formData.publicationDate}
               onChange={handleChange}
               required
             />
           </div>
           <div className="col-md-3">
-            <label className="form-label">dimensionsCm*</label>
+            <label className="form-label">Language*</label>
             <input
               type="text"
-              name="dimensionsCm"
-              className="form-control"
-              value={formData.dimensionsCm}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="col-md-3">
-            <label className="form-label">Brand*</label>
-            <input
-              type="text"
-              name="brand"
+              name="language"
               className="form-control"
               list="doorOptions"
-              value={formData.brand}
+              value={formData.language}
               onChange={handleChange}
               required
             />
@@ -284,40 +320,6 @@ const AddProduct = () => {
             />
           </div> */}
 
-          <div className="col-md-3">
-            <label className="form-label">Select Category</label>
-            <select
-              name="categoryId"
-              id=""
-              required
-              onChange={handleCategoryChange}
-              value={formData.categoryId}
-            >
-              <option value="">Select Category</option>
-              {categoryList.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.categoryName}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="col-md-3">
-            <label className="form-label">Select Sub Category</label>
-            <select
-              name="subCategory"
-              id=""
-              required
-              onChange={handleChange}
-              value={formData.subCategory}
-            >
-              <option value="">Select Category</option>
-              {subcategoryList.map((subcategory) => (
-                <option key={subcategory._id} value={subcategory._id}>
-                  {subcategory.subCategoryName}
-                </option>
-              ))}
-            </select>
-          </div>
 
           <div className="col-md-3">
             <label className="form-label">Images</label>
@@ -358,7 +360,7 @@ const AddProduct = () => {
                 type="number"
                 name="discount"
                 className="form-control"
-                value={formData.discountPrice}
+                value={formData.discount}
                 onChange={handleChange}
                 min={0}
                 max={100}
@@ -388,7 +390,7 @@ const AddProduct = () => {
               />
             </div>
           </div>
-          <div className="row" style={{ marginTop: "20px" }}>
+          {/* <div className="row" style={{ marginTop: "20px" }}>
             <div className="col-md-3">
               <label className="form-label">Specifications*</label>
               <input
@@ -452,19 +454,17 @@ const AddProduct = () => {
                 type="checkbox"
                 id="status"
                 checked={formData.isFeatured}
-                onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
+                onChange={(e) =>
+                  setFormData({ ...formData, isFeatured: e.target.checked })
+                }
               />
               <label className="form-check-label" htmlFor="status">
                 Featured Product
               </label>
             </div>
-          </div>
+          </div> */}
           <div className="col-md-12 mt-4 text-center">
-            <button
-              type="submit"
-              className="btn "
-              disabled={isLoading}
-            >
+            <button type="submit" className="btn " disabled={isLoading}>
               {isLoading ? "Submitting..." : "Submit"}
             </button>
           </div>

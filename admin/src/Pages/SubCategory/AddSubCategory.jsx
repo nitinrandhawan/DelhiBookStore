@@ -32,7 +32,7 @@ const AddSubCategory = () => {
   const fetchCategories = async () => {
     try {
       const response = await axiosInstance.get(
-        "/api/mainCategory/get-all-mainCategories"
+        "/api/v1/mainCategory/get-all-mainCategories"
       );
       if (response.status === 200) {
         setCategories(response?.data);
@@ -85,7 +85,7 @@ const AddSubCategory = () => {
       );
       if (response.status === 201) {
         toast.success(response?.message || "Category created successfully");
-        navigate("/all-subCategory");
+        navigate("/all-category");
       } else {
         toast.error(response?.message || "Error adding category");
       }
@@ -105,10 +105,10 @@ const AddSubCategory = () => {
       <ToastContainer />
       <div className="bread">
         <div className="head">
-          <h4>Add SubCategory</h4>
+          <h4>Add Category</h4>
         </div>
         <div className="links">
-          <Link to="/all-subCategory" className="add-new">
+          <Link to="/all-category" className="add-new">
             Back <i className="fa-regular fa-circle-left"></i>
           </Link>
         </div>
@@ -118,7 +118,7 @@ const AddSubCategory = () => {
         <form className="row g-3" onSubmit={handleSubmit}>
           <div className="col-md-4">
             <label htmlFor="image" className="form-label">
-              Select Category
+              Select Parent Category
             </label>
             <select
               className="form-control"
@@ -127,7 +127,7 @@ const AddSubCategory = () => {
               onChange={handleSelectChange}
               required
             >
-              <option value="">Select Category</option>
+              <option value="">Select Parent Category</option>
               {categories.map((category) => (
                 <option key={category._id} value={category._id}>
                   {category.Parent_name}
@@ -211,7 +211,7 @@ const AddSubCategory = () => {
     </div>
       <div className="col-md-4">
       <label htmlFor="collection" className="form-label">
-        Sub Category Collection Image
+        Level Image
       </label>
       <input
         type="file"
@@ -245,7 +245,7 @@ const AddSubCategory = () => {
               className="btn "
               disabled={isLoading}
             >
-              {isLoading ? "Saving..." : "Add Sub Category"}
+              {isLoading ? "Saving..." : "Add Category"}
             </button>
           </div>
         </form>

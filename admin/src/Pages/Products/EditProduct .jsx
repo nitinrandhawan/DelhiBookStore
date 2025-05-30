@@ -1,140 +1,111 @@
-import axios from "axios";
-import JoditEditor from "jodit-react";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import JoditEditor from "jodit-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axiosInstance from "../../services/FetchNodeServices.js";
-import "./product.css";
 import { fileLimit } from "../../services/fileLimit.js";
+import "./product.css";
+
 const EditProduct = () => {
+  const { id: productId } = useParams();
+  const navigate = useNavigate();
+
   const [isLoading, setIsLoading] = useState(false);
   const [categoryList, setCategoryList] = useState([]);
   const [subcategoryList, setSubcategoryList] = useState([]);
+
   const [formData, setFormData] = useState({
-    productName: "",
+    title: "",
     images: [],
+    category: "",
     price: 0,
     discount: 0,
     stock: 0,
     finalPrice: 0,
-    brand: "",
     description: "",
-    isFeatured: "",
-    material: "",
-    weight: "",
-    sku: "",
-    dimensionsInch: "",
-    dimensionsCm: "",
-    subCategory: "",
-    Specifications: "",
-    BrandCollectionOverview: "",
-    CareMaintenance: "",
-    seller: "",
-    Warranty: "",
+    newArrival: "",
+    featuredBooks: "",
+    bestSellingBooks: "",
+    author: "",
+    pages: 0,
+    ISBN: "",
+    publisher: "",
+    publicationDate: "",
+    language: "",
   });
 
-  const navigate = useNavigate();
-  const { id } = useParams();
-  const fetchCategory = async () => {
-    try {
-      const response = await axiosInstance.get(
-        "/api/v1/category/get-all-categories"
-      );
-      if (response?.status === 200) {
-        setCategoryList(response.data.data);
-      }
-    } catch (error) {
-      toast.error(
-        error.response
-          ? error.response.data.message
-          : "Error fetching Category data"
-      );
-    }
-  };
-  const fetchProductDetails = async () => {
-    try {
-      const response = await axiosInstance.get(
-        `/api/v1/product/get-single-product/${id}`
-      );
-      const data = response?.data?.data;
-      if (response.status === 200) {
-        setFormData({
-          productName: data.productName,
-          images: [],
-          price: data.price,
-          stock: data.stock,
-          finalPrice: data.finalPrice,
-          discount: data.discount,
-          brand: data.brand,
-          description: data.description,
-          isFeatured: data.isFeatured,
-          material: data.material,
-          weight: data.weight,
-          sku: data.sku,
-          dimensionsInch: data.dimensionsInch,
-          dimensionsCm: data.dimensionsCm,
-          categoryId: data.category,
-          Specifications: data.Specifications,
-          BrandCollectionOverview: data.BrandCollectionOverview,
-          CareMaintenance: data.CareMaintenance,
-          seller: data.seller,
-          Warranty: data.Warranty,
-        });
-        try {
-          const res = await axiosInstance.get(
-            `/api/v1/category/get-subcategories-by-category/${data?.category}`
-          );
-          setSubcategoryList(res?.data?.data);
-          setFormData((prev) => ({
-            ...prev,
-            subCategory: data?.subCategory?._id,
-          }));
-        } catch (error) {
-          console.log("fetching subcategory error", error);
-          toast.error("Error fetching subcategory data");
-        }
-      }
-    } catch (error) {
-      console.log("fetched product details", error.message);
-      toast.error(error?.response?.data?.message || "fetched product details");
-    }
-  };
   useEffect(() => {
     fetchCategory();
-    fetchProductDetails();
-  }, []);
+    if (productId) fetchProductDetails(productId);
+  }, [productId]);
+
+  const fetchCategory = async () => {
+    try {
+      const res = await axiosInstance.get("/api/v1/category/get-all-categories");
+      setCategoryList(res?.data || []);
+    } catch (err) {
+      toast.error("Failed to fetch categories.");
+    }
+  };
+
+  const fetchProductDetails = async (id) => {
+    try {
+      const res = await axiosInstance.get(`/api/v1/product/get-product/${id}`);
+      console.log("res", res.data);
+      
+      if (res?.data) {
+        
+        setFormData( res.data.product );
+        setFormData((prev) => ({ ...prev, category: res.data.product.category._id }));
+        
+      }
+    } catch (err) {
+      toast.error("Failed to load product.");
+    }
+  };
+
+  // const fetchSubcategories = async (categoryId) => {
+  //   try {
+  //     const res = await axiosInstance.get(`/api/v1/category/get-subcategories-by-category/${categoryId}`);
+  //     setSubcategoryList(res?.data?.data || []);
+  //   } catch (err) {
+  //     toast.error("Failed to fetch subcategories.");
+  //   }
+  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCategoryChange = async (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    try {
-      const res = await axiosInstance.get(
-        `/api/v1/category/get-subcategories-by-category/${value}`
-      );
-      setSubcategoryList(res?.data?.data);
-    } catch (error) {
-      console.log("fetching subcategory error", error);
-      toast.error("Error fetching subcategory data");
+  const handleJoditChange = (value) => {
+    setFormData((prev) => ({ ...prev, description: value }));
+  };
+
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    if (name === "images") {
+      setFormData((prev) => ({ ...prev, images: [...files] }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: files[0] }));
     }
   };
-  const handleJoditChange = (newValue) => {
-    setFormData((prev) => ({ ...prev, description: newValue }));
-  };
+
+  useEffect(() => {
+    const total = parseFloat(formData.price * (1 - formData.discount / 100)).toFixed(2);
+    setFormData((prev) => ({ ...prev, finalPrice: total }));
+  }, [formData.price, formData.discount]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    if (!formData.categoryId) {
-      toast.error("category is required");
+
+    if (!formData.category) {
+      toast.error("Category is required");
       return;
     }
-    if (!fileLimit(formData?.coverImage)) return;
+
     if (formData.images && Array.isArray(formData.images)) {
       for (const image of formData.images) {
         if (!fileLimit(image)) {
@@ -147,17 +118,15 @@ const EditProduct = () => {
     const payload = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        value.forEach((item) => {
-          payload.append(key, item);
-        });
+        value.forEach((item) => payload.append(key, item));
       } else {
         payload.append(key, value);
       }
     });
-    payload.append("category", formData.categoryId);
+
     try {
       const response = await axiosInstance.put(
-        `/api/v1/product/update-product/${id}`,
+        `/api/v1/product/update-product/${productId}`,
         payload,
         {
           headers: {
@@ -166,45 +135,22 @@ const EditProduct = () => {
         }
       );
       if (response.status === 200) {
-        toast.success("product updated success");
+        toast.success("Product updated successfully");
         navigate("/all-products");
-        setIsLoading(false);
       }
-    } catch (error) {
-      console.error(error);
-      toast.error(
-        error?.response?.data?.message ||
-          "Failed to update product. Please try again."
-      );
+    } catch (err) {
+      toast.error("Failed to update product");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    if (name === "images") {
-      setFormData((prev) => ({
-        ...prev,
-        images: [...Array.from(files)],
-      }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: files[0] }));
-    }
-  };
-
-  useEffect(() => {
-    let total = parseFloat(
-      formData.price * (1 - formData.discount / 100)
-    ).toFixed(2);
-    setFormData((prev) => ({ ...prev, finalPrice: total }));
-  }, [formData.price, formData.discount]);
   return (
     <>
       <ToastContainer />
       <div className="bread">
         <div className="head">
-          <h4>Update Product</h4>
+          <h4>Edit Product</h4>
         </div>
         <div className="links">
           <Link to="/all-products" className="add-new">
@@ -215,133 +161,108 @@ const EditProduct = () => {
 
       <div className="d-form">
         <form className="row g-3 mt-2" onSubmit={handleSubmit}>
-          {/* <div className="col-md-3">
-            <label className="form-label">Product Image*</label>
-            <input type="file" className="form-control" multiple onChange={handleFileChange} required />
-          </div> */}
-
           <div className="col-md-3">
             <label className="form-label">Product Name*</label>
             <input
               type="text"
-              name="productName"
+              name="title"
               className="form-control"
-              value={formData.productName}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="col-md-3">
-            <label className="form-label">material*</label>
-            <input
-              type="text"
-              name="material"
-              className="form-control"
-              value={formData.material}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="col-md-3">
-            <label className="form-label">weight*</label>
-            <input
-              type="text"
-              name="weight"
-              className="form-control"
-              value={formData.weight}
+              value={formData.title}
               onChange={handleChange}
               required
             />
           </div>
 
           <div className="col-md-3">
-            <label className="form-label">sku*</label>
+            <label className="form-label">Author*</label>
             <input
               type="text"
-              name="sku"
+              name="author"
               className="form-control"
-              value={formData.sku}
+              value={formData.author}
               onChange={handleChange}
               required
             />
-          </div>
-          <div className="col-md-3">
-            <label className="form-label">dimensionsInch*</label>
-            <input
-              type="text"
-              name="dimensionsInch"
-              className="form-control"
-              value={formData.dimensionsInch}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="col-md-3">
-            <label className="form-label">dimensionsCm*</label>
-            <input
-              type="text"
-              name="dimensionsCm"
-              className="form-control"
-              value={formData.dimensionsCm}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="col-md-3">
-            <label className="form-label">Brand*</label>
-            <input
-              type="text"
-              name="brand"
-              className="form-control"
-              list="doorOptions"
-              value={formData.brand}
-              onChange={handleChange}
-              required
-            />
-            <datalist id="doorOptions">
-              <option value="Single Door" />
-              <option value="Sliding brand" />
-              <option value="Mirror Door" />
-              <option value="Sliding Mirror Door" />
-              <option value="Double Door" />
-              <option value="Triple Door" />
-              <option value="Four Door" />
-            </datalist>
           </div>
 
           <div className="col-md-3">
-            <label className="form-label">Select Category</label>
-            <select
-              name="categoryId"
-              id=""
+            <label className="form-label">Pages*</label>
+            <input
+              type="number"
+              name="pages"
+              className="form-control"
+              value={formData.pages}
+              onChange={handleChange}
               required
-              onChange={handleCategoryChange}
-              value={formData.categoryId}
+            />
+          </div>
+
+          <div className="col-md-3">
+            <label className="form-label">ISBN*</label>
+            <input
+              type="text"
+              name="ISBN"
+              className="form-control"
+              value={formData.ISBN}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="col-md-3">
+            <label className="form-label">Category*</label>
+            <select
+              name="category"
+              className="form-control"
+              value={formData.category}
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              required
             >
               <option value="">Select Category</option>
-              {categoryList.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.categoryName}
+              {categoryList.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.categoryName}
                 </option>
               ))}
             </select>
           </div>
+
           <div className="col-md-3">
-            <label className="form-label">Select Sub Category</label>
-            <select
-              name="subCategory"
-              id=""
-              required
+            <label className="form-label">Publisher*</label>
+            <input
+              type="text"
+              name="publisher"
+              className="form-control"
+              value={formData.publisher}
               onChange={handleChange}
-              value={formData.subCategory}
-            >
-              <option value="">Select Category</option>
-              {subcategoryList.map((subcategory) => (
-                <option key={subcategory._id} value={subcategory._id}>
-                  {subcategory.subCategoryName}
-                </option>
-              ))}
-            </select>
+              required
+            />
+          </div>
+
+          <div className="col-md-3">
+            <label className="form-label">Publication Date*</label>
+            <input
+              type="date"
+              name="publicationDate"
+              className="form-control"
+              value={formData.publicationDate}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="col-md-3">
+            <label className="form-label">Language*</label>
+            <input
+              type="text"
+              name="language"
+              className="form-control"
+              value={formData.language}
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="col-md-3">
@@ -352,16 +273,12 @@ const EditProduct = () => {
               name="images"
               className="form-control"
               onChange={handleFileChange}
-              maxLength={4}
             />
           </div>
 
           <div className="col-md-12">
             <label className="form-label">Product Description*</label>
-            <JoditEditor
-              value={formData.description}
-              onChange={handleJoditChange}
-            />
+            <JoditEditor value={formData.description} onChange={handleJoditChange} />
           </div>
 
           <div className="row">
@@ -405,7 +322,7 @@ const EditProduct = () => {
             <div className="col-md-2">
               <label className="form-label">Stock</label>
               <input
-                type="text"
+                type="number"
                 name="stock"
                 className="form-control"
                 value={formData.stock}
@@ -413,80 +330,10 @@ const EditProduct = () => {
               />
             </div>
           </div>
-          <div className="row" style={{ marginTop: "20px" }}>
-            <div className="col-md-3">
-              <label className="form-label">Specifications*</label>
-              <input
-                type="text"
-                name="Specifications"
-                className="form-control"
-                value={formData.Specifications}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="col-md-3">
-              <label className="form-label">BrandCollectionOverview*</label>
-              <input
-                type="text"
-                name="BrandCollectionOverview"
-                className="form-control"
-                value={formData.BrandCollectionOverview}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="col-md-3">
-              <label className="form-label">CareMaintenance*</label>
-              <input
-                type="text"
-                name="CareMaintenance"
-                className="form-control"
-                value={formData.CareMaintenance}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="col-md-3">
-              <label className="form-label">seller*</label>
-              <input
-                type="text"
-                name="seller"
-                className="form-control"
-                value={formData.seller}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="col-md-3">
-              <label className="form-label">Warranty*</label>
-              <input
-                type="text"
-                name="Warranty"
-                className="form-control"
-                value={formData.Warranty}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="col-12" style={{ marginTop: "20px" }}>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                id="status"
-                checked={formData.isFeatured}
-                onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
-              />
-              <label className="form-check-label" htmlFor="status">
-                Featured Product
-              </label>
-            </div>
-          </div>
-          </div>
+
           <div className="col-md-12 mt-4 text-center">
-            <button type="submit" className="btn " disabled={isLoading}>
-              {isLoading ? "Submitting..." : "Submit"}
+            <button type="submit" className="btn" disabled={isLoading}>
+              {isLoading ? "Updating..." : "Update Product"}
             </button>
           </div>
         </form>

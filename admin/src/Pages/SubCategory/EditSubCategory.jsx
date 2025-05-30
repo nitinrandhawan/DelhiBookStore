@@ -31,8 +31,11 @@ const EditSubCategory = () => {
           image: null,
           status: data.isActive,
           collection: null,
-          category: data.Parent_name._id,
+          category: data.Parent_name,
+          level: data.level
         });
+        console.log("data", data);
+        
       }
     } catch (error) {
       toast.error("Failed to fetch subcategory details");
@@ -41,7 +44,7 @@ const EditSubCategory = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axiosInstance.get("/api/mainCategory/get-all-mainCategories");
+      const response = await axiosInstance.get("/api/v1/mainCategory/get-all-mainCategories");
       if (response.status === 200) {
         setCategories(response.data);
       }
@@ -70,18 +73,23 @@ const EditSubCategory = () => {
     payload.append("subCategoryName", formData.name);
     payload.append("isCollection", formData.status);
     payload.append("category", formData.category);
+    payload.append("level", formData.level);
     if (formData.image) payload.append("image", formData.image);
-    if (formData.collection) payload.append("collection", formData.collection);
+    if (formData.collection) payload.append("levelImage", formData.collection);
 
     try {
-      const res = await axiosInstance.put(`/api/v1/sub-category/update-sub-category/${id}`, payload, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const res = await axiosInstance.put(`/api/v1/category/update-category/${id}`, payload, 
+         (formData.image || formData.collection)
+      ? {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      : {} 
+        );
       if (res.status === 200) {
         toast.success("SubCategory updated successfully");
-        navigate("/all-subCategory");
+        navigate("/all-category");
       } else {
         toast.error(res?.message || "Error updating subcategory");
       }
@@ -102,10 +110,10 @@ const EditSubCategory = () => {
       <ToastContainer />
       <div className="bread">
         <div className="head">
-          <h4>Edit SubCategory</h4>
+          <h4>Edit Category</h4>
         </div>
         <div className="links">
-          <Link to="/all-subCategory" className="add-new">
+          <Link to="/all-category" className="add-new">
             Back <i className="fa-regular fa-circle-left"></i>
           </Link>
         </div>
@@ -113,7 +121,7 @@ const EditSubCategory = () => {
       <div className="d-form">
         <form className="row g-3" onSubmit={handleSubmit}>
           <div className="col-md-4">
-            <label className="form-label">Select Category</label>
+            <label className="form-label">Select Parent Category</label>
             <select
               className="form-control"
               name="category"
@@ -121,7 +129,7 @@ const EditSubCategory = () => {
               onChange={handleChange}
               required
             >
-              <option value="">Select Category</option>
+              <option value="">Select Parent Category</option>
               {categories.map((cat) => (
                 <option key={cat._id} value={cat._id}>
                   {cat.Parent_name}
@@ -191,7 +199,7 @@ const EditSubCategory = () => {
     </div>
       <div className="col-md-4">
       <label htmlFor="collection" className="form-label">
-        Sub Category Collection Image
+        Level Image
       </label>
       <input
         type="file"
@@ -200,7 +208,6 @@ const EditSubCategory = () => {
         id="collection"
         accept="image/*"
         onChange={handleChange}
-        required
       />
       {formData.collection && (
         <img

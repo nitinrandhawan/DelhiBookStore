@@ -44,7 +44,7 @@ const AllSubCategory = () => {
 
         if (confirmDelete.isConfirmed) {
             try {
-                const data = await axiosInstance.delete(`/api/v1/sub-category/delete-sub-category/${id}`);
+                const data = await axiosInstance.delete(`/api/v1/category/delete-category/${id}`);
             
                 if (data.status === 200) {
                     setCategories(categories.filter(category => category._id !== id));
@@ -94,10 +94,10 @@ const AllSubCategory = () => {
             <ToastContainer />
             <div className="bread">
                 <div className="head">
-                    <h4>All Sub Category</h4>
+                    <h4>All Category</h4>
                 </div>
                 <div className="links">
-                    <Link to="/add-subCategory" className="add-new">Add New <i className="fa-solid fa-plus"></i></Link>
+                    <Link to="/add-category" className="add-new">Add New <i className="fa-solid fa-plus"></i></Link>
                 </div>
             </div>
 
@@ -116,9 +116,9 @@ const AllSubCategory = () => {
                         <tr>
                             <th scope="col">Sr.No.</th>
                             <th scope="col">Name</th>
-                            <th scope="col">Category</th>
+                            <th scope="col">Parent Category</th>
                             <th scope="col">Image</th>
-                            <th scope="col">Show in Collection</th>
+                            {/* <th scope="col">Show in Collection</th> */}
                             <th scope="col">Edit</th>
                             <th scope="col">Delete</th>
                         </tr>
@@ -133,15 +133,15 @@ const AllSubCategory = () => {
                                     <td>
                                         <img src={`${category?.categoryImage}`} alt={category?.categoryName} style={{ width: '50px', height: '50px' }} />
                                     </td>
-                                    <td>
+                                    {/* <td>
                                         <input
                                             type="checkbox"
                                             checked={category?.isCollection}
                                             onChange={(e) => handleCheckboxChange(e, category._id)}
                                         />
-                                    </td>
+                                    </td> */}
                                     <td>
-                                        <Link to={`/edit-subCategory/${category?._id}`} className="bt edit">
+                                        <Link to={`/edit-category/${category?._id}`} className="bt edit">
                                             Edit <i className="fa-solid fa-pen-to-square"></i>
                                         </Link>
                                     </td>

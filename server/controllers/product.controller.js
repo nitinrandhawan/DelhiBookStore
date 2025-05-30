@@ -30,16 +30,16 @@ const createProduct = async (req, res) => {
     if (req.files.length == 0 || !req.files)
       errorMessages.push("image is required");
     if (!description) errorMessages.push("description is required");
-    if (!highlights) errorMessages.push("highlights is required");
-    if (!details) errorMessages.push("details is required");
+    // if (!highlights) errorMessages.push("highlights is required");
+    // if (!details) errorMessages.push("details is required");
     if (!author) errorMessages.push("author is required");
     if (!pages) errorMessages.push("pages is required");
     if (!ISBN) errorMessages.push("ISBN is required");
     if (!publisher) errorMessages.push("publisher is required");
     if (!publicationDate) errorMessages.push("publicationDate is required");
-    if (!Array.isArray(language)) errorMessages.push("language is required");
-    if (!priceInDollors) errorMessages.push("priceInDollors is required");
-    if (!priceInEuros) errorMessages.push("priceInEuros is required");
+    if (!language) errorMessages.push("language is required");
+    // if (!priceInDollors) errorMessages.push("priceInDollors is required");
+    // if (!priceInEuros) errorMessages.push("priceInEuros is required");
     if (!price) errorMessages.push("price is required");
     if (!discount) errorMessages.push("discount is required");
     if (!category) errorMessages.push("category is required");
@@ -67,8 +67,8 @@ const createProduct = async (req, res) => {
     const product = await Product.create({
       title,
       description,
-      highlights,
-      details,
+      // highlights,
+      // details,
       author,
       pages,
       ISBN,
@@ -78,8 +78,8 @@ const createProduct = async (req, res) => {
       newArrival: newArrivalBool,
       featuredBooks: featuredBooksBool,
       bestSellingBooks: bestSellingBooksBool,
-      priceInDollors: Number(priceInDollors),
-      priceInEuros: Number(priceInEuros),
+      // priceInDollors: Number(priceInDollors),
+      // priceInEuros: Number(priceInEuros),
       price: Number(price),
       discount: Number(discount),
       category,
@@ -147,20 +147,20 @@ const updateProduct = async (req, res) => {
       language,
       category,
     } = req.body || {};
-    let priceInDollors = Number(req.body.priceInDollors);
-    let priceInEuros = Number(req.body.priceInEuros);
-    let price = Number(req.body.price);
-    let stock = Number(req.body.stock);
-    let discount = Number(req.body.discount);
+    let priceInDollors = Number(req.body.priceInDollors || 0);
+    let priceInEuros = Number(req.body.priceInEuros || 0);
+    let price = Number(req.body.price || 0);
+    let stock = Number(req.body.stock || 0);
+    let discount = Number(req.body.discount || 0);
     let newArrival = req.body.newArrival === "true";
     let featuredBooks = req.body.featuredBooks === "true";
     let bestSellingBooks = req.body.bestSellingBooks === "true";
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: "Product not found" });
-    if (req.files) {
+    if (req.files && req.files.length > 0) {
       const imagesPromises = req.files.map((file) => {
         let localPath = file.path;
-        uploadOnCloudinary(localPath);
+      return uploadOnCloudinary(localPath);
       });
       const images = await Promise.all(imagesPromises);
       product.images = images;
@@ -205,10 +205,19 @@ const updateProduct = async (req, res) => {
 const getAllProducts = async (req, res) => {
   try {
     const page = parseInt(req?.query?.page) || 1;
-    const limit = parseInt(req?.query?.limit) || 10;
+    const limit = parseInt(req?.query?.limit) || 0;
     const skip = (page - 1) * limit;
-
-    const products = await Product.find({})
+const query={}
+if(req?.query?.newArrival){
+  query.newArrival=true
+}
+if(req?.query?.featuredBooks){
+  query.featuredBooks=true
+}
+if(req?.query?.bestSellingBooks){
+  query.bestSellingBooks=true
+}
+    const products = await Product.find(query)
       .populate("category")
       .skip(skip)
       .limit(limit);
