@@ -78,7 +78,12 @@ export const multipleCategory = async (req, res) => {
 };
 export const getAllCategories = async (req, res) => {
   try {
-    const categories = await Category.find().populate("Parent_name");
+    const {level}=req.query || {};
+    const query={}
+    if(level){
+      query.$or=[{level:1},{level:2},{level:3}]
+    }
+    const categories = await Category.find(query).populate("Parent_name");
     return res.status(200).json(categories);
   } catch (error) {
     console.error("Get All Categories Error:", error);
