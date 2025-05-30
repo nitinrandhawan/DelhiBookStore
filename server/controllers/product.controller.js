@@ -89,6 +89,9 @@ const createProduct = async (req, res) => {
 
     return res.status(201).json({ message: "product created", product });
   } catch (error) {
+    if(req.files){
+     await Promise.all(req.files.map((file) => deleteLocalImage(file.path)))
+    }
     console.log("create product error", error);
     return res.status(500).json({ message: "create product server error" });
   }
@@ -195,6 +198,9 @@ const updateProduct = async (req, res) => {
     await product.save();
     return res.status(200).json({ message: "Product updated", product });
   } catch (error) {
+      if(req.files){
+     await Promise.all(req.files.map((file) => deleteLocalImage(file.path)))
+    }
     console.log("update product error", error);
     return res.status(500).json({ message: "update product server error" });
   }
