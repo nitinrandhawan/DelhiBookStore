@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Heart, ArrowRight, Plus } from "lucide-react";
 import Link from "next/link";
@@ -7,239 +7,84 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "@/app/redux/cartSlice";
 import toast from "react-hot-toast";
 import product1 from "../../Images/DBS/1.jpg";
-
-const Featureproduct = () => {
-  const products = [
-    {
-      id: 30,
-      name: "Book Title 30",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 31,
-      name: "Book Title 31",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 32,
-      name: "Book Title 32",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 33,
-      name: "Book Title 33",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 34,
-      name: "Book Title 34",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 35,
-      name: "Book Title 35",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 36,
-      name: "Book Title 36",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 37,
-      name: "Book Title 37",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 38,
-      name: "Book Title 38",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 39,
-      name: "Book Title 39",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 40,
-      name: "Book Title 40",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 41,
-      name: "Book Title 41",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 42,
-      name: "Book Title 42",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 43,
-      name: "Book Title 43",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 44,
-      name: "Book Title 44",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 45,
-      name: "Book Title 45",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 46,
-      name: "Book Title 46",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 47,
-      name: "Book Title 47",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 48,
-      name: "Book Title 48",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 49,
-      name: "Book Title 49",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 50,
-      name: "Book Title 50",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 51,
-      name: "Book Title 51",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 52,
-      name: "Book Title 52",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 53,
-      name: "Book Title 53",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 54,
-      name: "Book Title 54",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-    {
-      id: 55,
-      name: "Book Title 55",
-      image: product1,
-      discount: "6%",
-      oldPrice: "8500",
-      newPrice: "7995",
-    },
-  ];
-
+import axiosInstance from "@/app/redux/features/axiosInstance";
+import { usePathname } from "next/navigation";
+const Featureproduct = ({ productlength, btnlength }) => {
   const dispatch = useDispatch();
-
   const { cartItems } = useSelector((state) => state.cart);
+  const pathname = usePathname();
 
-  const handleAddToCart = (id, name, img, newPrice) => {
+  const handleAddToCart = (_id, title, img, finalPrice) => {
     dispatch(
       addToCart({
-        id: id,
-        name: name,
+        id: _id,
+        name: title,
         image: img,
-        price: newPrice,
-        totalPrice: newPrice,
+        price: finalPrice,
+        totalPrice: finalPrice,
       })
     );
-    if (cartItems.some((item) => item.id === id)) {
+    if (cartItems.some((item) => item.id === _id)) {
       toast.success("Quantity updated in your cart!");
     } else {
-      toast.success(`"Great choice! ${name} added."`);
+      toast.success(`"Great choice! ${title} added."`);
     }
   };
+
+  const [product, setProduct] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    const featureProduct = async () => {
+      try {
+        const response = await axiosInstance.get("/product/get-featured-books");
+        setProduct(response.data.products || []); // ✅ Fallback to [] if undefined
+      } catch (err) {
+        setError("Failed to load New Arrival product. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    featureProduct();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div
+            key={index}
+            className="animate-pulse space-y-3 border border-gray-200 rounded-lg shadow p-4"
+          >
+            {/* Image skeleton */}
+            <div className="w-full h-40 bg-gray-300 rounded-md"></div>
+
+            {/* Title skeleton */}
+            <div className="h-4 bg-gray-300 rounded w-3/4 mx-auto"></div>
+
+            {/* Price skeleton */}
+            <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
+  }
+
+  if (!product) {
+    return (
+      <div className="text-center text-gray-500">
+        {loading ? "Loading..." : "Product not found."}
+      </div>
+    );
+  }
+
+  const visibleProducts =
+    product.length > productlength ? product.slice(0, productlength) : product;
 
   return (
     <>
@@ -253,24 +98,26 @@ const Featureproduct = () => {
             </p>
           </div>
 
-          <Link href="/">
-            <button className="view-all-btn">
-              View All <ArrowRight size={16} />
-            </button>
-          </Link>
+          {pathname !== "/pages/featurebook" && (
+            <Link href="/pages/featurebook">
+              <button className="view-all-btn">
+                View All <ArrowRight size={16} />
+              </button>
+            </Link>
+          )}
         </div>
 
         {/* Product Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3">
-          {products.map((product) => (
+          {visibleProducts.map((pro) => (
             <div
-              key={product.id}
+              key={pro._id}
               className="flex md:flex-row flex-col border border-gray-200 bg-white px-2"
             >
               <div className="relative">
                 {/* Discount Badge */}
                 <div className="absolute top-2 left-0 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-e-2xl z-10">
-                  {product.discount}
+                  {pro.discount}%
                 </div>
 
                 {/* Wishlist Icon */}
@@ -279,11 +126,11 @@ const Featureproduct = () => {
                 </div>
 
                 {/* Product Image */}
-                <Link href={`/product/${product.id}`}>
+                <Link href={`/pages/shop/${pro._id}`}>
                   <div className="w-30 h-50 lg:w-40 md:w-35 flex justify-center m-auto p-2 items-center mb-2 bg-white ">
                     <Image
-                      src={product.image}
-                      alt={product.name}
+                      src={product1}
+                      alt={pro.title}
                       className="object-contain h-full"
                     />
                   </div>
@@ -292,9 +139,9 @@ const Featureproduct = () => {
 
               {/* Product Name */}
               <div className="w-full">
-                <Link href={`/product/${product.id}`}>
+                <Link href={`/pages/shop/${pro._id}`}>
                   <h3 className="mt-2 text-sm md:text-md font-normal md:font-semibold line-clamp-2 hover:underline">
-                    {product.name}
+                    {pro.title}
                   </h3>
                 </Link>
 
@@ -307,37 +154,39 @@ const Featureproduct = () => {
                 {/* Price */}
                 <div className="mt-2">
                   <div className="text-md md:text-lg font-bold text-red-600">
-                    ₹{product.newPrice}
+                    ₹{pro.finalPrice}
                   </div>
                   <div className="text-sm text-gray-400 line-through">
-                    ₹{product.oldPrice}
+                    ₹{pro.price}
                   </div>
                 </div>
 
                 {/* Add to Cart Button */}
                 <button
                   className={`mb-2 md:mb-0 ${
-                    cartItems.some((item) => item.id === product.id)
+                    cartItems.some((item) => item.id === pro._id)
                       ? "added-to-cart-btn"
                       : "add-to-cart-btn"
                   }`}
                   onClick={() =>
-                    handleAddToCart(
-                      product.id,
-                      product.name,
-                      product.img,
-                      product.newPrice
-                    )
+                    handleAddToCart(pro._id, pro.title, pro.img, pro.finalPrice)
                   }
                 >
-                  {cartItems.some((item) => item.id === product.id)
+                  {cartItems.some((item) => item.id === pro._id)
                     ? "Added"
-                    : "Add to cart 🛒"}{" "}
+                    : "Add to cart 🛒"}
                 </button>
               </div>
             </div>
           ))}
         </div>
+        {product.length > btnlength && (
+          <div className="text-center mt-4">
+            <Link href={`/pages/shop/featured-books`}>
+              <button className="view-all-btn m-auto">View All</button>
+            </Link>
+          </div>
+        )}
       </div>
     </>
   );

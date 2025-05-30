@@ -1,7 +1,55 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { Facebook, Twitter, Instagram, Linkedin, MapPin } from "lucide-react";
 import Webfeature from "@/app/components/Webfeature/Webfeature";
+import axiosInstance from "@/app/redux/features/axiosInstance";
+import toast from "react-hot-toast";
+
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await axiosInstance.post(
+        "/contact-form/send-contact-form",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Success:", response.data);
+      toast.success("Your message has been sent successfully!");
+      // Reset form if successful
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-5 text-gray-700">
       {/* Header */}
@@ -68,34 +116,70 @@ const Contact = () => {
             Radiogen pasam inte loba även om prerade i garanterad traditionell
             specialitet till bebel.
           </p>
-          <form className="space-y-4">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <input
-                type="text"
-                placeholder="Your name *"
-                className="w-full sm:w-1/2 border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-              <input
-                type="email"
-                placeholder="Your email *"
-                className="w-full sm:w-1/2 border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="text"
-              placeholder="Subject *"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Your name *"
+              required
+              className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Your email *"
+              required
+              className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <input
+              type="text"
+              name="subject"
+              value={formData.subject}
+              onChange={handleChange}
+              placeholder="Your phone number *"
+              required
               className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
             <textarea
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
               placeholder="Your message"
               rows={5}
+              required
               className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
             <button
               type="submit"
-              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-md transition"
+              disabled={loading}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-md transition flex items-center justify-center"
             >
-              Send Message
+              {loading ? (
+                <svg
+                  className="animate-spin h-5 w-5 text-white mr-2"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4z"
+                  />
+                </svg>
+              ) : null}
+              {loading ? "Sending..." : "Send Message"}
             </button>
           </form>
         </div>
@@ -129,6 +213,7 @@ const Contact = () => {
           <Linkedin className="w-4 h-4" />
         </a>
       </div>
+
       <Webfeature />
     </div>
   );

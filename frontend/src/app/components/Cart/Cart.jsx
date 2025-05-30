@@ -80,10 +80,8 @@ export default function Cart() {
                       className="rounded-md object-contain"
                     />
                   </div>
-                  <div className="font-medium">
-                    {item.name.length > 20
-                      ? item.name.slice(0, 20) + "..."
-                      : item.name}
+                  <div className="font-medium line-clamp-1">
+                    {item.name}
                   </div>
                   <div className="text-center">₹{item.price}</div>
                   <div className="flex items-center justify-center space-x-2">
