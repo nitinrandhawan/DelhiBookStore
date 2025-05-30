@@ -1,5 +1,6 @@
 import { Banner } from "../models/banner.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.util.js";
+import { deleteLocalImage } from "../utils/image.util.js";
 
 export const createBanner = async (req, res) => {
   try {
@@ -7,8 +8,8 @@ export const createBanner = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "Banner image is required" });
     }
-    const localPath = req.file.path;
-    const imageUrl = await uploadOnCloudinary(localPath);
+
+    const imageUrl = "/public/image/" + req.file.filename
 
     if (!imageUrl) {
       return res.status(500).json({ message: "Image upload failed" });
@@ -17,6 +18,9 @@ export const createBanner = async (req, res) => {
     const banner = await Banner.create({ bannerImage: imageUrl, isActive });
     return res.status(201).json({ message: "Banner created", banner });
   } catch (error) {
+    if(req.file){
+      await deleteLocalImage(req.file.path);
+    }
     console.error("Create Banner Error:", error);
     return res
       .status(500)
@@ -56,8 +60,7 @@ export const updateBanner = async (req, res) => {
     if (!banner) return res.status(404).json({ message: "Banner not found" });
 
     if (req.file) {
-      const localPath = req.file.path;
-      const imageUrl = await uploadOnCloudinary(localPath);
+      const imageUrl = "/public/image/" + req.file.filename
       if (imageUrl) banner.bannerImage = imageUrl;
     } else {
       banner.bannerImage = banner.bannerImage;
@@ -66,6 +69,9 @@ export const updateBanner = async (req, res) => {
     await banner.save();
     return res.status(200).json({ message: "Banner updated", banner });
   } catch (error) {
+     if(req.file){
+      await deleteLocalImage(req.file.path);
+    }
     console.error("Update Banner Error:", error);
     return res
       .status(500)

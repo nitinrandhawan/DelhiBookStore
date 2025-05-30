@@ -184,7 +184,7 @@ const AllProduct = () => {
                                     <td>{product?.title}</td>
                                     <td>{product?.category?.categoryName}</td>
                                     <td>
-                                       <img src={product?.images?.[0]}/>
+                                       <img src={`${serverURL}${product?.images?.[0]}`}/>
                                     </td>
                                     <td>{Parser().parse(product?.description?.slice(0,25))}...</td>
                                     {/* <td>

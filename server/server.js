@@ -12,6 +12,7 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan.default("dev"));
 }
 
+app.use("/public/image", express.static("public/images"));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

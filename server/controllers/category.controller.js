@@ -157,7 +157,7 @@ export const deleteCategory = async (req, res) => {
 
 export const getCategoryByMainCategory = async (req, res) => {
   try {
-    const category = await Category.find({ Parent_name: req.params.id });
+    const category = await Category.find({ Parent_name: req.params.id }).populate("Parent_name");
     return res.status(200).json(category);
   } catch (error) {
     console.error("Get Category by ID Error:", error);

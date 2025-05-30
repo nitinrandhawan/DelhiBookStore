@@ -1,6 +1,7 @@
 import { Category } from "../models/category.model.js";
 import { Product } from "../models/product.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.util.js";
+import { deleteLocalImage } from "../utils/image.util.js";
 
 const createProduct = async (req, res) => {
   try {
@@ -57,11 +58,9 @@ const createProduct = async (req, res) => {
       return res.status(400).json({ message: "category not found" });
     }
 
-    const imagesPromises = req.files.map((file) => {
-      let localPath = file.path;
-      return uploadOnCloudinary(localPath);
+    const images = req.files.map((file) => {
+    return "/public/image/" + file.filename
     });
-    const images = await Promise.all(imagesPromises);
     const finalPrice = Number(price) - (Number(price) * Number(discount)) / 100;
 
     const product = await Product.create({
@@ -90,6 +89,9 @@ const createProduct = async (req, res) => {
 
     return res.status(201).json({ message: "product created", product });
   } catch (error) {
+    if(req.files){
+     await Promise.all(req.files.map((file) => deleteLocalImage(file.path)))
+    }
     console.log("create product error", error);
     return res.status(500).json({ message: "create product server error" });
   }
@@ -120,8 +122,6 @@ const multipleProducts = async (req, res) => {
       }
       return product;
     }));
-    console.log("updatedProducts", updatedProducts.slice(0, 5));
-    
     const insertedProducts = await Product.insertMany(updatedProducts);
 
     return res
@@ -158,11 +158,12 @@ const updateProduct = async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ message: "Product not found" });
     if (req.files && req.files.length > 0) {
-      const imagesPromises = req.files.map((file) => {
-        let localPath = file.path;
-      return uploadOnCloudinary(localPath);
+      const images = req.files.map((file) => {
+      return "/public/image/" + file.filename
       });
-      const images = await Promise.all(imagesPromises);
+      if(product.images){
+         await Promise.all(product.images.map(image => deleteLocalImage(image)));
+      }
       product.images = images;
     } else {
       product.images = product.images;
@@ -197,6 +198,9 @@ const updateProduct = async (req, res) => {
     await product.save();
     return res.status(200).json({ message: "Product updated", product });
   } catch (error) {
+      if(req.files){
+     await Promise.all(req.files.map((file) => deleteLocalImage(file.path)))
+    }
     console.log("update product error", error);
     return res.status(500).json({ message: "update product server error" });
   }
