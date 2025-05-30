@@ -44,6 +44,8 @@ const createOrder = async (req, res) => {
       return res.status(400).json({ message: "you are not logged in" });
     }
     const cart = await Cart.findOne({ user: userId });
+    console.log("cart", cart.items);
+    
     if (!cart) {
       return res.status(400).json({ message: "Cart not found" });
     }
@@ -138,11 +140,14 @@ const createOrder = async (req, res) => {
         : {},
     });
     if (paymentMethod === "COD") {
-      const cart = await Cart.findOne({ userId: req?.user?._id });
+      const cart = await Cart.findOne({ user: req?.user?._id });
       cart.items.length > 0 &&
         cart.items.forEach(async (item) => {
           const product = await Product.findById(item.productId);
           if (product) {
+            if(product.stock < item.quantity){
+              return res.status(400).json({ message: "Quantity exceeds stock" });
+            }
             product.stock -= item.quantity;
             await product.save();
           }
@@ -245,7 +250,7 @@ const UpdateCheckout = async (req, res) => {
 const DeleteOrder = async (req, res) => {
   try {
     const { id } = req.params;
-    const order = await Checkout.findByIdAndDelete(id);
+    const order = await Order.findByIdAndDelete(id);
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }

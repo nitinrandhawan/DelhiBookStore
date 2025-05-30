@@ -43,7 +43,7 @@ const AllOrder = () => {
 
       if (confirmation.isConfirmed) {
         const body = { orderId: orderId };
-        const response = await axiosInstance.delete(`/api/v1/order/delete-order/${orderId}`, body);
+        const response = await axiosInstance.delete(`/api/v1/order/delete-order/${orderId}`);
         if (response?.status === 200) {
           setOrders((prevOrders) =>
             prevOrders.filter((order) => order._id !== orderId)

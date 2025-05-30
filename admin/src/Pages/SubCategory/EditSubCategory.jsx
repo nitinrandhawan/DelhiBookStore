@@ -71,21 +71,20 @@ const EditSubCategory = () => {
     setIsLoading(true);
     const payload = new FormData();
     payload.append("subCategoryName", formData.name);
-    payload.append("isCollection", formData.status);
+    payload.append("isActive", formData.status);
     payload.append("category", formData.category);
     payload.append("level", formData.level);
     if (formData.image) payload.append("image", formData.image);
     if (formData.collection) payload.append("levelImage", formData.collection);
-
+   
     try {
       const res = await axiosInstance.put(`/api/v1/category/update-category/${id}`, payload, 
          (formData.image || formData.collection)
-      ? {
+      && {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         }
-      : {} 
         );
       if (res.status === 200) {
         toast.success("SubCategory updated successfully");

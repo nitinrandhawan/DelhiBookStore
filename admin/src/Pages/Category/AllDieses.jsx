@@ -111,13 +111,7 @@ const AllDieses = () => {
           <Link to="/add-parent-category" className="add-new">
             Add New <i className="fa-solid fa-plus"></i>
           </Link>
-          <Link
-            to="/add-multicategory"
-            className="add-new"
-            style={{ marginLeft: "10px" }}
-          >
-            Add Multiple Category <i className="fa-solid fa-plus"></i>
-          </Link>
+          
         </div>
       </div>
 

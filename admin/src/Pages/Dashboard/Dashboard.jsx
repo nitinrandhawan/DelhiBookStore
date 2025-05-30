@@ -33,31 +33,31 @@ const Dashboard = () => {
         // Fetch banners data
         const bannersResponse = await getData('api/v1/banner/get-all-banners');
         if (bannersResponse) {
-          setBanners(bannersResponse.banners);
+          setBanners(bannersResponse);
         }
 
         // Fetch categories data
         const categoriesResponse = await getData('api/v1/category/get-all-categories');
         if (categoriesResponse) {
-          setCategories(categoriesResponse.data);
+          setCategories(categoriesResponse);
         }
 
-        // Fetch user Wishlist data
-        const userWishlistResponse = await getData('api/v1/video/get-all-videos');
-        if (userWishlistResponse) {
-          setVideos(userWishlistResponse.videos);
-        }
+        // // Fetch user Wishlist data
+        // const userWishlistResponse = await getData('api/v1/video/get-all-videos');
+        // if (userWishlistResponse) {
+        //   setVideos(userWishlistResponse.videos);
+        // }
 
         // Fetch products data
         const productsResponse = await getData("api/v1/product/get-all-products");
         if (productsResponse) {
-          setProducts(productsResponse.data || []);
+          setProducts(productsResponse.products || []);
         }
 
         // Fetch reviews data
-        const rewardPointsResponse = await getData('api/v1/sub-category/get-all-sub-categories');
+        const rewardPointsResponse = await getData('api/v1/mainCategory/get-all-mainCategories');
         if (rewardPointsResponse) {
-          setRewardPoints(rewardPointsResponse?.data || []);
+          setRewardPoints(rewardPointsResponse || []);
         }
 
         // Fetch coupones data
@@ -67,8 +67,8 @@ const Dashboard = () => {
         }
 
         // Fetch orders data
-        const ordersResponse = await getData('api/order/get-all-orders');
-        if (ordersResponse?.success) {
+        const ordersResponse = await getData('api/v1/order/get-all-orders');
+        if (ordersResponse) {
           setOrders(ordersResponse.orders);
         }
 
@@ -107,7 +107,7 @@ const Dashboard = () => {
             <i className="fa-solid fa-truck"></i>
             <h3>Manage Orders</h3>
             <p>Track and manage your customer orders</p>
-            <p>{orders.length} Orders</p>
+            <p>{orders?.length} Orders</p>
           </Link>
         </div>
 
@@ -116,7 +116,15 @@ const Dashboard = () => {
             <i className="fa-regular fa-images"></i>
             <h3>Manage Banners</h3>
             <p>Update your website's banners</p>
-            <p>{banners.length} Banners</p>
+            <p>{banners?.length} Banners</p>
+          </Link>
+        </div>
+<div className="dashboard-card">
+          <Link to="/all-parent-category">
+            <i className="fa-solid fa-sitemap"></i>
+            <h3>Manage Parent Category</h3>
+            <p>Add, update, or remove parent category</p>
+            <p>{rewardPoints?.length} Parent Category</p>
           </Link>
         </div>
 
@@ -125,25 +133,17 @@ const Dashboard = () => {
             <i className="fa-solid fa-layer-group"></i>
             <h3>Manage Categorys</h3>
             <p>Manage Category of your products</p>
-            <p>{categories.length} Categorys</p>
+            <p>{categories?.length} Categorys</p>
           </Link>
         </div>
 
+        
         <div className="dashboard-card">
-          <Link to="/all-videos">
-            <i className="fa-solid fa-video"></i>
-            <h3>Manage Videos</h3>
-            <p>Add, update, or remove videos</p>
-            <p>{videos.length} Videos</p>
-          </Link>
-        </div>
-
-        <div className="dashboard-card">
-          <Link to="/all-subCategory">
-            <i className="fa-solid fa-sitemap"></i>
-            <h3>Manage Sub Category</h3>
-            <p>Add, update, or remove sub category </p>
-            <p>{rewardPoints?.length || 0} Sub Category</p>
+          <Link to="/all-inquiries">
+            <i className="fa-solid fa-envelope-open-text"></i>
+            <h3>Manage Inquiry</h3>
+            <p>Add, update, or remove inquiry </p>
+            <p>{rewardPoints?.length || 0} Inquiry</p>
           </Link>
         </div>
 
@@ -152,7 +152,7 @@ const Dashboard = () => {
             <i className="fa-solid fa-boxes-stacked"></i>
             <h3>Manage Products</h3>
             <p>Add, update, or remove products</p>
-            <p>{products.length} Products</p>
+            <p>{products?.length} Products</p>
           </Link>
         </div>
 
@@ -170,7 +170,7 @@ const Dashboard = () => {
             <i className="fa-solid fa-tags"></i>
             <h3>All Coupons</h3>
             <p>View and manage coupons</p>
-            <p>{coupones.length} Coupons</p>
+            <p>{coupones?.length} Coupons</p>
           </Link>
         </div>
       </div>

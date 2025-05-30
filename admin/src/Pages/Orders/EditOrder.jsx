@@ -44,10 +44,9 @@ const EditOrder = () => {
 
   const handleChangeStatus = async (e, title) => {
     const value = e?.target?.value || e;
-    if(title){
-      title === "paymant" ? setPaymentStatus(value) : setOrderStatus(value)
+    if (title) {
+      title === "paymant" ? setPaymentStatus(value) : setOrderStatus(value);
     }
-
   };
 
   const isOrderStatusDisabled =
@@ -57,11 +56,11 @@ const EditOrder = () => {
   //     setStep(2);
   //     setLoading(false);
   //   };
-  const handleLogin2 = async() => {
-      const loading =    toast.loading("Please wait...");
-      try {
+  const handleLogin2 = async () => {
+    const loading = toast.loading("Please wait...");
+    try {
       const res = await axiosInstance.put(
-        `/api/v1/order/update-checkout/${id}`,
+        `/api/v1/order/update-order/${id}`,
         {
           orderStatus,
           paymentStatus,
@@ -70,9 +69,9 @@ const EditOrder = () => {
       if (res?.status === 200) {
         toast.dismiss(loading);
         toast?.success("Order updated successfully!");
-setTimeout(() => {
-    navigate("/all-orders");
-}, 1000);
+        setTimeout(() => {
+          navigate("/all-orders");
+        }, 1000);
       }
     } catch (error) {
       toast.dismiss(loading);
@@ -167,24 +166,27 @@ setTimeout(() => {
                         </tr>
                         <tr>
                           <th scope="row">User Name</th>
-                          <td>{orderData?.shippingAddress?.[0]?.name} </td>
+                          <td>
+                            {orderData?.shippingAddress?.firstName}{" "}
+                            {orderData?.shippingAddress?.lastName}{" "}
+                          </td>
                         </tr>
                         <tr>
                           <th scope="row">Email</th>
-                          <td>{orderData?.userId?.email}</td>
+                          <td>{orderData?.shippingAddress?.email}</td>
                         </tr>
                         <tr>
                           <th scope="row">Phone Number</th>
-                          <td>{orderData?.shippingAddress?.[0]?.phone}</td>
+                          <td>{orderData?.shippingAddress?.phone}</td>
                         </tr>
                         <tr>
                           <th scope="row">Address</th>
                           <td>
-                            {orderData?.shippingAddress?.[0].address},{" "}
-                            {orderData?.shippingAddress?.[0].city},{" "}
-                            {orderData?.shippingAddress?.[0].state},{" "}
-                            {orderData?.shippingAddress?.[0].postalCode} ,
-                            {orderData?.shippingAddress?.[0].country}
+                            {orderData?.shippingAddress?.address},{" "}
+                            {orderData?.shippingAddress?.city},{" "}
+                            {orderData?.shippingAddress?.state},{" "}
+                            {orderData?.shippingAddress?.postalCode} ,
+                            {orderData?.shippingAddress?.country}
                           </td>
                         </tr>
                         <tr>
@@ -259,7 +261,7 @@ setTimeout(() => {
                         <strong>{item?.productId?.productName}</strong>
                         <br />
                         <img
-                          src={`${item?.productId?.images[0]}`}
+                          src={`${serverURL}${item?.productId?.images[0]}`}
                           alt={item?.productId?.productName}
                           style={{
                             width: "100px",
