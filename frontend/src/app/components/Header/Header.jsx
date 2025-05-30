@@ -126,13 +126,13 @@ const Header = () => {
                   Download Catalogue
                 </button>
               </a>
-              <Link
+              {/* <Link
                 href="/pages/about"
                 className="flex flex-col items-center gap-1"
               >
                 <Info size={16} />
                 <span>About Us</span>
-              </Link>
+              </Link> */}
             </div>
 
             {/* Right Column */}
@@ -374,10 +374,11 @@ const Header = () => {
                 {[
                   { label: "Home", url: "/" },
                   { label: "Shop Books", url: "/pages/shop" },
-                  { label: "Categories", url: "/pages/categories" },
+                  { label: "All Categories", url: "/pages/categories" },
                   { label: "Featured Books", url: "/pages/featurebook" },
                   { label: "Best Sellers", url: "/pages/bestSellerbook" },
                   { label: "Contact Us", url: "/pages/contact" },
+                  { label: "About Us", url: "/pages/about" },
                 ].map((item, index) => (
                   <motion.li
                     key={index}
