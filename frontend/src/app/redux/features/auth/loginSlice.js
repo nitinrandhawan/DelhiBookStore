@@ -21,7 +21,7 @@ export const verifyUser = createAsyncThunk("auth/verifyUser", async () => {
 
 export const handleLogout = () => {
   try {
-    const userLogout = axiosInstance.post("/api/v1/auth/logout");
+    const userLogout = axiosInstance.post("/auth/logout");
     if (userLogout) {
       toast.success("Logout successfully");
     }

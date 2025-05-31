@@ -3,13 +3,11 @@ import React, { useEffect, useState } from "react";
 import {
   LucideUser,
   LucideHeart,
-  LucideSearch,
   LucideMapPin,
   LayoutDashboard,
   PhoneCall,
   Send,
   ChevronDown,
-  Info,
   PackageSearch,
   ShoppingCart,
   UserCircle,
@@ -25,6 +23,8 @@ import { useDispatch, useSelector } from "react-redux";
 import BottomNavBar from "./BottomNavBar";
 import { fetchCategories } from "@/app/redux/features/getAllCategory/categorySlice";
 import { verifyUser } from "@/app/redux/features/auth/loginSlice";
+import UserLocation from "../UserLocation/UserLocation";
+import ProductSearchBar from "./SearchBar";
 
 const Header = () => {
   const [openDropdown, setOpenDropdown] = useState();
@@ -174,28 +174,12 @@ const Header = () => {
               </Link>
               <div className="flex items-center gap-1 text-gray-700 text-sm">
                 <LucideMapPin className="w-9 h-9 bg-gray-300 rounded-full p-2" />
-                Deliver to <span className="ml-1 font-medium">all</span>
+                <UserLocation />
               </div>
             </motion.div>
 
             {/* Search */}
-            <motion.div
-              className="flex-1 max-w-2xl mx-2 w-full"
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              <div className="flex items-center  bg-gray-100 rounded-md overflow-hidden">
-                <input
-                  type="text"
-                  placeholder="Search for products, categories or brands..."
-                  className="w-full px-4 py-3 outline-none text-sm bg-transparent"
-                />
-                <button className="px-4 py-2 text-gray-700">
-                  <LucideSearch className="w-5 h-5" />
-                </button>
-              </div>
-            </motion.div>
+           <ProductSearchBar />
 
             {/* Icons */}
             <motion.div

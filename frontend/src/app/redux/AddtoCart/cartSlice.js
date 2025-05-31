@@ -1,21 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "./features/axiosInstance";
-
-// export const addToCartAPI = createAsyncThunk(
-//   "cart/addToCartAPI",
-//   async (cartItem, { rejectWithValue }) => {
-//     try {
-//       const response = await axiosInstance.post("/cart/add-to-cart", cartItem, {
-//         withCredentials: true,
-//       });
-//       return response.data;
-//     } catch (error) {
-//       console.error("Add to Cart API error:", error);
-//       return rejectWithValue(error.response?.data || "Add to cart failed");
-//     }
-//   }
-// );
 
 // Helper to load cart from localStorage
 function loadCart() {

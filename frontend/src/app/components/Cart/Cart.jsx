@@ -10,12 +10,14 @@ import {
   calculateTotalsLoad,
   removeFromCart,
   updateQuantity,
-} from "@/app/redux/cartSlice";
+} from "@/app/redux/AddtoCart/cartSlice";
 import Link from "next/link";
 
 export default function Cart() {
   const { cartItems, totalAmount, tax, discountAmount, total, couponCode } =
     useSelector((state) => state.cart);
+
+  console.log("cartItems", cartItems);
 
   const dispatch = useDispatch();
   const [couponCodeInput, setCouponCode] = useState("");
@@ -32,7 +34,9 @@ export default function Cart() {
             alt="Empty Wishlist"
             className="w-60 h-60 object-contain opacity-100"
           />
-          <p className="text-purple-800 text-lg font-bold">Your Cart is empty.</p>
+          <p className="text-purple-800 text-lg font-bold">
+            Your Cart is empty.
+          </p>
           <p className="text-sm text-black font-semibold">
             Start exploring and add items you like!
           </p>
@@ -81,7 +85,11 @@ export default function Cart() {
                       className="rounded-md object-contain"
                     />
                   </div>
-                  <div className="font-medium line-clamp-1">{item.name}</div>
+                  <div className="font-medium">
+                    {item.name.length > 30
+                      ? item.name.slice(8, 40) + "..."
+                      : item.name}
+                  </div>
                   <div className="text-center">₹{item.price}</div>
                   <div className="flex items-center justify-center space-x-2">
                     <button

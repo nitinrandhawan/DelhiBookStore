@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Heart, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import product1 from "../../Images/DBS/1.jpg";
-import { addToCart } from "@/app/redux/cartSlice";
+import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import axiosInstance from "@/app/redux/features/axiosInstance";
