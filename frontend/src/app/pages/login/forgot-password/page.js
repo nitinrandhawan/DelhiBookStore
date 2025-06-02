@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,8 +6,7 @@ import { Mail } from "lucide-react";
 import stylebanner from "../../../Images/DBS/BOOKSTOREBANNER.jpg";
 import toast from "react-hot-toast";
 import axiosInstance from "@/app/redux/features/axiosInstance";
-import axios from "axios";
-const Page = () => {
+const page = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -136,4 +134,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default page;

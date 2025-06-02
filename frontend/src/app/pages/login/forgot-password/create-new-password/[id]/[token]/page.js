@@ -6,8 +6,13 @@ import Link from "next/link";
 import { Lock } from "lucide-react";
 import stylebanner from "../../../../../../Images/DBS/BOOKSTOREBANNER.jpg";
 import toast from "react-hot-toast";
+import { useParams, useRouter } from "next/navigation";
+import axiosInstance from "@/app/redux/features/axiosInstance";
 
-const Page = () => {
+const page = () => {
+  const { id, token } = useParams();
+  const router = useRouter();
+
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,11 +32,24 @@ const Page = () => {
 
     setLoading(true);
 
-    // Simulate API request
-    setTimeout(() => {
-      toast.success("Password successfully reset!");
+    try {
+      const response = await axiosInstance.post(
+        `/auth/reset-password/${id}/${token}`,
+        { password: newPassword }
+      );
+
+      toast.success("Password reset successfully!");
+      setTimeout(() => {
+        router.push("/pages/login");
+      }, 1500);
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        error?.response?.data?.message || "Something went wrong. Try again."
+      );
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -143,4 +161,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default page;
