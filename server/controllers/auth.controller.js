@@ -33,82 +33,100 @@ const sentResetPasswordMail = async (email, myToken, id) => {
       to: email,
       subject: "For Reset password",
       html: `
-      <!DOCTYPE html>
-  <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Reset Password</title>
-    <style>
-      body {
-        font-family: 'Arial', sans-serif;
-        background-color: #e6f4fb;
-        margin: 0;
-        padding: 0;
-      }
-      .container {
-        max-width: 600px;
-        margin: 50px auto;
-        background-color: white;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      }
-      .header {
-        background-color: #59168b;
-        color: white;
-        padding: 20px;
-        text-align: center;
-      }
-      .content {
-        padding: 30px;
-        color: #333;
-      }
-      .content h2 {
-        margin-top: 0;
-      }
-      .button {
-        display: inline-block;
-        margin: 20px 0;
-        padding: 12px 25px;
-        background-color:#4e342e;
-        color: white;
-        text-decoration: none;
-        border-radius: 6px;
-        font-weight: bold;
-      }
-      .footer {
-        padding: 15px;
-        font-size: 13px;
-        color: #888;
-        text-align: center;
-        background-color: #f0f9ff;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <h1>Password Reset Request</h1>
-      </div>
-      <div class="content">
-        <h2>Hello,</h2>
-        <p>We received a request to reset your password. Click the link below to set a new password:</p>
-  
-        <a href="${
-          process.env.BASE_URL
-        }/Pages/reset-password/${id}/${myToken}" >${
-        process.env.BASE_URL
-      }/Pages/reset-password/${id}/${myToken}</a>
-        <p><strong>Note:</strong> This link will expire after a short time for your security.</p>
-        <p style="color: red;"><strong>Do not share this email or link with anyone.</strong> If you didn’t request a password reset, please ignore this email or contact support.</p>
-      </div>
-      <div class="footer">
-        &copy; ${new Date().getFullYear()} Delhi Book Store.. All rights reserved.
-      </div>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Reset Your Password - Delhi Book Store</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f8fb;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    .header {
+      background-color: #5e35b1;
+      color: #ffffff;
+      text-align: center;
+      padding: 24px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .content {
+      padding: 30px;
+      color: #333333;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .button {
+      display: inline-block;
+      margin: 20px 0;
+      padding: 12px 20px;
+      background-color: #4e342e;
+      color: #ffffff !important;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+    .footer {
+      background-color: #f1f1f1;
+      text-align: center;
+      padding: 16px;
+      font-size: 13px;
+      color: #777777;
+    }
+    a {
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Reset Your Password</h1>
     </div>
-  </body>
-  </html>
-  `,
+    <div class="content">
+      <p>Dear User,</p>
+      <p>We received a request to reset the password for your <strong>Delhi Book Store</strong> account. If this was you, please click the button below to set a new password:</p>
+
+      <a class="button" href="${
+        process.env.BASE_URL
+      }/Pages/reset-password/${id}/${myToken}" target="_blank">
+        Reset Password
+      </a>
+
+      <p>Or you can paste the following link into your browser:</p>
+      <p><a href="${
+        process.env.BASE_URL
+      }/Pages/reset-password/${id}/${myToken}">${
+        process.env.BASE_URL
+      }/Pages/reset-password/${id}/${myToken}</a></p>
+
+      <p><strong>Note:</strong> This link will expire after a short time for security reasons.</p>
+      <p style="color: red;"><strong>Important:</strong> Do not share this email or link with anyone.</p>
+
+      <p>If you did not request a password reset, you can safely ignore this email or contact our support team.</p>
+
+      <p>Warm regards,<br><strong>Team Delhi Book Store</strong></p>
+    </div>
+    <div class="footer">
+      &copy; ${new Date().getFullYear()} Delhi Book Store. All rights reserved.
+    </div>
+  </div>
+</body>
+</html>
+`,
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
@@ -122,6 +140,7 @@ const sentResetPasswordMail = async (email, myToken, id) => {
     console.error("Error while sending email: ", error);
   }
 };
+
 const signUp = async (req, res) => {
   try {
     const { fullName, email, password } = req.body || {};
@@ -270,11 +289,11 @@ const verifyLoggedIn = async (req, res) => {
     if (!_id) {
       return res.status(400).json({ message: "User id is required" });
     }
-  
+
     const user = await User.findById(_id).select(
       "-password -resetPasswordToken -resetPasswordExpires -role"
     );
-  
+
     return res
       .status(200)
       .json({ message: "User logged in successfully", user });
@@ -314,7 +333,6 @@ const adminLogin = async (req, res) => {
     return res.status(500).json({ message: "admin login server error" });
   }
 };
-
 
 const verifyAdminLoggedIn = async (req, res) => {
   try {
@@ -373,5 +391,5 @@ export {
   verifyLoggedIn,
   updateProfile,
   GetAllUsers,
-  verifyAdminLoggedIn
+  verifyAdminLoggedIn,
 };
