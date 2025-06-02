@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { LucideSearch } from "lucide-react";
 import axiosInstance from "@/app/redux/features/axiosInstance";
+import Image from "next/image";
+import image1 from "../../Images/DBS/1.jpg";
+import Link from "next/link";
 
 export default function ProductSearchBar() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,12 +16,11 @@ export default function ProductSearchBar() {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedTerm(searchTerm);
-    }, 500); // 500ms debounce
-
+    }, 500);
     return () => clearTimeout(handler);
   }, [searchTerm]);
 
-  // Fetch API data on debounced term
+  // Fetch data on debounced term
   useEffect(() => {
     if (debouncedTerm.trim() === "") {
       setResults([]);
@@ -31,9 +33,10 @@ export default function ProductSearchBar() {
         const response = await axiosInstance.get(
           `/product/search-products?search=${debouncedTerm}`
         );
-        setResults(response.data || []);
+        setResults(response.data.products || []);
       } catch (err) {
         console.error("Error fetching search results", err);
+        setResults([]);
       } finally {
         setLoading(false);
       }
@@ -41,6 +44,12 @@ export default function ProductSearchBar() {
 
     fetchData();
   }, [debouncedTerm]);
+
+  const handleResultClick = () => {
+    setSearchTerm(""); // Clears input
+    setDebouncedTerm(""); // Prevents re-fetch
+    setResults([]); // Clears result dropdown
+  };
 
   return (
     <motion.div
@@ -52,7 +61,7 @@ export default function ProductSearchBar() {
       <div className="flex items-center bg-gray-100 rounded-md overflow-hidden">
         <input
           type="text"
-          placeholder="Search for products, categories or brands..."
+          placeholder="Search for products, categories or authors..."
           className="w-full px-4 py-3 outline-none text-sm bg-transparent"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -62,28 +71,35 @@ export default function ProductSearchBar() {
         </button>
       </div>
 
-      {/* Dropdown */}
+      {/* Search results dropdown */}
       {searchTerm && (
         <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-md max-h-60 overflow-y-auto">
           {loading ? (
             <p className="p-4 text-gray-500 text-sm">Loading...</p>
           ) : results.length > 0 ? (
             results.map((product) => (
-              <div
-                key={product.id}
-                className="flex items-center gap-3 p-3 hover:bg-gray-100 cursor-pointer"
-              >
-                <img
-                  src={product.coverImage}
-                  alt={product.productName}
-                  className="w-10 h-10 object-cover rounded"
-                />
-                <div className="text-sm">
-                  <p className="font-medium">{product.productName}</p>
-                  <p className="text-gray-500 text-xs">
-                    {product.category} · {product.authorName}
-                  </p>
-                </div>
+              <div key={product._id} onClick={handleResultClick}>
+                <Link href={`/pages/shop/${product._id}`}>
+                  <div className="flex items-center gap-3 p-3 hover:bg-gray-100 cursor-pointer">
+                    <Image
+                      // src={product.images[0]}
+                      src={image1}
+                      alt={product.title}
+                      className="w-10 h-10 object-cover rounded"
+                      width={10}
+                      height={10}
+                    />
+                    <div className="text-sm">
+                      <p className="font-medium line-clamp-1">
+                        {product.title}
+                      </p>
+                      <p className="text-gray-500 text-xs">
+                        {product.category?.categoryName || "Unknown"} ·{" "}
+                        {product.author || "Unknown Author"}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
               </div>
             ))
           ) : (
