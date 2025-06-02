@@ -4,7 +4,7 @@ import { Heart } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import toast from "react-hot-toast";
-import { addToCart } from "@/app/redux/cartSlice";
+import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "next/navigation";
 import ShopBanner from "@/app/components/Shop/ShopBanner";

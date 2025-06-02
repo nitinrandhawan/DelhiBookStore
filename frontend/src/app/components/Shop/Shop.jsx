@@ -1,32 +1,34 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import ShopBanner from "./ShopBanner";
 import { ChevronsLeft, ChevronsRight, Heart } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import book from "../../Images/DBS/1.jpg";
-import { addToCart } from "@/app/redux/cartSlice";
+import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "@/app/redux/features/shop/shopSlice";
 import { useRouter, useSearchParams } from "next/navigation";
+import { verifyUser } from "@/app/redux/features/auth/loginSlice";
+import { addToCartAPIThunk } from "@/app/redux/AddtoCart/apiCartSlice"; // ✅ Ensure this is correct
+import ShopBanner from "./ShopBanner";
 
 const Shop = () => {
   const dispatch = useDispatch();
   const { products, loading, error, totalPages } = useSelector(
     (state) => state.products
   );
+
   const searchParams = useSearchParams();
+  const router = useRouter();
+
   const initialPage = parseInt(searchParams.get("page")) || 1;
   const initialLimit = parseInt(searchParams.get("limit")) || 30;
 
   const [page, setPage] = useState(initialPage);
   const [limit, setLimit] = useState(initialLimit);
-  console.log("limit valu", limit);
-  const router = useRouter();
-  useEffect(() => {
-    console.log("limit", limit);
 
+  useEffect(() => {
     dispatch(fetchProducts({ limit, page }));
   }, [dispatch, limit, page]);
 
@@ -39,10 +41,54 @@ const Shop = () => {
     const selectedLimit = e.target.value;
     const currentParams = new URLSearchParams(searchParams);
     currentParams.set("limit", selectedLimit);
-    setLimit(e.target.value);
+    setLimit(selectedLimit);
     router.push(`?${currentParams.toString()}`);
   };
+
+  const visiblePages = 8;
+  const pageGroupStart =
+    Math.floor((page - 1) / visiblePages) * visiblePages + 1;
+  const pageGroupEnd = Math.min(pageGroupStart + visiblePages - 1, totalPages);
+
+  // Auth & Cart logic
+  const user = useSelector((state) => state.login.user);
   const { cartItems } = useSelector((state) => state.cart);
+  const { items: apiCartItems } = useSelector((state) => state.apiCart);
+
+  useEffect(() => {
+    dispatch(verifyUser());
+  }, [dispatch]);
+
+  const handleAddToCart = (product) => {
+    const exists = cartItems.some((item) => item.id === product._id);
+    const insideApiExists = apiCartItems.some(
+      (item) => item.id === product._id
+    );
+
+    const cartItem = {
+      id: product._id,
+      name: product.title,
+      image: book,
+      price: product.finalPrice,
+      totalPrice: product.finalPrice,
+    };
+
+    if (!user && !user?.email) {
+      dispatch(addToCart(cartItem));
+      toast.success(
+        exists
+          ? "Quantity updated in your cart!"
+          : `Great choice! ${product.title} added.`
+      );
+    } else {
+      dispatch(addToCartAPIThunk(cartItem));
+      toast.success(
+        insideApiExists
+          ? "Quantity updated in your cart!"
+          : `Great choice! ${product.title} added.`
+      );
+    }
+  };
 
   if (loading) {
     return (
@@ -63,37 +109,19 @@ const Shop = () => {
 
   if (error) {
     return (
-      <div className="text-center py-6 text-red-500">Error loading banners</div>
+      <div className="text-center py-6 text-red-500">
+        Error loading products.
+      </div>
     );
   }
 
-  const visiblePages = 8;
-  const pageGroupStart =
-    Math.floor((page - 1) / visiblePages) * visiblePages + 1;
-  const pageGroupEnd = Math.min(pageGroupStart + visiblePages - 1, totalPages);
-  const handleAddToCart = (id, name, image, newPrice) => {
-    dispatch(
-      addToCart({
-        id: id,
-        name: name,
-        image: image,
-        price: newPrice,
-        totalPrice: newPrice,
-      })
-    );
-    if (cartItems.some((item) => item.id === id)) {
-      toast.success("Quantity updated in your cart!");
-    } else {
-      toast.success(`"Great choice! ${name} added."`);
-    }
-  };
   return (
     <>
       <ShopBanner />
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between px-5 py-2 bg-gray-200">
           <div className="text-sm text-gray-600 text-left">
-           {products.length > 0
+            {products.length > 0
               ? `Showing ${products.length} products`
               : "No products found"}
           </div>
@@ -128,100 +156,87 @@ const Shop = () => {
       </div>
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="grid grid-cols-2 md:grid-cols-5">
-          {products.map((product) => (
-            <div
-              key={product._id}
-              className="grid md:flex-row flex-col border border-gray-200 bg-white px-2 py-2"
-            >
-              <div className="relative">
-                {/* Discount Badge */}
-                <div className="absolute top-2 left-0 bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-e-2xl z-10">
-                  {product.discount}%
-                </div>
+          {products.map((product) => {
+            const isInCart =
+              cartItems.some((item) => item.id === product._id) ||
+              apiCartItems.some((item) => item.id === product._id);
 
-                {/* Wishlist Icon */}
-                <div className="absolute top-2 right-3 bg-white rounded-full p-1 shadow-md hover:text-red-600 cursor-pointer z-10">
-                  <Heart size={18} />
-                </div>
-
-                {/* Product Image */}
-                <Link href={`/pages/shop/${product._id}`}>
-                  <div className="w-30 h-30 lg:w-50 lg:h-45 md:w-45 md:h-40 flex justify-center m-auto items-center py-2 mb-2 bg-white ">
-                    <Image
-                      // src={product.images}
-                      src={book}
-                      alt={product.title}
-                      className="object-contain h-full"
-                    />
+            return (
+              <div
+                key={product._id}
+                className="grid md:flex-row flex-col border border-gray-200 bg-white px-2 py-2"
+              >
+                <div className="relative">
+                  <div className="absolute top-2 left-0 bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-e-2xl z-10">
+                    {product.discount}%
                   </div>
-                </Link>
-              </div>
 
-              {/* Product Name */}
-              <div className="w-full">
-                <Link href={`/product/${product.id}`}>
-                  <h3
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #e9d5ff 0%, #d8b4fe 50%)", // light purple gradient
-                      color: "var(--purple)", // dark purple text
-                      maxWidth: "fit-content",
-                      padding: "0px 10px",
-                      fontSize: "14px",
-                    }}
-                    className="my-2 text-sm md:text-md font-normal md:font-bold line-clamp-1 hover:underline rounded-l-0 rounded-r-2xl"
+                  <div className="absolute top-2 right-3 bg-white rounded-full p-1 shadow-md hover:text-red-600 cursor-pointer z-10">
+                    <Heart size={18} />
+                  </div>
+
+                  <Link href={`/pages/shop/${product._id}`}>
+                    <div className="w-30 h-30 lg:w-50 lg:h-45 md:w-45 md:h-40 flex justify-center m-auto items-center py-2 mb-2 bg-white ">
+                      <Image
+                        // src={product.images}
+                        src={book}
+                        alt={product.title}
+                        className="object-contain h-full"
+                      />
+                    </div>
+                  </Link>
+                </div>
+
+                <div className="w-full">
+                  <Link href={`/product/${product._id}`}>
+                    <h3
+                      style={{
+                        background:
+                          "linear-gradient(90deg, #e9d5ff 0%, #d8b4fe 50%)", // light purple gradient
+                        color: "var(--purple)", // dark purple text
+                        maxWidth: "fit-content",
+                        padding: "0px 10px",
+                        fontSize: "14px",
+                      }}
+                      className="my-2 text-sm md:text-md font-normal md:font-bold line-clamp-2 hover:underline rounded-l-0 rounded-r-2xl"
+                    >
+                      {product.title}
+                    </h3>
+                    <h3 className="mt-1 text-sm text-gray-800 underline font-semibold italic line-clamp-1">
+                      by {product.author}
+                    </h3>
+                  </Link>
+                  <p className="text-sm text-gray-700 leading-relaxed tracking-wide line-clamp-3">
+                    {
+                      new DOMParser().parseFromString(
+                        product.description || "",
+                        "text/html"
+                      ).body.textContent
+                    }
+                  </p>
+
+                  <div className="flex items-baseline gap-2 mt-2">
+                    <div className="text-lg md:text-1xl font-semibold md:font-bold text-red-500">
+                      ₹ {product.finalPrice}
+                    </div>
+                    <div className="text-sm text-gray-800 font-bold line-through">
+                      ₹ {product.price}
+                    </div>
+                  </div>
+
+                  <button
+                    className={
+                      isInCart ? "added-to-cart-btn" : "add-to-cart-btn"
+                    }
+                    onClick={() => handleAddToCart(product)}
+                    disabled={isInCart}
                   >
-                    {product.title}
-                  </h3>
-                </Link>
-                <p className="text-sm text-gray-700 leading-relaxed tracking-wide line-clamp-3">
-                  {
-                    new DOMParser().parseFromString(
-                      product.description || "",
-                      "text/html"
-                    ).body.textContent
-                  }
-                </p>
-
-                {/* Rating */}
-                <div className="flex items-center text-sm gap-1 mt-1">
-                  <div className="text-yellow-400 text-2xl">★ ★ ★ ★ ★</div>
-                  <span className="text-gray-500 text-xs">(3)</span>
+                    {isInCart ? "Added" : "Add to cart 🛒"}
+                  </button>
                 </div>
-
-                {/* Price */}
-                <div className="flex items-baseline gap-2 mt-2">
-                  <div className="text-lg md:text-1xl font-semibold md:font-bold text-red-500">
-                    ₹ {product.price}
-                  </div>
-                  <div className="text-sm text-gray-800 font-bold line-through">
-                    ₹ {product.price}
-                  </div>
-                </div>
-
-                {/* Add to Cart Button */}
-                <button
-                  className={`${
-                    cartItems.some((item) => item.id === product.id)
-                      ? "added-to-cart-btn"
-                      : "add-to-cart-btn"
-                  }`}
-                  onClick={() =>
-                    handleAddToCart(
-                      product.id,
-                      product.name,
-                      product.image,
-                      product.newPrice
-                    )
-                  }
-                >
-                  {cartItems.some((item) => item.id === product.id)
-                    ? "Added"
-                    : "Add to cart 🛒"}{" "}
-                </button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

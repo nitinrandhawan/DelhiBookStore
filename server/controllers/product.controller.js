@@ -241,6 +241,8 @@ if(req?.query?.bestSellingBooks){
   }
 };
 
+
+
 const getSingleProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id).populate("category");

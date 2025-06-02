@@ -198,7 +198,7 @@ export default function UserProfile() {
   const handleLogoutFun = () => {
     handleLogout();
     dispatch(resetState());
-     router.push("/");
+    router.push("/");
   };
   // Handle order selection
   const handleOrderClick = (order) => {

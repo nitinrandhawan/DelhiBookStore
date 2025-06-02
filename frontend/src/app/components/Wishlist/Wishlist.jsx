@@ -7,7 +7,7 @@ import { BadgeX } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import EmptywishList from "../../Images/DowloadImage/EmptyWishList.jpg";
-import { addToCart } from "@/app/redux/cartSlice";
+import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
 import Link from "next/link";
 
 const Wishlist = () => {

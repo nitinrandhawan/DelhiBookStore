@@ -16,7 +16,7 @@ import {
   Star,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { addToCart } from "@/app/redux/cartSlice";
+import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import axiosInstance from "@/app/redux/features/axiosInstance";
 import { useParams } from "next/navigation";

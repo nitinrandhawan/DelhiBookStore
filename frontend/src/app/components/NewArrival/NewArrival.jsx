@@ -11,7 +11,7 @@ import product1 from "../../Images/DBS/1.jpg";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart } from "@/app/redux/cartSlice";
+import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
 import { addToWishlist, removeFromWishlist } from "@/app/redux/wishlistSlice";
 import axiosInstance from "@/app/redux/features/axiosInstance";
 

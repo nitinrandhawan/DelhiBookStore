@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Heart, ArrowRight, Plus } from "lucide-react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart } from "@/app/redux/cartSlice";
+import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
 import toast from "react-hot-toast";
 import product1 from "../../Images/DBS/1.jpg";
 import axiosInstance from "@/app/redux/features/axiosInstance";
@@ -13,27 +13,10 @@ const Featureproduct = ({ productlength, btnlength }) => {
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
   const pathname = usePathname();
-
-  const handleAddToCart = (_id, title, img, finalPrice) => {
-    dispatch(
-      addToCart({
-        id: _id,
-        name: title,
-        image: img,
-        price: finalPrice,
-        totalPrice: finalPrice,
-      })
-    );
-    if (cartItems.some((item) => item.id === _id)) {
-      toast.success("Quantity updated in your cart!");
-    } else {
-      toast.success(`"Great choice! ${title} added."`);
-    }
-  };
-
   const [product, setProduct] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   useEffect(() => {
     const featureProduct = async () => {
       try {
@@ -85,6 +68,23 @@ const Featureproduct = ({ productlength, btnlength }) => {
 
   const visibleProducts =
     product.length > productlength ? product.slice(0, productlength) : product;
+
+  const handleAddToCart = (_id, title, img, finalPrice) => {
+    dispatch(
+      addToCart({
+        id: _id,
+        name: title,
+        image: img,
+        price: finalPrice,
+        totalPrice: finalPrice,
+      })
+    );
+    if (cartItems.some((item) => item.id === _id)) {
+      toast.success("Quantity updated in your cart!");
+    } else {
+      toast.success(`"Great choice! ${title} added."`);
+    }
+  };
 
   return (
     <>
