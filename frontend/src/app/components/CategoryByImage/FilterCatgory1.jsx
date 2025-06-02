@@ -1,39 +1,35 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import filterimage1 from "../../Images/DBS/BANNER2.jpg";
-import filterimage2 from "../../Images/DBS/BANNER9.jpg";
-import filterimage3 from "../../Images/DBS/BANNER13.png";
 import { MoveRight } from "lucide-react";
 import { motion } from "framer-motion"; // Importing the necessary hooks
-
-const bannerData = [
-  {
-    id: 1,
-    imgSrc: filterimage1,
-    link: "/category/fruits",
-    alt: "Fruits Banner",
-  },
-  {
-    id: 2,
-    imgSrc: filterimage2,
-    link: "/category/vegetables",
-    alt: "Vegetables Banner",
-  },
-  {
-    id: 3,
-    imgSrc: filterimage3,
-    link: "/category/dairy",
-    alt: "Dairy Banner",
-  },
-];
+import { useDispatch, useSelector } from "react-redux";
+import { fetchBannerByCategory } from "@/app/redux/features/BannerByCategory/BannerByCategory";
 
 const FilterCatgory1 = () => {
+  const dispatch = useDispatch();
+  const { data, loading, error } = useSelector(
+    (state) => state.bannerByCategory
+  );
+
+  useEffect(() => {
+    dispatch(fetchBannerByCategory());
+  }, [dispatch]);
+
+  const level1Categories = data.filter((item) => item.level === 1);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-4 grid grid-cols-1 sm:grid-cols-3 gap-6">
-      {bannerData.map((item) => (
-        <Link href={item.link} key={item.id} className="block group">
+      {level1Categories?.map((category) => (
+        <Link
+          key={category._id}
+          href={`/pages/shop/productBysubcategory/${category._id}`}
+          className="block group"
+        >
           {/* Using motion.div to animate the element when in view */}
           <motion.div
             className="relative overflow-hidden rounded-xl shadow-lg"
@@ -43,8 +39,8 @@ const FilterCatgory1 = () => {
             transition={{ duration: 0.6 }} // Animation duration
           >
             <Image
-              src={item.imgSrc}
-              alt={item.alt}
+              src={category.levelImage}
+              alt={category.Parent_name.Parent_name}
               width={400}
               height={250}
               className="w-full h-[200px] object-cover transition-transform duration-300 group-hover:scale-105"

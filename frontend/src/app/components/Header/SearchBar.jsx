@@ -29,7 +29,7 @@ export default function ProductSearchBar() {
       try {
         setLoading(true);
         const response = await axiosInstance.get(
-          `https://your-api-url.com/products?search=${debouncedTerm}`
+          `/product/search-products?search=${debouncedTerm}`
         );
         setResults(response.data || []);
       } catch (err) {

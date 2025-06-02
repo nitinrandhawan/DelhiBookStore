@@ -1,33 +1,38 @@
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import filterimage8 from "../../Images/DBS/BANNER14.png";
-import filterimage9 from "../../Images/DBS/BANNER10.jpg";
 import { MoveRight } from "lucide-react";
+import { fetchBannerByCategory } from "@/app/redux/features/BannerByCategory/BannerByCategory";
+import { useDispatch, useSelector } from "react-redux";
 
-const bannerData = [
-  {
-    id: 1,
-    imgSrc: filterimage8,
-    link: "/category/fruits",
-    alt: "Fruits Banner",
-  },
-  {
-    id: 2,
-    imgSrc: filterimage9,
-    link: "/category/vegetables",
-    alt: "Vegetables Banner",
-  },
-];
 const FilterCatgory3 = () => {
+  const dispatch = useDispatch();
+  const { data, loading, error } = useSelector(
+    (state) => state.bannerByCategory
+  );
+
+  useEffect(() => {
+    dispatch(fetchBannerByCategory());
+  }, [dispatch]);
+
+  const level1Categories = data.filter((item) => item.level === 3);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-4 grid grid-cols-1 sm:grid-cols-2 gap-6">
-      {bannerData.map((item) => (
-        <Link href={item.link} key={item.id} className="block group">
+      {level1Categories?.map((category) => (
+        <Link
+          key={category._id}
+          href={`/pages/shop/productBysubcategory/${category._id}`}
+          className="block group"
+        >
           <div className="relative overflow-hidden rounded-xl shadow-lg">
             <Image
-              src={item.imgSrc}
-              alt={item.alt}
+              src={category.levelImage}
+              alt={category.Parent_name.Parent_name}
               width={400}
               height={250}
               className="w-full h-[200px] md:h-[250px] object-fill md:object-cover transition-transform duration-300 group-hover:scale-105"

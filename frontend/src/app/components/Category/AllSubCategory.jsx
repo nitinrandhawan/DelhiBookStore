@@ -21,7 +21,7 @@ export default function AllSubCategory() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-autogrid grid-cols-2 md:grid-cols-4 gap-4 p-4">
+      <div className="max-w-7xl mx-auto grid-cols-2 md:grid-cols-4 gap-4 p-4">
         {Array.from({ length: 8 }).map((_, index) => (
           <div
             key={index}

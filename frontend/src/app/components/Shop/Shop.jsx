@@ -127,7 +127,7 @@ const Shop = () => {
           </div>
           <div className="flex justify-between items-center text-sm text-gray-600">
             {/* Sort Dropdown */}
-            <div>
+            {/* <div>
               <span>Sort by:</span>
               <select className="p-2 text-black  focus:outline-none">
                 <option value="latest">Latest</option>
@@ -135,7 +135,7 @@ const Shop = () => {
                 <option value="lowToHigh">Price: Low to High</option>
                 <option value="highToLow">Price: High to Low</option>
               </select>
-            </div>
+            </div> */}
 
             {/* Items per page */}
             <div className="flex items-center gap-2">

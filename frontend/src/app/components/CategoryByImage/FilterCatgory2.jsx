@@ -1,46 +1,35 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import filterimage4 from "../../Images/DBS/BANNER7.jpg";
-import filterimage5 from "../../Images/DBS/BANNER8.jpg";
-import filterimage6 from "../../Images/DBS/BANNER11.jpg";
-import filterimage7 from "../../Images/DBS/BANNER12.jpg";
 import { MoveRight } from "lucide-react";
 import { motion } from "framer-motion"; // Import motion from framer-motion
-
-const bannerData = [
-  {
-    id: 1,
-    imgSrc: filterimage4,
-    link: "/category/fruits",
-    alt: "Fruits Banner",
-  },
-  {
-    id: 2,
-    imgSrc: filterimage5,
-    link: "/category/vegetables",
-    alt: "Vegetables Banner",
-  },
-  {
-    id: 3,
-    imgSrc: filterimage6,
-    link: "/category/dairy",
-    alt: "Dairy Banner",
-  },
-  {
-    id: 4,
-    imgSrc: filterimage7,
-    link: "/category/dairy",
-    alt: "Dairy Banner",
-  },
-];
+import { useDispatch, useSelector } from "react-redux";
+import { fetchBannerByCategory } from "@/app/redux/features/BannerByCategory/BannerByCategory";
 
 const FilterCatgory2 = () => {
+  const dispatch = useDispatch();
+  const { data, loading, error } = useSelector(
+    (state) => state.bannerByCategory
+  );
+
+  useEffect(() => {
+    dispatch(fetchBannerByCategory());
+  }, [dispatch]);
+
+  const level1Categories = data.filter((item) => item.level === 2);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-      {bannerData.map((item) => (
-        <Link href={item.link} key={item.id} className="block group">
+      {level1Categories?.map((category) => (
+        <Link
+          key={category._id}
+          href={`/pages/shop/productBysubcategory/${category._id}`}
+          className="block group"
+        >
           {/* Adding motion.div to animate when in view */}
           <motion.div
             className="relative overflow-hidden rounded-xl shadow-lg"
@@ -50,8 +39,8 @@ const FilterCatgory2 = () => {
             transition={{ duration: 0.6 }} // Animation duration
           >
             <Image
-              src={item.imgSrc}
-              alt={item.alt}
+              src={category.levelImage}
+              alt={category.Parent_name.Parent_name}
               width={400}
               height={250}
               className="w-full h-[280px] md:h-[380px] object-cover bg-top transition-transform duration-300 group-hover:scale-105"
