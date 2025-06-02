@@ -59,7 +59,7 @@ const createProduct = async (req, res) => {
     }
 
     const images = req.files.map((file) => {
-    return "/public/image/" + file.filename
+      return "/public/image/" + file.filename;
     });
     const finalPrice = Number(price) - (Number(price) * Number(discount)) / 100;
 
@@ -89,8 +89,8 @@ const createProduct = async (req, res) => {
 
     return res.status(201).json({ message: "product created", product });
   } catch (error) {
-    if(req.files){
-     await Promise.all(req.files.map((file) => deleteLocalImage(file.path)))
+    if (req.files) {
+      await Promise.all(req.files.map((file) => deleteLocalImage(file.path)));
     }
     console.log("create product error", error);
     return res.status(500).json({ message: "create product server error" });
@@ -103,25 +103,27 @@ const multipleProducts = async (req, res) => {
     if (!products || !Array.isArray(products) || products.length === 0) {
       return res.status(400).json({ message: "No products provided" });
     }
-  
-    const updatedProducts = await Promise.all(products.map(async (product) => {
-      if (product.images) {
-        if (typeof product.images === "string") {
-          product.images = [product.images];
-        } else {
-          product.images = [];
-        }
-        if (product.category) {
-          const existedCategory = await Category.findOne({
-            category: product.categoryName,
-          });
-          if (existedCategory) {
-            product.category = existedCategory._id;
+
+    const updatedProducts = await Promise.all(
+      products.map(async (product) => {
+        if (product.images) {
+          if (typeof product.images === "string") {
+            product.images = [product.images];
+          } else {
+            product.images = [];
+          }
+          if (product.category) {
+            const existedCategory = await Category.findOne({
+              category: product.categoryName,
+            });
+            if (existedCategory) {
+              product.category = existedCategory._id;
+            }
           }
         }
-      }
-      return product;
-    }));
+        return product;
+      })
+    );
     const insertedProducts = await Product.insertMany(updatedProducts);
 
     return res
@@ -129,7 +131,9 @@ const multipleProducts = async (req, res) => {
       .json({ message: "Products created", products: insertedProducts });
   } catch (error) {
     console.log("create product error", error);
-    return res.status(500).json({ message: "create product server error" , error});
+    return res
+      .status(500)
+      .json({ message: "create product server error", error });
   }
 };
 const updateProduct = async (req, res) => {
@@ -159,10 +163,12 @@ const updateProduct = async (req, res) => {
     if (!product) return res.status(404).json({ message: "Product not found" });
     if (req.files && req.files.length > 0) {
       const images = req.files.map((file) => {
-      return "/public/image/" + file.filename
+        return "/public/image/" + file.filename;
       });
-      if(product.images){
-         await Promise.all(product.images.map(image => deleteLocalImage(image)));
+      if (product.images) {
+        await Promise.all(
+          product.images.map((image) => deleteLocalImage(image))
+        );
       }
       product.images = images;
     } else {
@@ -198,8 +204,8 @@ const updateProduct = async (req, res) => {
     await product.save();
     return res.status(200).json({ message: "Product updated", product });
   } catch (error) {
-      if(req.files){
-     await Promise.all(req.files.map((file) => deleteLocalImage(file.path)))
+    if (req.files) {
+      await Promise.all(req.files.map((file) => deleteLocalImage(file.path)));
     }
     console.log("update product error", error);
     return res.status(500).json({ message: "update product server error" });
@@ -211,16 +217,16 @@ const getAllProducts = async (req, res) => {
     const page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 0;
     const skip = (page - 1) * limit;
-const query={}
-if(req?.query?.newArrival){
-  query.newArrival=true
-}
-if(req?.query?.featuredBooks){
-  query.featuredBooks=true
-}
-if(req?.query?.bestSellingBooks){
-  query.bestSellingBooks=true
-}
+    const query = {};
+    if (req?.query?.newArrival) {
+      query.newArrival = true;
+    }
+    if (req?.query?.featuredBooks) {
+      query.featuredBooks = true;
+    }
+    if (req?.query?.bestSellingBooks) {
+      query.bestSellingBooks = true;
+    }
     const products = await Product.find(query)
       .populate("category")
       .skip(skip)
@@ -241,8 +247,6 @@ if(req?.query?.bestSellingBooks){
   }
 };
 
-
-
 const getSingleProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id).populate("category");
@@ -254,34 +258,36 @@ const getSingleProduct = async (req, res) => {
   }
 };
 
-const getNewArrival=async(req,res)=>{
+const getNewArrival = async (req, res) => {
   try {
-    const products=await Product.find({newArrival:true})
-    return res.status(200).json({message:"new arrival",products})
+    const products = await Product.find({ newArrival: true });
+    return res.status(200).json({ message: "new arrival", products });
   } catch (error) {
     console.log("get new arrival error", error);
     return res.status(500).json({ message: "get new arrival server error" });
   }
-}
-const getFeaturedBooks=async(req,res)=>{
+};
+const getFeaturedBooks = async (req, res) => {
   try {
-    const products=await Product.find({featuredBooks:true})
-    return res.status(200).json({message:"featured books",products})
+    const products = await Product.find({ featuredBooks: true });
+    return res.status(200).json({ message: "featured books", products });
   } catch (error) {
     console.log("get featured books error", error);
     return res.status(500).json({ message: "get featured books server error" });
   }
-}
-const getBestSellingBooks=async(req,res)=>{
+};
+const getBestSellingBooks = async (req, res) => {
   try {
-    const products=await Product.find({bestSellingBooks:true})
-    return res.status(200).json({message:"best selling books",products})
+    const products = await Product.find({ bestSellingBooks: true });
+    return res.status(200).json({ message: "best selling books", products });
   } catch (error) {
     console.log("get best selling books error", error);
-    return res.status(500).json({ message: "get best selling books server error" });
+    return res
+      .status(500)
+      .json({ message: "get best selling books server error" });
   }
-}
- const getProductByCategory = async (req, res) => {
+};
+const getProductByCategory = async (req, res) => {
   try {
     const category = await Product.find({ category: req.params.id });
     if (!category)
@@ -303,6 +309,29 @@ const deleteProduct = async (req, res) => {
     return res.status(500).json({ message: "delete product server error" });
   }
 };
+
+const searchProducts = async (req, res) => {
+  try {
+    const query = req.query.search;
+    const matchingCategories = await Category.find({
+      categoryName: { $regex: query, $options: "i" },
+    });
+    const categoryIds = matchingCategories.map((cat) => cat._id);
+    const products = await Product.find({
+      $or: [
+        { title: { $regex: query, $options: "i" } },
+        { author: { $regex: query, $options: "i" } },
+        { ISBN: { $regex: query, $options: "i" } },
+        { category: { $in: categoryIds } },
+      ],
+    }).populate("category");
+
+    return res.status(200).json({ message: "search products", products });
+  } catch (error) {
+    console.log("search products error", error);
+    return res.status(500).json({ message: "search products server error" });
+  }
+};
 export {
   createProduct,
   updateProduct,
@@ -313,5 +342,6 @@ export {
   getNewArrival,
   getFeaturedBooks,
   getBestSellingBooks,
-  getProductByCategory
+  getProductByCategory,
+  searchProducts,
 };
