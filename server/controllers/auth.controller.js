@@ -102,16 +102,16 @@ const sentResetPasswordMail = async (email, myToken, id) => {
 
       <a class="button" href="${
         process.env.BASE_URL
-      }/Pages/reset-password/${id}/${myToken}" target="_blank">
+      }/pages/login/forgot-password/create-new-password/${id}/${myToken}" target="_blank">
         Reset Password
       </a>
 
       <p>Or you can paste the following link into your browser:</p>
       <p><a href="${
         process.env.BASE_URL
-      }/Pages/reset-password/${id}/${myToken}">${
+      }/pages/login/forgot-password/create-new-password/${id}/${myToken}">${
         process.env.BASE_URL
-      }/Pages/reset-password/${id}/${myToken}</a></p>
+      }/pages/login/forgot-password/create-new-password/${id}/${myToken}</a></p>
 
       <p><strong>Note:</strong> This link will expire after a short time for security reasons.</p>
       <p style="color: red;"><strong>Important:</strong> Do not share this email or link with anyone.</p>
