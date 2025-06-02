@@ -172,14 +172,14 @@ const Header = () => {
               <Link href="/">
                 <Image src={logo} alt="Logo" className="w-20 h-auto" />
               </Link>
-              <div className="flex items-center gap-1 text-gray-700 text-sm">
-                <LucideMapPin className="w-9 h-9 bg-gray-300 rounded-full p-2" />
+              <div className="flex items-center gap-1 text-sm">
+                <LucideMapPin className="w-9 h-9 bg-purple-600 text-white rounded-full p-2" />
                 <UserLocation />
               </div>
             </motion.div>
 
             {/* Search */}
-           <ProductSearchBar />
+            <ProductSearchBar />
 
             {/* Icons */}
             <motion.div

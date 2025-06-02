@@ -27,22 +27,22 @@ export default function UserLocation() {
             setLocation(loc);
             setError(null);
           } catch (err) {
-            setError("❌ Failed to fetch location details.");
+            setError("Failed to fetch location details.");
           }
         },
         (err) => {
-          setError("⚠️ Please allow location access.");
+          setError("Please allow location access.");
           if (retryCount < 1) {
             setRetryCount((prev) => prev + 1);
             setTimeout(() => {
-              alert("⚠️ Location is mandatory. Please allow access.");
+              alert("Location is mandatory. Please allow access.");
               requestLocation(); // retry once
             }, 8000);
           }
         }
       );
     } else {
-      setError("❌ Geolocation is not supported in your browser.");
+      setError("Geolocation is not supported in your browser.");
     }
   };
 
@@ -67,12 +67,14 @@ export default function UserLocation() {
     <div>
       {location ? (
         <p className="m-0 p-0 location-detact">
-          📍 {location.city}, {location.state}
+          {location.city} {location.state}
         </p>
       ) : (
         <>
-          <p className="m-0 p-0 location-detact">📡 Detecting location...</p>
-          {error && <p className="m-0 p-0 location-detact text-danger">{error}</p>}
+          <p className="m-0 p-0 location-detact">Detecting location...</p>
+          {error && (
+            <p className="m-0 p-0 location-detact text-danger">{error}</p>
+          )}
         </>
       )}
     </div>

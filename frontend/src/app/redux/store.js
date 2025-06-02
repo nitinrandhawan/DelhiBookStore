@@ -8,6 +8,7 @@ import productReducer from "./features/shop/shopSlice";
 import productByCategoryReducer from "./features/productByCategory/productByCategorySlice";
 import localCartReducer from "./AddtoCart/cartSlice";
 import apiCartReducer from "./AddtoCart/apiCartSlice";
+import bannerByCategoryReducer from "./features/BannerByCategory/BannerByCategory";
 
 export const store = configureStore({
   reducer: {
@@ -20,5 +21,6 @@ export const store = configureStore({
     login: loginReducer,
     products: productReducer,
     productByCategory: productByCategoryReducer,
+    bannerByCategory: bannerByCategoryReducer,
   },
 });
