@@ -17,10 +17,11 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const allowedOrigins = ["http://localhost:3000"];
+const allowedOrigins = ["http://localhost:3000", "http://localhost:3001"];
 app.use(
   cors({
     origin: function (origin, callback) {
+   
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {

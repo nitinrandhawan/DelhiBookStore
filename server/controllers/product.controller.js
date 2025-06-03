@@ -214,6 +214,7 @@ const updateProduct = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
   try {
+ 
     const page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 0;
     const skip = (page - 1) * limit;

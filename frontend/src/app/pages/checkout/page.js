@@ -1,11 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import book1 from "../../Images/DBS/1.jpg";
 import book2 from "../../Images/DBS/1.jpg";
 import { Loader2, Lock, ShoppingBag, Truck } from "lucide-react";
-
+import { useDispatch, useSelector } from "react-redux";
+import { getAllCartItemsAPI } from "@/app/redux/AddtoCart/apiCartSlice";
+import image from "../../Images/DBS/1.jpg";
+import { createOrder } from "@/app/redux/features/order/orderSlice";
 export default function Page() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -18,33 +21,44 @@ export default function Page() {
     state: "",
     zipCode: "",
     country: "India",
+    paymentMethod:""
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const user=useSelector((state)=>state.login.user)
+const {items}=useSelector((state)=>state.apiCart)
+const {cartItems}=useSelector((state)=> state.cart)
+const dispatch=useDispatch()
+  // const cartItems = [
+  //   {
+  //     id: 1,
+  //     name: "Love Book",
+  //     price: 7995,
+  //     quantity: 1,
+  //     image: book1,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Science Book",
+  //     price: 7995,
+  //     quantity: 1,
+  //     image: book2,
+  //   },
+  // ];
 
-  const cartItems = [
-    {
-      id: 1,
-      name: "Love Book",
-      price: 7995,
-      quantity: 1,
-      image: book1,
-    },
-    {
-      id: 2,
-      name: "Science Book",
-      price: 7995,
-      quantity: 1,
-      image: book2,
-    },
-  ];
-
+  let cartItemsValue=[]
+  if(user?.email){
+    cartItemsValue=items
+  }else{
+    cartItemsValue=cartItems
+  }
+  
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
-  const shipping = 4.99;
   const tax = subtotal * 0.08;
+  const shipping = subtotal > 500 ? 0 : 50;
   const total = subtotal + shipping + tax;
 
   const handleChange = (e) => {
@@ -61,6 +75,9 @@ export default function Page() {
     }
   };
 
+  useEffect(() => {
+    dispatch(getAllCartItemsAPI())
+  },[])
   const validateForm = () => {
     const newErrors = {};
 
@@ -69,7 +86,8 @@ export default function Page() {
       newErrors.firstName = "First name is required";
     if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
-    if (!/^\S+@\S+\.\S+$/.test(formData.email))
+    const emailRegex=/^\S+@\S+\.\S+$/
+    if (!emailRegex.test(formData.email))
       newErrors.email = "Invalid email format";
     if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
     if (!formData.address.trim()) newErrors.address = "Address is required";
@@ -88,14 +106,13 @@ export default function Page() {
 
     setIsSubmitting(true);
 
-    // Simulate API call
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Redirect to success page
-      router.push("/pages/checkout/success");
+     await dispatch(createOrder(formData)).unwrap(); 
+    router.push("/pages/checkout/success");
+     
     } catch (error) {
       console.error("Checkout failed:", error);
+      toast.error(error.message || "Something went wrong during checkout.");
     } finally {
       setIsSubmitting(false);
     }
@@ -133,7 +150,7 @@ export default function Page() {
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none ${
+                      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none ₹{
                         errors.firstName ? "border-red-500" : "border-gray-400"
                       }`}
                     />
@@ -157,7 +174,7 @@ export default function Page() {
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none ${
+                      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none ₹{
                         errors.lastName ? "border-red-500" : "border-gray-400"
                       }`}
                     />
@@ -181,7 +198,7 @@ export default function Page() {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none ${
+                      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none ₹{
                         errors.email ? "border-red-500" : "border-gray-400"
                       }`}
                     />
@@ -204,7 +221,7 @@ export default function Page() {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none ${
+                      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none ₹{
                         errors.phone ? "border-red-500" : "border-gray-400"
                       }`}
                     />
@@ -228,7 +245,7 @@ export default function Page() {
                       name="address"
                       value={formData.address}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none ${
+                      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none ₹{
                         errors.address ? "border-red-500" : "border-gray-400"
                       }`}
                     />
@@ -252,7 +269,7 @@ export default function Page() {
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none ${
+                      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none ₹{
                         errors.city ? "border-red-500" : "border-gray-400"
                       }`}
                     />
@@ -274,7 +291,7 @@ export default function Page() {
                       name="state"
                       value={formData.state}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none ${
+                      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none ₹{
                         errors.state ? "border-red-500" : "border-gray-400"
                       }`}
                     />
@@ -298,7 +315,7 @@ export default function Page() {
                       name="zipCode"
                       value={formData.zipCode}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none ${
+                      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none ₹{
                         errors.zipCode ? "border-red-500" : "border-gray-400"
                       }`}
                     />
@@ -329,7 +346,30 @@ export default function Page() {
                       <option value="Australia">Australia</option>
                     </select>
                   </div>
+
                 </div>
+                <hr className="my-4 text-gray-400"/>
+
+                
+                   <div>
+          <label
+            htmlFor="paymentMethod"
+            className="block text-lg font-semibold text-gray-700 mb-1"
+          >
+            Payment Method
+          </label>
+          <select
+            id="paymentMethod"
+            name="paymentMethod"
+            value={formData.paymentMethod}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-400 rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none"
+          >
+            <option value="">Select Payment Method</option>
+            <option value="COD">Cash on Delivery (COD)</option>
+            <option value="Online">Online Payment</option>
+          </select>
+        </div>
               </div>
 
               <button
@@ -361,24 +401,27 @@ export default function Page() {
               </div>
 
               <div className="divide-y">
-                {cartItems.map((item) => (
+                {
+                  cartItemsValue?.length === 0 && <p className="text-gray-500 text-sm">Your cart is empty. </p>
+                }
+                {cartItemsValue?.map((item) => (
                   <div key={item.id} className="py-4 flex gap-4">
                     <div className="w-auto h-20 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
                       <Image
-                        src={item.image || "/placeholder.svg"}
-                        alt={item.name}
+                        src={image || "/placeholder.svg"}
+                        alt={item?.name || item?.productId?.title}
                         width={80}
                         height={80}
                         className="w-full h-full object-contain"
                       />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-medium text-gray-800">{item.name}</h3>
+                      <h3 className="font-medium text-gray-800">{item.name ?? item.productId?.title}</h3>
                       <p className="text-gray-500 text-sm">
                         Quantity: {item.quantity}
                       </p>
                       <p className="text-gray-900 font-medium mt-1">
-                        ${item.price.toFixed(2)}
+                        ₹{(item.price ?? item.productId?.price).toFixed(2)}
                       </p>
                     </div>
                   </div>
@@ -389,24 +432,24 @@ export default function Page() {
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Subtotal</span>
                   <span className="text-gray-900 font-medium">
-                    ${subtotal.toFixed(2)}
+                    ₹{subtotal.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Shipping</span>
                   <span className="text-gray-900 font-medium">
-                    ${shipping.toFixed(2)}
+                    ₹{shipping.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Tax</span>
                   <span className="text-gray-900 font-medium">
-                    ${tax.toFixed(2)}
+                    ₹{tax.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-gray-200 text-base font-medium">
                   <span className="text-gray-900">Total</span>
-                  <span className="text-gray-900">${total.toFixed(2)}</span>
+                  <span className="text-gray-900">₹{total.toFixed(2)}</span>
                 </div>
               </div>
 

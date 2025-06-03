@@ -1,4 +1,6 @@
-const { createSlice } = require("@reduxjs/toolkit");
+import axiosInstance from "./features/axiosInstance";
+
+const { createSlice, createAsyncThunk } = require("@reduxjs/toolkit");
 
 // Load wishlist from localStorage
 const loadWishlistFromStorage = () => {
@@ -11,6 +13,49 @@ const loadWishlistFromStorage = () => {
   }
 };
 
+export const addToWishlistApi = createAsyncThunk(
+  "wishlist/addToWishlistApi",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(
+        "/wishlist/add-to-wishlist",
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.log("Error adding to wishlist:", error);
+      return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+  }
+);
+export const removeFromWishlistApi = createAsyncThunk(
+  "wishlist/remove-from-wishlist-api",
+  async (data, { rejectWithValue }) => {
+    try {
+      console.log("data", data);
+
+      const response = await axiosInstance.delete(
+        `/wishlist/remove-from-wishlist/${data}`
+      );
+      return;
+    } catch (error) {
+      console.log("Error adding to wishlist:", error);
+      return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+  }
+);
+
+export const getAllWishlistItemsApi = createAsyncThunk(
+  "wishlist/getAllWishlistItemsApi",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/wishlist/get-all-wishlists");
+      return response.data?.wishlists?.products;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+  }
+);
 // Save wishlist to localStorage
 const saveWishlistToStorage = (wishlist) => {
   try {
@@ -37,15 +82,70 @@ const wishlistSlice = createSlice({
         saveWishlistToStorage(state.wishlistItems);
       }
     },
-
+    addToWishlistState: (state, action) => {
+      const exists = state.wishlistItems.find(
+        (item) => item._id === action.payload._id
+      );
+      
+      if (!exists) {
+        state.wishlistItems.push(action.payload);
+      }
+    },
     removeFromWishlist: (state, action) => {
       state.wishlistItems = state.wishlistItems.filter(
         (item) => item.id !== action.payload
       );
       saveWishlistToStorage(state.wishlistItems);
     },
+    removeFromWishlistState: (state, action) => {
+      state.wishlistItems = state.wishlistItems.filter(
+        (item) => item._id !== action.payload
+      );
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(addToWishlistApi.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addToWishlistApi.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(addToWishlistApi.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getAllWishlistItemsApi.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllWishlistItemsApi.fulfilled, (state, action) => {
+        state.loading = false;
+        state.wishlistItems = action.payload;
+      })
+      .addCase(getAllWishlistItemsApi.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(removeFromWishlistApi.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(removeFromWishlistApi.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(removeFromWishlistApi.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
-export const { addToWishlist, removeFromWishlist } = wishlistSlice.actions;
+export const {
+  addToWishlist,
+  removeFromWishlist,
+  removeFromWishlistState,
+  addToWishlistState,
+} = wishlistSlice.actions;
 export default wishlistSlice.reducer;
