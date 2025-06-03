@@ -9,6 +9,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBanners } from "@/app/redux/features/banners/bannerSlice";
+import { serverUrl } from "@/app/redux/features/axiosInstance";
 
 const HomeBanner = () => {
   const dispatch = useDispatch();
@@ -61,7 +62,7 @@ const HomeBanner = () => {
                     transition={{ delay: 0.3, duration: 0.8 }}
                   >
                     <Image
-                      src={slide.bannerImage}
+                      src={`${serverUrl}${slide.bannerImage}`}
                       alt={"banners"}
                       fill
                       className="object-fill md:object-cover"

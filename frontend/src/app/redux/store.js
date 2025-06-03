@@ -9,6 +9,7 @@ import productByCategoryReducer from "./features/productByCategory/productByCate
 import localCartReducer from "./AddtoCart/cartSlice";
 import apiCartReducer from "./AddtoCart/apiCartSlice";
 import bannerByCategoryReducer from "./features/BannerByCategory/BannerByCategory";
+import orderReducer from "./features/order/orderSlice";
 
 export const store = configureStore({
   reducer: {
@@ -22,5 +23,6 @@ export const store = configureStore({
     products: productReducer,
     productByCategory: productByCategoryReducer,
     bannerByCategory: bannerByCategoryReducer,
+    order:orderReducer
   },
 });

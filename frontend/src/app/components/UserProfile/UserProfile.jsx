@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import userImage from "../../Images/DowloadImage/testi6.jpg";
 import bookimage1 from "../../Images/DBS/1.jpg";
@@ -24,8 +24,9 @@ import Link from "next/link";
 import Cart from "../Cart/Cart";
 import Wishlist from "../Wishlist/Wishlist";
 import { handleLogout, resetState } from "@/app/redux/features/auth/loginSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
+import { getOrder } from "@/app/redux/features/order/orderSlice";
 
 export default function UserProfile() {
   const [activeTab, setActiveTab] = useState("orders");
@@ -46,122 +47,122 @@ export default function UserProfile() {
     profileImage: userImage,
   };
 
-  const orders = [
-    {
-      id: "ORD-12345",
-      date: "May 12, 2024",
-      total: "₹15,990",
-      status: "Delivered",
-      items: [
-        {
-          id: 1,
-          name: "Love and Poetry",
-          price: "₹7995",
-          quantity: 1,
-          image: bookimage1,
-        },
-        {
-          id: 2,
-          name: "AI in Everyday Life",
-          price: "₹7995",
-          quantity: 1,
-          image: bookimage1,
-        },
-      ],
-      deliveryAddress:
-        "Flat 12B, Green Residency, Sector 21, Gurugram, Haryana - 122016",
-      trackingNumber: "TRK-987654321",
-      deliverySteps: [
-        { id: 1, name: "Order Placed", completed: true, date: "May 8, 2024" },
-        { id: 2, name: "Processing", completed: true, date: "May 9, 2024" },
-        { id: 3, name: "Shipped", completed: false, date: "May 10, 2024" },
-        {
-          id: 4,
-          name: "Out for Delivery",
-          completed: false,
-          date: "May 12, 2024",
-        },
-        { id: 5, name: "Delivered", completed: false, date: "May 12, 2024" },
-      ],
-    },
-    {
-      id: "ORD-12344",
-      date: "April 28, 2024",
-      total: "₹15,990",
-      status: "Delivered",
-      items: [
-        {
-          id: 3,
-          name: "The Art of Focus",
-          price: "₹7995",
-          quantity: 1,
-          image: bookimage1,
-        },
-        {
-          id: 4,
-          name: "Mindful Living",
-          price: "₹7995",
-          quantity: 1,
-          image: bookimage1,
-        },
-      ],
-      deliveryAddress:
-        "Flat 12B, Green Residency, Sector 21, Gurugram, Haryana - 122016",
-      trackingNumber: "TRK-987654320",
-      deliverySteps: [
-        {
-          id: 1,
-          name: "Order Placed",
-          completed: true,
-          date: "April 24, 2024",
-        },
-        { id: 2, name: "Processing", completed: true, date: "April 25, 2024" },
-        { id: 3, name: "Shipped", completed: true, date: "April 26, 2024" },
-        {
-          id: 4,
-          name: "Out for Delivery",
-          completed: true,
-          date: "April 28, 2024",
-        },
-        { id: 5, name: "Delivered", completed: false, date: "April 28, 2024" },
-      ],
-    },
-    {
-      id: "ORD-12343",
-      date: "April 15, 2024",
-      total: "₹7995",
-      status: "Delivered",
-      items: [
-        {
-          id: 5,
-          name: "The Future of Imagination",
-          price: "₹7995",
-          quantity: 1,
-          image: bookimage1,
-        },
-      ],
-      deliveryAddress:
-        "Flat 12B, Green Residency, Sector 21, Gurugram, Haryana - 122016",
-      trackingNumber: "TRK-987654319",
-      deliverySteps: [
-        {
-          id: 1,
-          name: "Order Placed",
-          completed: true,
-          date: "April 11, 2024",
-        },
-        { id: 2, name: "Processing", completed: true, date: "April 12, 2024" },
-        { id: 3, name: "Shipped", completed: true, date: "April 13, 2024" },
-        {
-          id: 4,
-          name: "Out for Delivery",
-          completed: true,
-          date: "April 15, 2024",
-        },
-        { id: 5, name: "Delivered", completed: true, date: "April 15, 2024" },
-      ],
-    },
-  ];
+  // const orders = [
+  //   {
+  //     id: "ORD-12345",
+  //     date: "May 12, 2024",
+  //     total: "₹15,990",
+  //     status: "Delivered",
+  //     items: [
+  //       {
+  //         id: 1,
+  //         name: "Love and Poetry",
+  //         price: "₹7995",
+  //         quantity: 1,
+  //         image: bookimage1,
+  //       },
+  //       {
+  //         id: 2,
+  //         name: "AI in Everyday Life",
+  //         price: "₹7995",
+  //         quantity: 1,
+  //         image: bookimage1,
+  //       },
+  //     ],
+  //     deliveryAddress:
+  //       "Flat 12B, Green Residency, Sector 21, Gurugram, Haryana - 122016",
+  //     trackingNumber: "TRK-987654321",
+  //     deliverySteps: [
+  //       { id: 1, name: "Order Placed", completed: true, date: "May 8, 2024" },
+  //       { id: 2, name: "Processing", completed: true, date: "May 9, 2024" },
+  //       { id: 3, name: "Shipped", completed: false, date: "May 10, 2024" },
+  //       {
+  //         id: 4,
+  //         name: "Out for Delivery",
+  //         completed: false,
+  //         date: "May 12, 2024",
+  //       },
+  //       { id: 5, name: "Delivered", completed: false, date: "May 12, 2024" },
+  //     ],
+  //   },
+  //   {
+  //     id: "ORD-12344",
+  //     date: "April 28, 2024",
+  //     total: "₹15,990",
+  //     status: "Delivered",
+  //     items: [
+  //       {
+  //         id: 3,
+  //         name: "The Art of Focus",
+  //         price: "₹7995",
+  //         quantity: 1,
+  //         image: bookimage1,
+  //       },
+  //       {
+  //         id: 4,
+  //         name: "Mindful Living",
+  //         price: "₹7995",
+  //         quantity: 1,
+  //         image: bookimage1,
+  //       },
+  //     ],
+  //     deliveryAddress:
+  //       "Flat 12B, Green Residency, Sector 21, Gurugram, Haryana - 122016",
+  //     trackingNumber: "TRK-987654320",
+  //     deliverySteps: [
+  //       {
+  //         id: 1,
+  //         name: "Order Placed",
+  //         completed: true,
+  //         date: "April 24, 2024",
+  //       },
+  //       { id: 2, name: "Processing", completed: true, date: "April 25, 2024" },
+  //       { id: 3, name: "Shipped", completed: true, date: "April 26, 2024" },
+  //       {
+  //         id: 4,
+  //         name: "Out for Delivery",
+  //         completed: true,
+  //         date: "April 28, 2024",
+  //       },
+  //       { id: 5, name: "Delivered", completed: false, date: "April 28, 2024" },
+  //     ],
+  //   },
+  //   {
+  //     id: "ORD-12343",
+  //     date: "April 15, 2024",
+  //     total: "₹7995",
+  //     status: "Delivered",
+  //     items: [
+  //       {
+  //         id: 5,
+  //         name: "The Future of Imagination",
+  //         price: "₹7995",
+  //         quantity: 1,
+  //         image: bookimage1,
+  //       },
+  //     ],
+  //     deliveryAddress:
+  //       "Flat 12B, Green Residency, Sector 21, Gurugram, Haryana - 122016",
+  //     trackingNumber: "TRK-987654319",
+  //     deliverySteps: [
+  //       {
+  //         id: 1,
+  //         name: "Order Placed",
+  //         completed: true,
+  //         date: "April 11, 2024",
+  //       },
+  //       { id: 2, name: "Processing", completed: true, date: "April 12, 2024" },
+  //       { id: 3, name: "Shipped", completed: true, date: "April 13, 2024" },
+  //       {
+  //         id: 4,
+  //         name: "Out for Delivery",
+  //         completed: true,
+  //         date: "April 15, 2024",
+  //       },
+  //       { id: 5, name: "Delivered", completed: true, date: "April 15, 2024" },
+  //     ],
+  //   },
+  // ];
 
   // FAQ Answers
 
@@ -195,6 +196,18 @@ export default function UserProfile() {
 
   const dispatch = useDispatch();
   const router = useRouter();
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef(null);
+  const {order: orders} = useSelector((state) => state.order)
+   const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setSelectedFile(URL.createObjectURL(file));
+    // At this point you could also dispatch an action to upload:
+    // dispatch(uploadProfileImage(file));
+  };
+
+
   const handleLogoutFun = () => {
     handleLogout();
     dispatch(resetState());
@@ -210,6 +223,9 @@ export default function UserProfile() {
     setSelectedOrder(null);
   };
 
+  useEffect(() => {
+    dispatch(getOrder())
+  },[])
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
@@ -240,7 +256,7 @@ export default function UserProfile() {
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
           <div className="w-full md:w-1/4">
-            <div className="bg-white rounded-lg shadow p-6">
+            {/* <div className="bg-white rounded-lg shadow p-6">
               <div className="flex flex-col items-center mb-6">
                 <div className="relative mb-4">
                   <Image
@@ -354,7 +370,131 @@ export default function UserProfile() {
                   <span>Logout</span>
                 </button>
               </nav>
-            </div>
+            </div> */}
+            <div className="bg-white rounded-lg shadow p-6">
+      <div className="flex flex-col items-center mb-6">
+        {/* Profile Image + Edit Button */}
+        <div className="relative mb-4">
+          <Image
+            src={selectedFile || user.profileImage || "/placeholder.svg"}
+            alt="Profile"
+            width={120}
+            height={120}
+            className="rounded-full border-4 border-purple-500 object-cover"
+          />
+
+          {/* Hidden File Input */}
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleImageChange}
+            className="hidden"
+          />
+
+          {/* Edit Icon (clicking opens file picker) */}
+          <button
+            type="button"
+            className="absolute bottom-0 right-0 bg-purple-600 text-white p-1 rounded-full"
+            onClick={() => fileInputRef.current.click()}
+          >
+            <Edit className="h-4 w-4" />
+          </button>
+        </div>
+
+        <h2 className="text-xl font-semibold">{user.name}</h2>
+        <p className="text-gray-600">{user.email}</p>
+      </div>
+
+      <nav className="space-y-2 flex flex-row flex-wrap justify-center md:flex-col">
+        <button
+          className={`flex items-center space-x-3 md:w-full p-2 md:p-3 rounded-lg ${
+            activeTab === "orders"
+              ? "bg-purple-100 text-purple-800"
+              : "text-gray-700 hover:bg-gray-100"
+          }`}
+          onClick={() => {
+            setActiveTab("orders");
+          }}
+        >
+          <ShoppingBag className="h-4 w-4" />
+          <span>My Orders</span>
+        </button>
+        <button
+          className={`flex items-center space-x-3 md:w-full p-2 md:p-3 rounded-lg ${
+            activeTab === "wishlist"
+              ? "bg-purple-100 text-purple-800"
+              : "text-gray-700 hover:bg-gray-100"
+          }`}
+          onClick={() => {
+            setActiveTab("wishlist");
+          }}
+        >
+          <Heart className="h-4 w-4" />
+          <span>Wishlist</span>
+        </button>
+        <button
+          className={`flex items-center space-x-3 md:w-full p-2 md:p-3 rounded-lg ${
+            activeTab === "cart"
+              ? "bg-purple-100 text-purple-800"
+              : "text-gray-700 hover:bg-gray-100"
+          }`}
+          onClick={() => {
+            setActiveTab("cart");
+          }}
+        >
+          <ShoppingCartIcon className="h-4 w-4" />
+          <span>Cart</span>
+        </button>
+        <button
+          className={`flex items-center space-x-3 md:w-full p-2 md:p-3 rounded-lg ${
+            activeTab === "profile"
+              ? "bg-purple-100 text-purple-800"
+              : "text-gray-700 hover:bg-gray-100"
+          }`}
+          onClick={() => {
+            setActiveTab("profile");
+            setIsEditingProfile(true);
+          }}
+        >
+          <User className="h-4 w-4" />
+          <span>Profile</span>
+        </button>
+        <button
+          className={`flex items-center space-x-3 md:w-full p-2 md:p-3 rounded-lg ${
+            activeTab === "help"
+              ? "bg-purple-100 text-purple-800"
+              : "text-gray-700 hover:bg-gray-100"
+          }`}
+          onClick={() => {
+            setActiveTab("help");
+          }}
+        >
+          <HelpCircle className="h-4 w-4" />
+          <span>Help Center</span>
+        </button>
+        <button
+          className={`flex items-center space-x-3 md:w-full p-2 md:p-3 rounded-lg ${
+            activeTab === "settings"
+              ? "bg-purple-100 text-purple-800"
+              : "text-gray-700 hover:bg-gray-100"
+          }`}
+          onClick={() => {
+            setActiveTab("settings");
+          }}
+        >
+          <Settings className="h-4 w-4" />
+          <span>Settings</span>
+        </button>
+        <button
+          className="flex items-center space-x-3 md:w-full p-2 md:p-3 rounded-lg text-red-600 hover:bg-red-50"
+          onClick={handleLogoutFun}
+        >
+          <LogOut className="h-4 w-4" />
+          <span>Logout</span>
+        </button>
+      </nav>
+    </div>
           </div>
 
           {/* Main Content Area */}
@@ -370,23 +510,23 @@ export default function UserProfile() {
                 <div className="p-6">
                   {orders.length > 0 ? (
                     <div className="space-y-4">
-                      {orders.map((order) => (
+                      {orders?.map((order) => (
                         <div
-                          key={order.id}
+                          key={order._id}
                           className="border border-purple-600 rounded-lg p-4 hover:shadow-md transition cursor-pointer"
                           onClick={() => handleOrderClick(order)}
                         >
                           <div className="flex justify-between items-center">
                             <div>
                               <h3 className="font-semibold text-lg">
-                                {order.id}
+                                {order?.orderUniqueId}
                               </h3>
-                              <p className="text-gray-600">{order.date}</p>
+                              <p className="text-gray-600">{new Date(order?.createdAt).toLocaleDateString()}</p>
                             </div>
                             <div className="text-right">
-                              <p className="font-bold text-lg">{order.total}</p>
+                              <p className="font-bold text-lg">₹{order?.totalAmount}</p>
                               <span className="inline-block px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
-                                {order.status}
+                                {order?.orderStatus}
                               </span>
                             </div>
                           </div>

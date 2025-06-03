@@ -25,6 +25,9 @@ import { fetchCategories } from "@/app/redux/features/getAllCategory/categorySli
 import { verifyUser } from "@/app/redux/features/auth/loginSlice";
 import UserLocation from "../UserLocation/UserLocation";
 import ProductSearchBar from "./SearchBar";
+import { getAllCartItemsAPI } from "@/app/redux/AddtoCart/apiCartSlice";
+import { fetchCoupons } from "@/app/redux/features/shop/shopSlice";
+import { getAllWishlistItemsApi } from "@/app/redux/wishlistSlice";
 
 const Header = () => {
   const [openDropdown, setOpenDropdown] = useState();
@@ -41,16 +44,24 @@ const Header = () => {
     } else {
       setOpenDropdown(false);
     }
+    dispatch(getAllWishlistItemsApi())
+    dispatch(fetchCoupons())
+    dispatch(getAllCartItemsAPI())
   }, [pathname]);
 
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const totalCartItems = cartItems.length;
+  const apiCartItems = useSelector((state) => state.apiCart.items);
+  const user = useSelector((state) => state.login.user);
+  let totalCartItems = [];
+  if (user?.email) {
+    totalCartItems = apiCartItems.length;
+  } else {
+    totalCartItems = cartItems.length;
+  }
 
   const wishlistCount = useSelector(
     (state) => state.wishlist.wishlistItems.length
   );
-
-  const user = useSelector((state) => state.login.user);
 
   const dispatch = useDispatch();
   const { categories, loading, error } = useSelector((state) => state.category);

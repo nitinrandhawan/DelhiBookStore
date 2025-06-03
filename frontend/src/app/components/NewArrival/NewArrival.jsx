@@ -12,15 +12,24 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
-import { addToWishlist, removeFromWishlist } from "@/app/redux/wishlistSlice";
+import {
+  addToWishlist,
+  addToWishlistApi,
+  addToWishlistState,
+  getAllWishlistItemsApi,
+  removeFromWishlist,
+  removeFromWishlistApi,
+  removeFromWishlistState,
+} from "@/app/redux/wishlistSlice";
 import axiosInstance from "@/app/redux/features/axiosInstance";
+import { removeFromCartAPI } from "@/app/redux/AddtoCart/apiCartSlice";
 
 const NewArrival = () => {
   const dispatch = useDispatch();
 
   const { cartItems } = useSelector((state) => state.cart);
   const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
-
+  const user = useSelector((state) => state.login.user);
   const handleAddToCart = (_id, title, img, finalPrice) => {
     dispatch(
       addToCart({
@@ -39,22 +48,33 @@ const NewArrival = () => {
   };
 
   const handleAddToWishlist = (_id, title, img, finalPrice, price) => {
-    const isAlreadyInWishlist = wishlistItems.some((item) => item.id === _id);
-
-    if (isAlreadyInWishlist) {
-      dispatch(removeFromWishlist(_id));
-      toast.error(`"${title}" removed from wishlist.`);
+    
+    if (user?.email) {
+      const isAlreadyInWishlist = wishlistItems.some((item) => item._id === _id);
+      if (isAlreadyInWishlist) {
+        dispatch(removeFromWishlistState(_id));
+        dispatch(removeFromWishlistApi(_id));
+      }else{
+        dispatch(addToWishlistState({ _id }));
+        dispatch(addToWishlistApi({ productId: _id }));
+      }
     } else {
-      dispatch(
-        addToWishlist({
-          id: _id,
-          name: title,
-          image: img,
-          price: finalPrice,
-          oldPrice: price,
-        })
-      );
-      toast.success(`"${title}" added to wishlist.`);
+      const isAlreadyInWishlist = wishlistItems.some((item) => item.id === _id);
+      if (isAlreadyInWishlist) {
+        dispatch(removeFromWishlist(_id));
+        toast.error(`"${title}" removed from wishlist.`);
+      } else {
+        dispatch(
+          addToWishlist({
+            id: _id,
+            name: title,
+            image: img,
+            price: finalPrice,
+            oldPrice: price,
+          })
+        );
+        toast.success(`"${title}" added to wishlist.`);
+      }
     }
   };
   const swiperRef = useRef(null);
@@ -63,7 +83,6 @@ const NewArrival = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  console.log("Product data:", product);
 
   useEffect(() => {
     const newArrivals = async () => {
@@ -102,6 +121,8 @@ const NewArrival = () => {
     );
   }
 
+  console.log("wishlistItems:", wishlistItems);
+  
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
   }
@@ -166,7 +187,7 @@ const NewArrival = () => {
                     )
                   }
                 >
-                  {wishlistItems.some((item) => item.id === pro._id) ? (
+                  {(user?.email ? wishlistItems.some((item) => item?._id === pro._id) :wishlistItems.some((item) => item.id === pro._id) ) ? (
                     "❤️"
                   ) : (
                     <Heart size={16} />

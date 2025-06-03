@@ -21,12 +21,20 @@ export default function BottomNavBar() {
   const [debouncedTerm, setDebouncedTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  const cartCount = useSelector((state) => state.cart.cartItems.length);
+  const user = useSelector((state) => state.login.user);
+const localCartCount = useSelector((state) => state.cart.cartItems.length);
+const apiCartCount = useSelector((state) => state.apiCart.items.length);
+  let cartCount =0
+  if(user?.email){
+    cartCount = apiCartCount
+  }else{
+    if(localCartCount){
+      cartCount = localCartCount
+  }
+  }
   const wishlistCount = useSelector(
     (state) => state.wishlist.wishlistItems.length
   );
-  const user = useSelector((state) => state.login.user);
   const dispatch = useDispatch();
 
   useEffect(() => {

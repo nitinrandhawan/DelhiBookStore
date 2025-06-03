@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "@/app/redux/features/shop/shopSlice";
 import { useRouter, useSearchParams } from "next/navigation";
 import { verifyUser } from "@/app/redux/features/auth/loginSlice";
-import { addToCartAPIThunk } from "@/app/redux/AddtoCart/apiCartSlice"; // ✅ Ensure this is correct
+import { addToCartAPIThunk, addtoCartState } from "@/app/redux/AddtoCart/apiCartSlice"; // ✅ Ensure this is correct
 import ShopBanner from "./ShopBanner";
 
 const Shop = () => {
@@ -59,7 +59,7 @@ const Shop = () => {
     dispatch(verifyUser());
   }, [dispatch]);
 
-  const handleAddToCart = (product) => {
+  const handleAddToCart = async (product) => {
     const exists = cartItems.some((item) => item.id === product._id);
     const insideApiExists = apiCartItems.some(
       (item) => item.id === product._id
@@ -71,17 +71,25 @@ const Shop = () => {
       image: book,
       price: product.finalPrice,
       totalPrice: product.finalPrice,
+      quantity: 1,
     };
 
     if (!user && !user?.email) {
-      dispatch(addToCart(cartItem));
-      toast.success(
-        exists
-          ? "Quantity updated in your cart!"
-          : `Great choice! ${product.title} added.`
-      );
+      try {
+        await dispatch(addToCart(cartItem)).unwrap();
+
+        toast.success(
+          exists
+            ? "Quantity updated in your cart!"
+            : `Great choice! ${product.title} added.`
+        );
+      } catch (error) {
+        toast.error("Something went wrong. Please try again.");
+        console.error("Cart error:", error);
+      }
     } else {
-      dispatch(addToCartAPIThunk(cartItem));
+      dispatch(addtoCartState({ id: product._id }));
+      dispatch(addToCartAPIThunk({ productId: product._id, quantity: 1 }));
       toast.success(
         insideApiExists
           ? "Quantity updated in your cart!"

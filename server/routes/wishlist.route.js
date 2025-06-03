@@ -8,7 +8,7 @@ import {
 const router = Router();
 
 router.post("/add-to-wishlist", verifyToken, AddToWishlist);
-router.put("/update-wishlist", verifyToken, RemoveFromWishlist);
+router.delete("/remove-from-wishlist/:id", verifyToken, RemoveFromWishlist);
 router.get("/get-all-wishlists", verifyToken, getAllWishlists);
 
 export default router;

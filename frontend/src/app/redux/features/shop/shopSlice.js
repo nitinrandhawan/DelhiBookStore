@@ -16,11 +16,26 @@ export const fetchProducts = createAsyncThunk(
   }
 );
 
+export const fetchCoupons = createAsyncThunk(
+  "products/fetchCoupons",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(
+        `/coupon/get-all-coupons`
+      );
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data || "Error fetching products");
+    }
+  }
+);
+
 const productSlice = createSlice({
   name: "products",
   initialState: {
     loading: false,
     products: [],
+    coupons:[],
     totalPages: 0,
     error: null,
   },
@@ -37,6 +52,17 @@ const productSlice = createSlice({
         state.totalPages = action.payload.totalPages;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchCoupons.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCoupons.fulfilled, (state, action) => {
+        state.coupons = action.payload;
+      })
+      .addCase(fetchCoupons.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

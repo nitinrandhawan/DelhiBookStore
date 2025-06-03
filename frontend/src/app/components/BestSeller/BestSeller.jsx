@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import axiosInstance from "@/app/redux/features/axiosInstance";
 import { usePathname } from "next/navigation";
+import { addToCartAPIThunk, addtoCartState } from "@/app/redux/AddtoCart/apiCartSlice";
+import { addToWishlistApi, addToWishlistState, removeFromWishlistApi, removeFromWishlistState } from "@/app/redux/wishlistSlice";
 
 const BestSeller = ({ productlength, btnlength }) => {
   const [product, setProduct] = useState([]);
@@ -17,24 +19,79 @@ const BestSeller = ({ productlength, btnlength }) => {
   const dispatch = useDispatch();
   const pathname = usePathname();
   const { cartItems } = useSelector((state) => state.cart);
+  const { items: apiCartItems } = useSelector((state) => state.apiCart);
+  const user = useSelector((state) => state.login.user);
+  const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
 
-  const handleAddToCart = (_id, title, img, finalPrice) => {
-    dispatch(
-      addToCart({
-        id: _id,
-        name: title,
-        image: img,
-        price: finalPrice,
-        totalPrice: finalPrice,
-      })
+  const handleAddToCart = async (product) => {
+    const exists = cartItems.some((item) => item.id === product._id);
+    const insideApiExists = apiCartItems.some(
+      (item) => item.id === product._id
     );
-    if (cartItems.some((item) => item.id === _id)) {
-      toast.success("Quantity updated in your cart!");
+
+    const cartItem = {
+      id: product._id,
+      name: product.title,
+      image: product1,
+      price: product.finalPrice,
+      totalPrice: product.finalPrice,
+      quantity: 1,
+    };
+
+    if (!user && !user?.email) {
+      try {
+        await dispatch(addToCart(cartItem)).unwrap();
+
+        toast.success(
+          exists
+            ? "Quantity updated in your cart!"
+            : `Great choice! ${product.title} added.`
+        );
+      } catch (error) {
+        toast.error("Something went wrong. Please try again.");
+        console.error("Cart error:", error);
+      }
     } else {
-      toast.success(`"Great choice! ${title} added."`);
+      dispatch(addtoCartState({ id: product._id }));
+      dispatch(addToCartAPIThunk({ productId: product._id, quantity: 1 }));
+      toast.success(
+        insideApiExists
+          ? "Quantity updated in your cart!"
+          : `Great choice! ${product.title} added.`
+      );
     }
   };
-
+  const handleAddToWishlist = (_id, title, img, finalPrice, price) => {
+    if (user?.email) {
+      const isAlreadyInWishlist = wishlistItems.some(
+        (item) => item._id === _id
+      );
+      if (isAlreadyInWishlist) {
+        dispatch(removeFromWishlistState(_id));
+        dispatch(removeFromWishlistApi(_id));
+      } else {
+        dispatch(addToWishlistState({ _id }));
+        dispatch(addToWishlistApi({ productId: _id }));
+      }
+    } else {
+      const isAlreadyInWishlist = wishlistItems.some((item) => item.id === _id);
+      if (isAlreadyInWishlist) {
+        dispatch(removeFromWishlist(_id));
+        toast.error(`"${title}" removed from wishlist.`);
+      } else {
+        dispatch(
+          addToWishlist({
+            id: _id,
+            name: title,
+            image: img,
+            price: finalPrice,
+            oldPrice: price,
+          })
+        );
+        toast.success(`"${title}" added to wishlist.`);
+      }
+    }
+  };
   useEffect(() => {
     const bestSellingProduct = async () => {
       try {
@@ -126,9 +183,28 @@ const BestSeller = ({ productlength, btnlength }) => {
               </div>
 
               {/* Wishlist Icon */}
-              <div className="absolute top-0 right-0 bg-white rounded-full p-1 shadow-sm hover:text-red-600 cursor-pointer z-10">
-                <Heart size={18} />
-              </div>
+               <div
+                                className="bg-white text-black absolute top-2 right-3 shadow-md rounded-2xl p-1 cursor-pointer"
+                                onClick={() =>
+                                  handleAddToWishlist(
+                                    pro._id,
+                                    pro.title,
+                                    pro.img,
+                                    pro.finalPrice,
+                                    pro.oldPrice
+                                  )
+                                }
+                              >
+                                {(
+                                  user?.email
+                                    ? wishlistItems.some((item) => item?._id === pro._id)
+                                    : wishlistItems.some((item) => item.id === pro._id)
+                                ) ? (
+                                  "❤️"
+                                ) : (
+                                  <Heart size={16} />
+                                )}
+                              </div>
 
               {/* Product Image - Using placeholder */}
               <Link href={`/pages/shop/${pro._id}`}>
@@ -180,7 +256,7 @@ const BestSeller = ({ productlength, btnlength }) => {
                       : "add-to-cart-btn"
                   }`}
                   onClick={() =>
-                    handleAddToCart(pro._id, pro.title, pro.img, pro.finalPrice)
+                    handleAddToCart(pro)
                   }
                 >
                   {cartItems.some((item) => item.id === pro._id)

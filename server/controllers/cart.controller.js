@@ -78,7 +78,7 @@ const AddToCart = async (req, res) => {
 
 const RemoveFromCart = async (req, res) => {
   try {
-    const { productId } = req.body || {};
+    const productId = req.params.id;
     const user = req.user?._id;
 
     if (!user || !productId) {

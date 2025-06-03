@@ -30,7 +30,7 @@ const AddToWishlist = async (req, res) => {
 
 const RemoveFromWishlist=async(req,res)=>{
   try {
-    const {  productId } = req.body || {};
+    const {id:  productId } = req.params || {};
     const user = req.user._id;
 
     if (!user || !productId) {

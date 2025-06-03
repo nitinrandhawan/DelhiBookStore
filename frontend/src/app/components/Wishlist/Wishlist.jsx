@@ -1,30 +1,58 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { removeFromWishlist } from "@/app/redux/wishlistSlice";
+import {
+  removeFromWishlist,
+  removeFromWishlistApi,
+  removeFromWishlistState,
+} from "@/app/redux/wishlistSlice";
 import { BadgeX } from "lucide-react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import EmptywishList from "../../Images/DowloadImage/EmptyWishList.jpg";
 import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
 import Link from "next/link";
+import {
+  addToCartAPIThunk,
+  addtoCartState,
+  getAllCartItemsAPI,
+  removeFromCartAPI,
+  removeFromCartState,
+  updateStateQuantity,
+} from "@/app/redux/AddtoCart/apiCartSlice";
 
 const Wishlist = () => {
   const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
   const { cartItems } = useSelector((state) => state.cart);
+  const { items } = useSelector((state) => state.apiCart);
+  const { user } = useSelector((state) => state.login);
   const dispatch = useDispatch();
+let cartItemsValue = [];
+
+  if (user?.email) {
+    cartItemsValue = items;
+  } else {
+    cartItemsValue = cartItems;
+  }
 
   const handleAddToCart = (id, name, image, price) => {
-    dispatch(
-      addToCart({
-        id: id,
-        name: name,
-        image: image,
-        price: price,
-        totalPrice: price,
-      })
-    );
+    if (user?.email) {
+      dispatch(updateStateQuantity({ id: id, quantity: 1 }));
+      dispatch(addtoCartState({ id: id}));
+      dispatch(addToCartAPIThunk({ productId: id, quantity: 1 }));
+    } else {
+      dispatch(
+        addToCart({
+          id: id,
+          name: name,
+          image: image,
+          price: price,
+          totalPrice: price,
+        })
+      );
+    }
+
     if (cartItems.some((item) => item.id === id)) {
       toast.success("Quantity updated in your cart!");
     } else {
@@ -33,10 +61,17 @@ const Wishlist = () => {
   };
 
   const handleRemoveFromWishlist = (id, name) => {
-    dispatch(removeFromWishlist(id));
-    toast.error(`"${name}" removed from wishlist`);
+    if (user?.email) {
+      dispatch(removeFromWishlistState(id));
+      dispatch(removeFromWishlistApi(id));
+      toast.error(`"${name}" removed from wishlist`);
+    } else {
+      dispatch(removeFromWishlist(id));
+      toast.error(`"${name}" removed from wishlist`);
+    }
   };
 
+ 
   return (
     <div className="px-4 py-8 max-w-7xl mx-auto">
       <h2 className="text-2xl font-semibold mb-6">My Wishlist</h2>
@@ -80,13 +115,14 @@ const Wishlist = () => {
           <tbody>
             {wishlistItems.map((wishItem) => (
               <tr
-                key={wishItem.id}
+                key={wishItem.id ?? wishItem._id}
                 className="hover:bg-gray-100 transition border-b"
               >
                 {/* Image */}
                 <td className="py-4 pr-2">
                   <Image
-                    src={wishItem.image}
+                    // src={wishItem?.image ?? wishItem.images[0]}
+                    src={EmptywishList}
                     alt={wishItem.name}
                     width={60}
                     height={60}
@@ -96,7 +132,7 @@ const Wishlist = () => {
 
                 {/* Product Name */}
                 <td className="text-sm font-medium text-gray-800 max-w-xs pr-4">
-                  {wishItem.name}
+                  {wishItem?.name ?? wishItem.title}
                 </td>
 
                 {/* Price */}
@@ -122,21 +158,28 @@ const Wishlist = () => {
                       } py-1 md:py-2 px-2 md:px-4  text-sm rounded `}
                       onClick={() =>
                         handleAddToCart(
-                          wishItem.id,
-                          wishItem.name,
+                          wishItem.id ?? wishItem._id,
+                          wishItem.name ?? wishItem.title,
                           wishItem.image,
                           wishItem.price
                         )
                       }
                     >
-                      {cartItems.some((item) => item.id === wishItem.id)
+                      {cartItemsValue.some(
+                        (item) =>
+                          (item?.id ?? item.productId?._id) ===
+                          (wishItem?.id ?? wishItem._id)
+                      )
                         ? "Added"
                         : "Add to cart"}
                     </button>
                     <button
                       className="text-gray-500 hover:text-red-600"
                       onClick={() =>
-                        handleRemoveFromWishlist(wishItem.id, wishItem.name)
+                        handleRemoveFromWishlist(
+                          wishItem?.id ?? wishItem._id,
+                          wishItem?.name ?? wishItem.title
+                        )
                       }
                     >
                       <BadgeX size={22} />

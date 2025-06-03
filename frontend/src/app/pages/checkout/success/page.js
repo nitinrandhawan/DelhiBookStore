@@ -2,6 +2,23 @@ import Link from "next/link";
 import { CheckCircle, Home } from "lucide-react";
 
 export default function page() {
+  const getEstimatedDelivery = () => {
+  const today = new Date();
+
+  const startDate = new Date(today);
+  startDate.setDate(today.getDate() + 3);
+
+  const endDate = new Date(today);
+  endDate.setDate(today.getDate() + 5);
+
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const formattedStart = `${monthNames[startDate.getMonth()]} ${startDate.getDate()}`;
+  const formattedEnd = `${endDate.getDate()}, ${endDate.getFullYear()}`;
+
+  return `Estimated delivery: ${formattedStart}–${formattedEnd}`;
+};
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-sm p-8 text-center">
@@ -13,14 +30,14 @@ export default function page() {
           Order Confirmed!
         </h1>
         <p className="text-gray-600 mb-6">
-          Thank you for your purchase. We&apos;ve sent a confirmation email with
-          your order details.
+          🎉 Thanks for your purchase! We appreciate your order and hope you
+          enjoy your items.
         </p>
 
         <div className="bg-gray-50 p-4 rounded-md border border-gray-200 mb-6">
           <div className="text-sm text-gray-600 text-left">
-            <p className="font-medium text-gray-900 mb-1">Order #38492</p>
-            <p>Estimated delivery: May 19-21&#39; 2025</p>
+            {/* <p className="font-medium text-gray-900 mb-1">Order #38492</p> */}
+            <p>Estimated delivery: {getEstimatedDelivery()}</p>
           </div>
         </div>
 

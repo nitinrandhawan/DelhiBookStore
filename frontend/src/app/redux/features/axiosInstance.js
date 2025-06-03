@@ -1,20 +1,21 @@
 import axios from "axios";
+export const serverUrl="http://localhost:9000"
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:9000/api/v1",
+  baseURL: `${serverUrl}/api/v1`,
   withCredentials: true,  // <-- This is important to send and receive cookies
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Remove this interceptor because token is stored in HttpOnly cookie, not in localStorage
-// axiosInstance.interceptors.request.use((config) => {
-//   const token = localStorage.getItem("token");
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
-
+export function debounce(func, delay) {
+  let timer;
+  return (...args) => {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+}
 export default axiosInstance;

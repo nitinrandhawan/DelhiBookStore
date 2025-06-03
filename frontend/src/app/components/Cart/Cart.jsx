@@ -1,9 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Trash2, Minus, Plus } from "lucide-react";
 import EmptyCart from "../../Images/DowloadImage/EmptyCart.png";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import product1 from "../../Images/DBS/1.jpg";
 import { useSelector, useDispatch } from "react-redux";
 import {
   applyCoupon,
@@ -12,20 +13,215 @@ import {
   updateQuantity,
 } from "@/app/redux/AddtoCart/cartSlice";
 import Link from "next/link";
+import {
+  addToCartAPIThunk,
+  getAllCartItemsAPI,
+  removeFromCartAPI,
+  removeFromCartState,
+  updateStateQuantity,
+} from "@/app/redux/AddtoCart/apiCartSlice";
+import { debounce } from "@/app/redux/features/axiosInstance";
 
 export default function Cart() {
   const { cartItems, totalAmount, tax, discountAmount, total, couponCode } =
     useSelector((state) => state.cart);
-
-  console.log("cartItems", cartItems);
-
+  const { items, loading } = useSelector((state) => state.apiCart);
+  const { coupons } = useSelector((state) => state.products);
+  const { user } = useSelector((state) => state.login);
+  const [couponDiscount,setCouponDiscount]=useState(0);
+  const debouncedUpdateAPI = useRef(
+    debounce((id, quantity) => {
+      dispatch(addToCartAPIThunk({ productId: id, quantity }));
+    }, 500)
+  ).current;
+  // const latestQuantityMap = useRef(new Map());
+  // const prevQuantityMap = useRef(new Map());
   const dispatch = useDispatch();
+  // console.log("latestQuantityMap:", latestQuantityMap);
+  // console.log("prevQuantityMap:", prevQuantityMap);
+
+  // const debouncedUpdateAPI = useRef(
+  //   debounce(() => {
+  //     console.log("⏱ Debounce triggered");
+  //     latestQuantityMap.current.forEach((latestQty, id) => {
+  //       const prevQty = prevQuantityMap.current.get(id) ?? latestQty;
+  //       const delta = latestQty - prevQty;
+  //       console.log(
+  //         "latestQty:",
+  //         latestQty,
+  //         "prevQty:",
+  //         prevQty,
+  //         "delta:",
+  //         delta
+  //       );
+
+  //       if (delta !== 0) {
+  //         console.log("🔁 Dispatching API with delta:", { id, delta });
+  //         dispatch(addToCartAPIThunk({ productId: id, quantity: delta }));
+  //         prevQuantityMap.current.set(id, latestQty);
+  //       }
+  //     });
+  //   }, 500)
+  // ).current;
+
+  let cartItemsValue = [];
+
+  if (user?.email) {
+    cartItemsValue = items;
+  } else {
+    cartItemsValue = cartItems;
+  }
+
   const [couponCodeInput, setCouponCode] = useState("");
+
+  let newQty = 0;
+  const handleRemoveItem = (item) => {
+    if (item.quantity > 1) {
+      if (user?.email) {
+        newQty--;
+        dispatch(
+          updateStateQuantity({
+            id: item.productId._id,
+            quantity: newQty,
+          })
+        );
+        dispatch(
+          addToCartAPIThunk({ productId: item.productId._id, quantity: -1 })
+        );
+      } else {
+        dispatch(updateQuantity({ id: item.id, quantity: item.quantity - 1 }));
+        dispatch(removeFromCart(item.id));
+        toast.success(`${item.name} removed from cart`);
+      }
+    }
+  };
+
+  let addnewQty = 0;
+  const handleAddItem = (item) => {
+    const newQty = item.quantity + 1;
+    addnewQty++;
+    if (user?.email) {
+      dispatch(
+        updateStateQuantity({ id: item.productId._id, quantity: 1 })
+      );
+      dispatch(
+        addToCartAPIThunk({ productId: item.productId._id, quantity: 1 })
+      );
+    } else {
+      dispatch(updateQuantity({ id: item.id, quantity: newQty }));
+    }
+  };
+
+  // const handleRemoveItem = (item) => {
+  //   const id = item.productId._id;
+  //   const newQty = item.quantity - 1;
+
+  //   if (newQty >= 1) {
+  //     // Update Redux state immediately for UI
+  //     dispatch(updateStateQuantity({ id, quantity: -1 }));
+
+  //     // Logged-in flow
+  //     if (user?.email) {
+  //       latestQuantityMap.current.set(id, newQty);
+  //       debouncedUpdateAPI(); // Triggers debounce
+  //     } else {
+  //       dispatch(updateQuantity({ id: item.id, quantity: newQty }));
+  //       toast.success(`${item.name} removed from cart`);
+  //     }
+  //   }
+  // };
+
+  // const handleAddItem = (item) => {
+  //   const id = item.productId._id;
+  //   const newQty = item.quantity + 1;
+
+  //   dispatch(updateStateQuantity({ id, quantity: 1 }));
+
+  //   if (user?.email) {
+  //     latestQuantityMap.current.set(id, newQty);
+  //     debouncedUpdateAPI(); // Triggers debounce
+  //   } else {
+  //     dispatch(updateQuantity({ id: item.id, quantity: newQty }));
+  //   }
+  // };
+
+  const handleDeleteProduct = (id) => {
+    if (user?.email) {
+      dispatch(removeFromCartState(id));
+      dispatch(removeFromCartAPI(id));
+    } else {
+      dispatch(removeFromCart(id));
+    }
+  };
+
+  const subtotal = cartItemsValue.reduce((acc, item) => {
+    const price = item?.price ?? item?.productId?.price ?? 0;
+    return acc + price * item.quantity;
+  }, 0);
+
+  let discountAmountValue = 0;
+  if (user?.email) {
+    discountAmountValue = cartItemsValue.reduce((acc, item) => {
+      const price =
+        item?.price ??
+        item?.productId?.price - item?.productId?.finalPrice ??
+        0;
+      return acc + price * item.quantity;
+    }, 0);
+  } else {
+    discountAmountValue = discountAmount;
+  }
+  // Shipping logic
+  const shippingCost = subtotal >= 500 ? 0 : 50;
+
+  // Final Total
+  const finalTotal = subtotal - discountAmountValue + shippingCost -couponDiscount;
 
   useEffect(() => {
     dispatch(calculateTotalsLoad());
+    dispatch(getAllCartItemsAPI());
   }, [dispatch, cartItems]);
-  if (cartItems.length === 0) {
+
+  // useEffect(() => {
+  //   if(!loading) return
+  //   console.log("items:", items);
+  //   if (user?.email && items.length > 0) {
+
+  //     items.forEach((item) => {
+  //       prevQuantityMap.current.set(item.productId._id, item.quantity);
+  //     });
+  //   }
+  // }, [user?.email]);
+
+  const initializedRef = useRef(false);
+
+  // useEffect(() => {
+  //   // Prevent overriding if already set, loading not done, or user not logged in
+  //   console.log("items:", items);
+  //    const testObj = {};
+  // items.forEach((item) => {
+  //   const id = item?.productId?._id;
+  //   const qty = item.quantity;
+  //   if (id) {
+  //     testObj[id] = qty;
+  //   }
+  // });
+  // console.log("✅ testObj output:", testObj);
+  //   if (!user?.email || loading || initializedRef.current) return;
+  //   console.log("items:", items);
+
+  //   if (items.length > 0) {
+  //     items.forEach((item) => {
+  //       const id = item.productId._id;
+  //       const quantity = item.quantity;
+  //       prevQuantityMap.current.set(id, quantity);
+  //     });
+
+  //     initializedRef.current = true; // 🚫 Don’t allow reinitialization
+  //     console.log("✅ prevQuantityMap initialized", prevQuantityMap.current);
+  //   }
+  // }, [user?.email, loading, items]);
+  if (cartItemsValue.length === 0) {
     return (
       <div className="mx-auto px-4 py-12 max-w-7xl">
         <div className="flex flex-col items-center justify-center">
@@ -71,40 +267,34 @@ export default function Cart() {
             </div>
 
             <div className="space-y-4 pr-2">
-              {cartItems.map((item) => (
+              {cartItemsValue?.map((item,index) => (
                 <div
-                  key={item.id}
+                  key={index}
                   className="flex flex-row flex-wrap justify-between items-center gap-2 md:gap-4 border-b border-gray-300 pb-4"
                 >
                   <div>
+                    {/* src={item?.image || item?.productId?.images[0]} */}
                     <Image
-                      src={item.image}
-                      alt={item.name}
+                      src={product1}
+                      alt={item?.name || item?.productId?.title}
                       width={60}
                       height={60}
                       className="rounded-md object-contain"
                     />
                   </div>
                   <div className="font-medium">
-                    {item.name.length > 30
-                      ? item.name.slice(8, 40) + "..."
-                      : item.name}
+                    {(item?.name ?? item?.productId?.title)?.length > 30
+                      ? (item?.name ?? item?.productId?.title).slice(0, 30) +
+                        "..."
+                      : item?.name ?? item?.productId?.title}
                   </div>
-                  <div className="text-center">₹{item.price}</div>
+                  <div className="text-center">
+                    ₹{item?.price ?? item?.productId?.price}
+                  </div>
                   <div className="flex items-center justify-center space-x-2">
                     <button
                       onClick={() => {
-                        if (item.quantity > 1) {
-                          dispatch(
-                            updateQuantity({
-                              id: item.id,
-                              quantity: item.quantity - 1,
-                            })
-                          );
-                        } else {
-                          dispatch(removeFromCart(item.id));
-                          toast.success(`${item.name} removed from cart`);
-                        }
+                        handleRemoveItem(item);
                       }}
                       className="p-2 rounded text-dark bg-gray-200 hover:bg-gray-300"
                     >
@@ -120,25 +310,20 @@ export default function Cart() {
                     />
 
                     <button
-                      onClick={() =>
-                        dispatch(
-                          updateQuantity({
-                            id: item.id,
-                            quantity: item.quantity + 1,
-                          })
-                        )
-                      }
-                      className="p-2 rounded text-dark bg-gray-200 hover:bg-gray-300"
+                      onClick={() => {
+                        handleAddItem(item);
+                      }}
                     >
-                      <Plus className="w-4 h-4" />
+                      <Plus />
                     </button>
                   </div>
                   <div className="text-right flex justify-end items-center space-x-2">
-                    <span>₹{item.price * item.quantity}</span>
+                    <span>
+                      ₹{(item?.price ?? item?.productId?.price) * item.quantity}
+                    </span>
                     <button
                       onClick={() => {
-                        dispatch(removeFromCart(item.id));
-                        toast.success(`${item.name} removed from cart`);
+                        handleDeleteProduct(item?.id ?? item?.productId?._id);
                       }}
                       className="text-red-500 hover:underline"
                     >
@@ -159,21 +344,31 @@ export default function Cart() {
             <div className="space-y-2 text-sm text-gray-700">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>₹{totalAmount}</span>
+                <span>₹{subtotal}</span>
               </div>
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <span>Tax</span>
                 <span>₹{tax.toFixed(2)}</span>
+              </div> */}
+              <div className="flex justify-between">
+                <span>Shipping Cost</span>
+                <span>₹{shippingCost}</span>
               </div>
-              {discountAmount > 0 && (
+              {discountAmountValue > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span>Discount</span>
-                  <span>-₹{discountAmount}</span>
+                  <span>-₹{discountAmountValue}</span>
+                </div>
+              )}
+              {couponDiscount > 0 && (
+                <div className="flex justify-between text-red-600">
+                  <span>Coupon Discount</span>
+                  <span>-{`${couponDiscount > 100 ?"₹"  : "%"}`}{couponDiscount}</span>
                 </div>
               )}
               <div className="border-t border-gray-300 pt-2 flex justify-between font-semibold">
                 <span>Total</span>
-                <span>₹{total.toFixed(2)}</span>
+                <span>₹{finalTotal}</span>
               </div>
             </div>
 
@@ -181,14 +376,35 @@ export default function Cart() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                dispatch(applyCoupon(couponCodeInput));
-                console.log("couponCodeInput", couponCodeInput);
-                console.log("couponCode", couponCode);
-                if (couponCodeInput === couponCode) {
+               
+                const coupon = coupons.find((coupon) => 
+                  coupon.couponCode == couponCodeInput
+                );
+               
+                if (!coupon) {
+                  toast.error("Please enter a valid coupon code.");
+                  setCouponDiscount(0)
+                  return;
+                }
+                if (coupon.minAmount > finalTotal) {
+                  toast.error("Minimum amount should be " + coupon.minAmount);
+                  setCouponDiscount(0)
+                  return;
+                }
+                if (coupon.maxAmount < finalTotal) {
+                  toast.error("Maximum amount should be " + coupon.maxAmount);
+                  setCouponDiscount(0)
+                  return;
+                }
+                // dispatch(applyCoupon(couponCodeInput));
+
+                if (couponCodeInput === coupon.couponCode) {
+                  setCouponDiscount(coupon.discount);
                   toast.success("Coupon Applied Successfully!");
                   return;
                 } else {
                   toast.error("Please enter a valid coupon code.");
+                  setCouponDiscount(0)
                   return;
                 }
               }}
