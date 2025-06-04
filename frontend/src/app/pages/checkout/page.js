@@ -94,7 +94,7 @@ const dispatch=useDispatch()
     if (!formData.city.trim()) newErrors.city = "City is required";
     if (!formData.state.trim()) newErrors.state = "State is required";
     if (!formData.zipCode.trim()) newErrors.zipCode = "ZIP code is required";
-
+if(!formData.paymentMethod) newErrors.paymentMethod="Payment method is required"
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };

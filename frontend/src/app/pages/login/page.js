@@ -9,6 +9,8 @@ import { Eye, EyeOff, Mail } from "lucide-react";
 import stylebanner from "../../Images/DBS/BOOKSTOREBANNER.jpg";
 import Link from "next/link";
 import Image from "next/image";
+import { addToWishlistApi } from "@/app/redux/wishlistSlice";
+import { addToCartAPIThunk } from "@/app/redux/AddtoCart/apiCartSlice";
 // import '../../pages/login/forgot-password/page'
 const Page = () => {
   const dispatch = useDispatch();
@@ -19,12 +21,30 @@ const Page = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const { user, loading, error } = useSelector((state) => state.login);
-
+  const { cartItems } = useSelector((state) => state.cart);
+  const { wishlistItems } = useSelector((state) => state.wishlist);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const result = await dispatch(loginUser({ email, password })).unwrap();
+      const result = await dispatch(loginUser({ email, password }))
       toast.success("Login successful!");
+     await dispatch(
+        addToCartAPIThunk({
+          items: cartItems.map((item) => ({
+            productId: item.id,
+            quantity: item.quantity,
+          })),
+        })
+      );
+
+     await dispatch(
+        addToWishlistApi(
+          wishlistItems.map((item) => 
+           item.id,
+          ),
+        )
+      );
+      dispatch();
       setEmail("");
       setPassword("");
       router.push("/");

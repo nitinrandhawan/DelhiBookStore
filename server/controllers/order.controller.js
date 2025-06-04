@@ -206,7 +206,7 @@ const verifyPayment = async (req, res) => {
 
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ user: req?.user?._id });
+    const orders = await Order.find({ user: req?.user?._id }).populate("items.productId");
     return res.status(200).json({ orders });
   } catch (error) {
     console.log("get all orders error", error);

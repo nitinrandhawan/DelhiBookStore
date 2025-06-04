@@ -1,7 +1,10 @@
 import { Category } from "../models/category.model.js";
 import { Product } from "../models/product.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.util.js";
-import { deleteLocalImage } from "../utils/image.util.js";
+import {
+  deleteLocalImage,
+  findImageWithExtension,
+} from "../utils/image.util.js";
 
 const createProduct = async (req, res) => {
   try {
@@ -59,7 +62,7 @@ const createProduct = async (req, res) => {
     }
 
     const images = req.files.map((file) => {
-      return "/public/image/" + file.filename;
+      return file.filename;
     });
     const finalPrice = Number(price) - (Number(price) * Number(discount)) / 100;
 
@@ -107,11 +110,10 @@ const multipleProducts = async (req, res) => {
     const updatedProducts = await Promise.all(
       products.map(async (product) => {
         if (product.images) {
-          if (typeof product.images === "string") {
-            product.images = [product.images];
-          } else {
-            product.images = [];
-          }
+          product.images = product.images ? [product.images] : [];
+          product.images = product.images.map((img) => {
+            return findImageWithExtension(img);
+          });
           if (product.category) {
             const existedCategory = await Category.findOne({
               category: product.categoryName,
@@ -163,7 +165,7 @@ const updateProduct = async (req, res) => {
     if (!product) return res.status(404).json({ message: "Product not found" });
     if (req.files && req.files.length > 0) {
       const images = req.files.map((file) => {
-        return "/public/image/" + file.filename;
+        return file.filename;
       });
       if (product.images) {
         await Promise.all(
@@ -214,7 +216,6 @@ const updateProduct = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
   try {
- 
     const page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 0;
     const skip = (page - 1) * limit;
@@ -333,6 +334,17 @@ const searchProducts = async (req, res) => {
     return res.status(500).json({ message: "search products server error" });
   }
 };
+
+const uploadMultipleProducts = async (req, res) => {
+  try {
+    return res.status(200).json({ message: "upload multiple products" });
+  } catch (error) {
+    console.log("upload multiple products error", error);
+    return res
+      .status(500)
+      .json({ message: "upload multiple products server error" });
+  }
+};
 export {
   createProduct,
   updateProduct,
@@ -345,4 +357,5 @@ export {
   getBestSellingBooks,
   getProductByCategory,
   searchProducts,
+  uploadMultipleProducts,
 };

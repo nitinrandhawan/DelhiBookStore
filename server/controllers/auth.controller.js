@@ -366,15 +366,22 @@ const updateProfile = async (req, res) => {
     if (!userId) {
       return res.status(400).json({ message: "you are not logged in" });
     }
+    const {fullName,phone,city,address}=req.body
     const user = await User.findById(userId);
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }
-    const localPath = req.file.path;
-    const profileUrl = await uploadOnCloudinary(localPath);
-    user.profileImage = profileUrl;
+    const localPath = req.file?.filename;
+    if(localPath){
+      user.profileImage = localPath;
+    }
+    user.fullName = fullName || user.fullName;
+    user.phone = phone || user.phone;
+    user.city = city || user.city;
+    user.address = address || user.address;
+
     await user.save();
-    return res.status(200).json({ message: "Profile updated successfully" });
+    return res.status(200).json({ message: "Profile updated successfully", user });
   } catch (error) {
     console.log("update profile error", error);
     return res.status(500).json({ message: "update profile server error" });

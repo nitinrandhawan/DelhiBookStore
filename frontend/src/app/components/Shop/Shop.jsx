@@ -12,6 +12,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { verifyUser } from "@/app/redux/features/auth/loginSlice";
 import { addToCartAPIThunk, addtoCartState } from "@/app/redux/AddtoCart/apiCartSlice"; // ✅ Ensure this is correct
 import ShopBanner from "./ShopBanner";
+import { addToWishlist, addToWishlistApi, addToWishlistState, removeFromWishlist, removeFromWishlistApi, removeFromWishlistState } from "@/app/redux/wishlistSlice";
+import { serverUrl } from "@/app/redux/features/axiosInstance";
 
 const Shop = () => {
   const dispatch = useDispatch();
@@ -27,6 +29,7 @@ const Shop = () => {
 
   const [page, setPage] = useState(initialPage);
   const [limit, setLimit] = useState(initialLimit);
+  const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
 
   useEffect(() => {
     dispatch(fetchProducts({ limit, page }));
@@ -98,6 +101,36 @@ const Shop = () => {
     }
   };
 
+   const handleAddToWishlist = (_id, title, img, finalPrice, price) => {
+    
+    if (user?.email) {
+      const isAlreadyInWishlist = wishlistItems.some((item) => item._id === _id);
+      if (isAlreadyInWishlist) {
+        dispatch(removeFromWishlistState(_id));
+        dispatch(removeFromWishlistApi(_id));
+      }else{
+        dispatch(addToWishlistState({ _id }));
+        dispatch(addToWishlistApi({ productId: _id }));
+      }
+    } else {
+      const isAlreadyInWishlist = wishlistItems.some((item) => item.id === _id);
+      if (isAlreadyInWishlist) {
+        dispatch(removeFromWishlist(_id));
+        toast.error(`"${title}" removed from wishlist.`);
+      } else {
+        dispatch(
+          addToWishlist({
+            id: _id,
+            name: title,
+            image: img,
+            price: finalPrice,
+            oldPrice: price,
+          })
+        );
+        toast.success(`"${title}" added to wishlist.`);
+      }
+    }
+  };
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
@@ -165,9 +198,8 @@ const Shop = () => {
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="grid grid-cols-2 md:grid-cols-5">
           {products.map((product) => {
-            const isInCart =
-              cartItems.some((item) => item.id === product._id) ||
-              apiCartItems.some((item) => item.id === product._id);
+            const isInCart = user?.email ?apiCartItems.some((item) => item?.productId?._id === product._id) :
+              cartItems.some((item) => item.id === product._id) 
 
             return (
               <div
@@ -179,16 +211,33 @@ const Shop = () => {
                     {product.discount}%
                   </div>
 
-                  <div className="absolute top-2 right-3 bg-white rounded-full p-1 shadow-md hover:text-red-600 cursor-pointer z-10">
-                    <Heart size={18} />
-                  </div>
+                 <div
+                  className="bg-white text-black absolute top-2 right-3 shadow-md rounded-2xl p-1 cursor-pointer"
+                  onClick={() =>
+                    handleAddToWishlist(
+                      product._id,
+                      product.title,
+                      product.img,
+                      product.finalPrice,
+                      product.oldPrice
+                    )
+                  }
+                >
+                  {(user?.email ? wishlistItems.some((item) => item?._id === product._id) :wishlistItems.some((item) => item.id === product._id) ) ? (
+                    "❤️"
+                  ) : (
+                    <Heart size={16} />
+                  )}
+                </div>
 
                   <Link href={`/pages/shop/${product._id}`}>
                     <div className="w-30 h-30 lg:w-50 lg:h-45 md:w-45 md:h-40 flex justify-center m-auto items-center py-2 mb-2 bg-white ">
                       <Image
-                        // src={product.images}
-                        src={book}
+                        src={`${serverUrl}/public/image/${product.images[0]}`}
+                        // src={book}
                         alt={product.title}
+                        width={300}
+                        height={300}
                         className="object-contain h-full"
                       />
                     </div>

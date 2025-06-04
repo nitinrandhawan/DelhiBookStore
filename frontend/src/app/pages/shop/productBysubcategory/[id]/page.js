@@ -10,12 +10,18 @@ import { useParams } from "next/navigation";
 import ShopBanner from "@/app/components/Shop/ShopBanner";
 import book1 from "../../../../Images/DBS/1.jpg";
 import { fetchProductsByCategory } from "@/app/redux/features/productByCategory/productByCategorySlice";
+import { addToCartAPIThunk, addtoCartState } from "@/app/redux/AddtoCart/apiCartSlice";
+import { addToWishlist, addToWishlistApi, addToWishlistState, removeFromWishlist, removeFromWishlistApi, removeFromWishlistState } from "@/app/redux/wishlistSlice";
+import { serverUrl } from "@/app/redux/features/axiosInstance";
 
 const page = () => {
   const dispatch = useDispatch();
   const { id: subcategoryId } = useParams();
   const { cartItems } = useSelector((state) => state.cart);
+  const { items: apiCartItems } = useSelector((state) => state.apiCart);
 
+  const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
+const user = useSelector((state) => state.login.user);
   const { products, loading, error } = useSelector(
     (state) => state.productByCategory
   );
@@ -50,20 +56,73 @@ const page = () => {
       </div>
     );
   }
-  const handleAddToCart = (id, name, image, newPrice) => {
-    dispatch(
-      addToCart({
-        id: id,
-        name: name,
-        image: image,
-        price: newPrice,
-        totalPrice: newPrice,
-      })
+  const handleAddToCart = async (product) => {
+    const exists = cartItems.some((item) => item.id === product._id);
+    const insideApiExists = apiCartItems.some(
+      (item) => item.id === product._id
     );
-    if (cartItems.some((item) => item.id === id)) {
-      toast.success("Quantity updated in your cart!");
+
+    const cartItem = {
+      id: product._id,
+      name: product.title,
+      image: book1,
+      price: product.finalPrice,
+      totalPrice: product.finalPrice,
+      quantity: 1,
+    };
+
+    if (!user && !user?.email) {
+      try {
+        await dispatch(addToCart(cartItem)).unwrap();
+
+        toast.success(
+          exists
+            ? "Quantity updated in your cart!"
+            : `Great choice! ${product.title} added.`
+        );
+      } catch (error) {
+        toast.error("Something went wrong. Please try again.");
+        console.error("Cart error:", error);
+      }
     } else {
-      toast.success(`"Great choice! ${name} added."`);
+      dispatch(addtoCartState({ id: product._id }));
+      dispatch(addToCartAPIThunk({ productId: product._id, quantity: 1 }));
+      toast.success(
+        insideApiExists
+          ? "Quantity updated in your cart!"
+          : `Great choice! ${product.title} added.`
+      );
+    }
+  };
+
+   const handleAddToWishlist = (_id, title, img, finalPrice, price) => {
+    
+    if (user?.email) {
+      const isAlreadyInWishlist = wishlistItems.some((item) => item._id === _id);
+      if (isAlreadyInWishlist) {
+        dispatch(removeFromWishlistState(_id));
+        dispatch(removeFromWishlistApi(_id));
+      }else{
+        dispatch(addToWishlistState({ _id }));
+        dispatch(addToWishlistApi({ productId: _id }));
+      }
+    } else {
+      const isAlreadyInWishlist = wishlistItems.some((item) => item.id === _id);
+      if (isAlreadyInWishlist) {
+        dispatch(removeFromWishlist(_id));
+        toast.error(`"${title}" removed from wishlist.`);
+      } else {
+        dispatch(
+          addToWishlist({
+            id: _id,
+            name: title,
+            image: img,
+            price: finalPrice,
+            oldPrice: price,
+          })
+        );
+        toast.success(`"${title}" added to wishlist.`);
+      }
     }
   };
   return (
@@ -105,16 +164,31 @@ const page = () => {
                 )}
 
                 {/* Wishlist icon */}
-                <div className="absolute top-2 right-3 bg-white rounded-full p-1 shadow-md hover:text-red-600 cursor-pointer z-10">
-                  <Heart size={18} />
+                  <div
+                  className="bg-white text-black absolute top-2 right-3 shadow-md rounded-2xl p-1 cursor-pointer"
+                  onClick={() =>
+                    handleAddToWishlist(
+                      product._id,
+                      product.title,
+                      product.img,
+                      product.finalPrice,
+                      product.oldPrice
+                    )
+                  }
+                >
+                  {(user?.email ? wishlistItems.some((item) => item?._id === product._id) :wishlistItems.some((item) => item.id === product._id) ) ? (
+                    "❤️"
+                  ) : (
+                    <Heart size={16} />
+                  )}
                 </div>
 
                 {/* Product Image */}
                 <Link href={`/pages/shop/${product._id}`}>
                   <div className="w-30 h-30 lg:w-50 lg:h-45 md:w-45 md:h-40 flex justify-center m-auto items-center py-2 mb-2 bg-white ">
                     <Image
-                      // src={product.images[0] || "/fallback.jpg"}
-                      src={book1}
+                      src={`${serverUrl}/${product.images[0]}` || book1}
+                      // src={book1}
                       alt={product.title}
                       width={120}
                       height={120}
@@ -171,10 +245,7 @@ const page = () => {
                   }`}
                   onClick={() =>
                     handleAddToCart(
-                      product.id,
-                      product.name,
-                      product.image,
-                      product.newPrice
+                      product
                     )
                   }
                 >

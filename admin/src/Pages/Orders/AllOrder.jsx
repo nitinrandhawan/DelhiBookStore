@@ -20,7 +20,7 @@ const AllOrder = () => {
     try {
       const response = await axiosInstance.get("/api/v1/order/get-all-orders");
       if (response.status === 200) {
-        setOrders(response?.data.orders);
+        setOrders(response?.data.orders?.reverse());
         setFilteredOrders(response?.data.orders);
       }
     } catch (error) {
