@@ -26,10 +26,18 @@ import { removeFromCartAPI } from "@/app/redux/AddtoCart/apiCartSlice";
 
 const NewArrival = () => {
   const dispatch = useDispatch();
-
   const { cartItems } = useSelector((state) => state.cart);
-  const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
+  const { items: apiCartItems } = useSelector((state) => state.apiCart);
   const user = useSelector((state) => state.login.user);
+  let cartItemsValue = [];
+    if (user?.email) {
+    cartItemsValue = apiCartItems;
+  } else {
+    cartItemsValue = cartItems;
+  }
+
+
+  const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
   const handleAddToCart = (_id, title, img, finalPrice) => {
     dispatch(
       addToCart({
@@ -121,8 +129,6 @@ const NewArrival = () => {
     );
   }
 
-  console.log("wishlistItems:", wishlistItems);
-  
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
   }
@@ -223,7 +229,7 @@ const NewArrival = () => {
 
                 <button
                   className={`${
-                    cartItems.some((item) => item.id === pro._id)
+                  (user?.email ?cartItemsValue.some((item) => item?.productId?._id  === pro._id): cartItemsValue.some((item) => item.id === pro._id))
                       ? "added-to-cart-btn"
                       : "add-to-cart-btn"
                   }`}
@@ -231,7 +237,7 @@ const NewArrival = () => {
                     handleAddToCart(pro._id, pro.title, pro.img, pro.finalPrice)
                   }
                 >
-                  {cartItems.some((item) => item.id === pro._id)
+                  {(user?.email ?cartItemsValue.some((item) => item?.productId?._id  === pro._id): cartItemsValue.some((item) => item.id === pro._id))
                     ? "Added"
                     : "Add to cart 🛒"}
                 </button>

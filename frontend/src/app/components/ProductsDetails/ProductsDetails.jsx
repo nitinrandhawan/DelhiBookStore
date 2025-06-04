@@ -18,7 +18,7 @@ import {
 import toast from "react-hot-toast";
 import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
-import axiosInstance from "@/app/redux/features/axiosInstance";
+import axiosInstance, { serverUrl } from "@/app/redux/features/axiosInstance";
 import { useParams } from "next/navigation";
 
 export default function ProductDetails() {
@@ -134,8 +134,10 @@ export default function ProductDetails() {
           {/* Main Image */}
           <div className="border border-purple-500 rounded-lg overflow-hidden bg-white p-4 flex items-center justify-center">
             <Image
-              // src={book.images}
-              src={book1}
+              // src={book1}
+              src={`${serverUrl}/public/image/${book?.images[0]}` || "/placeholder.svg"}
+              width={500}
+              height={500}
               alt={book.title}
               zoom={2}
             />
@@ -223,9 +225,11 @@ export default function ProductDetails() {
             </div> */}
 
             <div className="flex flex-wrap gap-2 mt-3">
+              <Link href={`/pages/shop/productBysubcategory/${book.category._id}`}>
               <span className="px-2.5 py-0.5 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">
                 {book.category.categoryName}
               </span>
+              </Link>
             </div>
           </div>
 

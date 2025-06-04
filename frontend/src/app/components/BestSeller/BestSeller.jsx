@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 import axiosInstance from "@/app/redux/features/axiosInstance";
 import { usePathname } from "next/navigation";
 import { addToCartAPIThunk, addtoCartState } from "@/app/redux/AddtoCart/apiCartSlice";
-import { addToWishlistApi, addToWishlistState, removeFromWishlistApi, removeFromWishlistState } from "@/app/redux/wishlistSlice";
+import { addToWishlist, addToWishlistApi, addToWishlistState, removeFromWishlist, removeFromWishlistApi, removeFromWishlistState } from "@/app/redux/wishlistSlice";
 
 const BestSeller = ({ productlength, btnlength }) => {
   const [product, setProduct] = useState([]);

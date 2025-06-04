@@ -19,6 +19,35 @@ export const verifyUser = createAsyncThunk("auth/verifyUser", async () => {
   return response.data?.user;
 });
 
+export const updateUser = createAsyncThunk(
+  "auth/updateUser",
+  async (updatedUser, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put("/auth/update-profile", updatedUser);
+      return response.data.user
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Update failed");
+    }
+  }
+);
+
+export const updateProfileImg = createAsyncThunk(
+  "auth/updateProfileImg",
+  async (updatedUser, { rejectWithValue }) => {
+    try {
+    const data = new FormData();
+    data.append("image", updatedUser.image);
+      const response = await axiosInstance.put("/auth/update-profile", data,  {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      return
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Update failed");
+    }
+  }
+);
 export const handleLogout = () => {
   try {
     const userLogout = axiosInstance.post("/auth/logout");
@@ -65,6 +94,29 @@ const loginSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(verifyUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user=action.payload
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateProfileImg.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfileImg.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(updateProfileImg.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

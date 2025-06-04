@@ -19,7 +19,22 @@ export const addToWishlistApi = createAsyncThunk(
     try {
       const response = await axiosInstance.post(
         "/wishlist/add-to-wishlist",
-        data
+       { productIds:[data.productId]}
+      );
+      return response.data;
+    } catch (error) {
+      console.log("Error adding to wishlist:", error);
+      return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+  }
+);
+export const MultipleAddToWishlist = createAsyncThunk(
+  "wishlist/MultipleAddToWishlist",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(
+        "/wishlist/add-to-wishlist",
+       { productIds:data}
       );
       return response.data;
     } catch (error) {
@@ -113,6 +128,17 @@ const wishlistSlice = createSlice({
         state.loading = false;
       })
       .addCase(addToWishlistApi.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(MultipleAddToWishlist.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(MultipleAddToWishlist.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(MultipleAddToWishlist.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

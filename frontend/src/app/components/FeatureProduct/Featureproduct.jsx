@@ -94,7 +94,7 @@ const Featureproduct = ({ productlength, btnlength }) => {
 
     if (!user && !user?.email) {
       try {
-        await dispatch(addToCart(cartItem)).unwrap();
+        await dispatch(addToCart(cartItem))
 
         toast.success(
           exists

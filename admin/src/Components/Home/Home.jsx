@@ -48,6 +48,7 @@ import AllSubCategory from "../../Pages/SubCategory/AllSubCategory";
 import AllFranchise from "../../Pages/Franchise/Franchise";
 import ExcelProductUploader from "../../Pages/Products/MultiProduct";
 import ExcelCategoryUploader from "../../Pages/Category/MultiCategory";
+import ImageUploader from "../../Pages/Products/UploadProductsImages";
 
 const Home = () => {
   const [login, setLogin] = useState(false);
@@ -137,6 +138,7 @@ const Home = () => {
               <Route path={"/all-videos"} element={<AllVideios />} />
               <Route path={"edit-videos/:id"} element={<EditVideios />} /> */}
               <Route path={"/all-inquiries"} element={<AllInquiries />} />
+              <Route path={"/upload-multiproducts-images"} element={<ImageUploader />} />
               {/* <Route path={"/all-become-franchise"} element={<AllFranchise />} /> */}
             </Routes>
           </div>

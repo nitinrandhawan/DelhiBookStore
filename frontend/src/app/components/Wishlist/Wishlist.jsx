@@ -123,7 +123,7 @@ let cartItemsValue = [];
                   <Image
                     // src={wishItem?.image ?? wishItem.images[0]}
                     src={EmptywishList}
-                    alt={wishItem.name}
+                    alt={wishItem.name ?? wishItem?.productId?.title}
                     width={60}
                     height={60}
                     className="rounded-md object-contain"

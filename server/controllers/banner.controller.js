@@ -9,7 +9,7 @@ export const createBanner = async (req, res) => {
       return res.status(400).json({ message: "Banner image is required" });
     }
 
-    const imageUrl = "/public/image/" + req.file.filename
+    const imageUrl =   req.file.filename
 
     if (!imageUrl) {
       return res.status(500).json({ message: "Image upload failed" });
@@ -60,7 +60,7 @@ export const updateBanner = async (req, res) => {
     if (!banner) return res.status(404).json({ message: "Banner not found" });
 
     if (req.file) {
-      const imageUrl = "/public/image/" + req.file.filename
+      const imageUrl =  req.file.filename
       if (imageUrl) banner.bannerImage = imageUrl;
     } else {
       banner.bannerImage = banner.bannerImage;
