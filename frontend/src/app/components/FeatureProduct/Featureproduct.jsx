@@ -88,7 +88,7 @@ const Featureproduct = ({ productlength, btnlength }) => {
   }
 
   const visibleProducts =
-    product.length > productlength ? product.slice(0, productlength) : product;
+    product?.length > productlength ? product.slice(0, productlength) : product;
 
   const handleAddToCart = async (product) => {
     const exists = cartItems.some((item) => item.id === product._id);
@@ -272,7 +272,7 @@ const Featureproduct = ({ productlength, btnlength }) => {
             </div>
           ))}
         </div>
-        {product.length > btnlength && (
+        {product?.length > btnlength && (
           <div className="text-center mt-4">
             <Link href={`/pages/shop/featured-books`}>
               <button className="view-all-btn m-auto">View All</button>

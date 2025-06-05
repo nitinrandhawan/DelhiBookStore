@@ -160,7 +160,7 @@ const BestSeller = ({ productlength, btnlength }) => {
   }
 
   const visibleProducts =
-    product.length > productlength ? product.slice(0, productlength) : product;
+    product?.length > productlength ? product.slice(0, productlength) : product;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4">
@@ -296,7 +296,7 @@ const BestSeller = ({ productlength, btnlength }) => {
         ))}
       </div>
 
-      {visibleProducts.length > btnlength && (
+      {visibleProducts?.length > btnlength && (
         <div className="text-center mt-4">
           <button className="view-all-btn m-auto">
             View All <ChevronDown size={16} />

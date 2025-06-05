@@ -577,7 +577,7 @@ export default function UserProfile() {
                   <p className="text-gray-600">View and manage your orders</p>
                 </div>
                 <div className="p-6">
-                  {orders.length > 0 ? (
+                  {orders?.length > 0 ? (
                     <div className="space-y-4">
                       {orders?.map((order) => (
                         <div

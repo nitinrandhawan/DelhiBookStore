@@ -15,7 +15,7 @@ import { addToWishlist, addToWishlistApi, addToWishlistState, removeFromWishlist
 import { serverUrl } from "@/app/redux/features/axiosInstance";
 import CallBackImg from "../../../../Images/DBS/DBSLOGO.jpg";
 
-const page = () => {
+const Page = () => {
   const dispatch = useDispatch();
   const { id: subcategoryId } = useParams();
   const { cartItems } = useSelector((state) => state.cart);
@@ -137,8 +137,8 @@ let cartItemsValue = [];
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between px-5 py-2 bg-gray-200">
           <div className="text-sm text-gray-600 text-left">
-            {products.length > 0
-              ? `Showing ${products.length} products`
+            {products?.length > 0
+              ? `Showing ${products?.length} products`
               : "No products found"}
           </div>
           <div>
@@ -264,4 +264,4 @@ let cartItemsValue = [];
   );
 };
 
-export default page;
+export default Page;

@@ -23,8 +23,8 @@ export default function BottomNavBar() {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const user = useSelector((state) => state.login.user);
-const localCartCount = useSelector((state) => state.cart.cartItems.length);
-const apiCartCount = useSelector((state) => state.apiCart.items.length);
+const localCartCount = useSelector((state) => state.cart.cartItems?.length);
+const apiCartCount = useSelector((state) => state.apiCart.items?.length);
   let cartCount =0
   if(user?.email){
     cartCount = apiCartCount
@@ -34,7 +34,7 @@ const apiCartCount = useSelector((state) => state.apiCart.items.length);
   }
   }
   const wishlistCount = useSelector(
-    (state) => state.wishlist.wishlistItems.length
+    (state) => state.wishlist.wishlistItems?.length
   );
   const dispatch = useDispatch();
 
@@ -140,7 +140,7 @@ const apiCartCount = useSelector((state) => state.apiCart.items.length);
             <div className="bg-white border border-gray-200 rounded-md shadow-md max-h-60 overflow-y-auto">
               {loading ? (
                 <p className="p-4 text-gray-500 text-sm">Loading...</p>
-              ) : searchResults.length > 0 ? (
+              ) : searchResults?.length > 0 ? (
                 searchResults.map((product) => (
                   <Link
                     key={product._id}

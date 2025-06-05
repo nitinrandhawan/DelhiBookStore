@@ -226,7 +226,7 @@ export default function Cart() {
   //     console.log("✅ prevQuantityMap initialized", prevQuantityMap.current);
   //   }
   // }, [user?.email, loading, items]);
-  if (cartItemsValue.length === 0) {
+  if (cartItemsValue?.length === 0) {
     return (
       <div className="mx-auto px-4 py-12 max-w-7xl">
         <div className="flex flex-col items-center justify-center">

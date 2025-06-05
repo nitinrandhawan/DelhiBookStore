@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import axiosInstance from "@/app/redux/features/axiosInstance";
 
-const page = () => {
+const Page = () => {
   const { id, token } = useParams();
   const router = useRouter();
 
@@ -161,4 +161,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -77,7 +77,7 @@ export default function ProductSearchBar() {
         <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-md max-h-60 overflow-y-auto">
           {loading ? (
             <p className="p-4 text-gray-500 text-sm">Loading...</p>
-          ) : results.length > 0 ? (
+          ) : results?.length > 0 ? (
             results.map((product) => (
               <div key={product._id} onClick={handleResultClick}>
                 <Link href={`/pages/shop/${product._id}`}>

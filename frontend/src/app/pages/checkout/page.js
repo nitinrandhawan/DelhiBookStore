@@ -80,7 +80,7 @@ const dispatch=useDispatch()
 
   useEffect(() => {
     dispatch(getAllCartItemsAPI())
-  },[])
+  },[dispatch])
   const validateForm = () => {
     const newErrors = {};
 

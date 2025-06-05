@@ -89,7 +89,7 @@ let cartItemsValue = [];
           </tr>
         </thead>
 
-        {wishlistItems.length === 0 ? (
+        {wishlistItems?.length === 0 ? (
           <tbody>
             <tr>
               <td colSpan="4" className="text-center py-8">
@@ -116,7 +116,7 @@ let cartItemsValue = [];
           </tbody>
         ) : (
           <tbody>
-            {wishlistItems.map((wishItem) => (
+            {wishlistItems?.map((wishItem) => (
               <tr
                 key={wishItem.id ?? wishItem._id}
                 className="hover:bg-gray-100 transition border-b"
