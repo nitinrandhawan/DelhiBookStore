@@ -44,7 +44,7 @@ const AddProduct = () => {
       );
       if (response?.status === 200) {
         console.log("response", response.data);
-        
+
         setCategoryList(response.data);
       }
     } catch (error) {
@@ -240,26 +240,24 @@ const AddProduct = () => {
             />
           </div>
           <div>
-
-     
-          <div className="col-md-3">
-            <label className="form-label">Select Category</label>
-            <select
-              name="category"
-              id=""
-              required
-              onChange={handleChange}
-              value={formData.category}
-            >
-              <option value="">Select Category</option>
-              {categoryList?.map((category) => (
-                <option key={category?._id} value={category?._id}>
-                  {category?.categoryName}
-                </option>
-              ))}
-            </select>
+            <div className="col-md-3">
+              <label className="form-label">Select Category</label>
+              <select
+                name="category"
+                id=""
+                required
+                onChange={handleChange}
+                value={formData.category}
+              >
+                <option value="">Select Category</option>
+                {categoryList?.map((category) => (
+                  <option key={category?._id} value={category?._id}>
+                    {category?.categoryName}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-               </div>
           <div className="col-md-3">
             <label className="form-label">publisher*</label>
             <input
@@ -319,7 +317,6 @@ const AddProduct = () => {
               renderInput={(params) => <TextField {...params} label="Select Type" />}
             />
           </div> */}
-
 
           <div className="col-md-3">
             <label className="form-label">Images</label>
@@ -463,6 +460,66 @@ const AddProduct = () => {
               </label>
             </div>
           </div> */}
+          <div className="row mt-3">
+            <div className="col-md-4">
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="newArrival"
+                  checked={formData.newArrival === "true"}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      newArrival: e.target.checked.toString(),
+                    })
+                  }
+                />
+                <label className="form-check-label" htmlFor="newArrival">
+                  New Arrival
+                </label>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="featuredBooks"
+                  checked={formData.featuredBooks === "true"}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      featuredBooks: e.target.checked.toString(),
+                    })
+                  }
+                />
+                <label className="form-check-label" htmlFor="featuredBooks">
+                  Featured Books
+                </label>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="bestSellingBooks"
+                  checked={formData.bestSellingBooks === "true"}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      bestSellingBooks: e.target.checked.toString(),
+                    })
+                  }
+                />
+                <label className="form-check-label" htmlFor="bestSellingBooks">
+                  Best Selling Books
+                </label>
+              </div>
+            </div>
+          </div>
+
           <div className="col-md-12 mt-4 text-center">
             <button type="submit" className="btn " disabled={isLoading}>
               {isLoading ? "Submitting..." : "Submit"}

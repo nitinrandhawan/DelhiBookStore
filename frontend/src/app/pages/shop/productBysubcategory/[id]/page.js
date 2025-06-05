@@ -25,7 +25,12 @@ const user = useSelector((state) => state.login.user);
   const { products, loading, error } = useSelector(
     (state) => state.productByCategory
   );
-
+let cartItemsValue = [];
+    if (user?.email) {
+    cartItemsValue = apiCartItems;
+  } else {
+    cartItemsValue = cartItems;
+  }
   useEffect(() => {
     if (subcategoryId) {
       dispatch(fetchProductsByCategory(subcategoryId));
@@ -187,7 +192,7 @@ const user = useSelector((state) => state.login.user);
                 <Link href={`/pages/shop/${product._id}`}>
                   <div className="w-30 h-30 lg:w-50 lg:h-45 md:w-45 md:h-40 flex justify-center m-auto items-center py-2 mb-2 bg-white ">
                     <Image
-                      src={`${serverUrl}/${product.images[0]}` || book1}
+                      src={`${serverUrl}/public/image/${product.images[0]}` || book1}
                       // src={book1}
                       alt={product.title}
                       width={120}
@@ -237,21 +242,19 @@ const user = useSelector((state) => state.login.user);
                   </div>
                 </div>
 
-                <button
+            <button
                   className={`${
-                    cartItems.some((item) => item.id === product.id)
+                  (user?.email ?cartItemsValue.some((item) => item?.productId?._id  === product._id): cartItemsValue.some((item) => item.id === product._id))
                       ? "added-to-cart-btn"
                       : "add-to-cart-btn"
                   }`}
                   onClick={() =>
-                    handleAddToCart(
-                      product
-                    )
+                    handleAddToCart(product)
                   }
                 >
-                  {cartItems.some((item) => item.id === product.id)
+                   {(user?.email ?cartItemsValue.some((item) => item?.productId?._id  === product._id): cartItemsValue.some((item) => item.id === product._id))
                     ? "Added"
-                    : "Add to cart 🛒"}{" "}
+                    : "Add to cart 🛒"}
                 </button>
               </div>
             </div>

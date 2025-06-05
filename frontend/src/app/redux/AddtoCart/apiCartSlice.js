@@ -16,7 +16,7 @@ export const addToCartAPIThunk = createAsyncThunk(
   async (cartItem, { rejectWithValue }) => {
     try {
       const data = await postCartItemToAPI(cartItem);
-      return data;
+      return cartItem;
     } catch (err) {
       return rejectWithValue(err.response?.data || "Something went wrong");
     }
@@ -50,7 +50,7 @@ const cartSlice = createSlice({
   name: "cart",
   initialState: {
     items: [],
-    coupon:null,
+    coupon: null,
     loading: false,
     error: null,
   },
@@ -70,21 +70,26 @@ const cartSlice = createSlice({
     },
     addtoCartState: (state, action) => {
       const existing = state.items.find(
-        (item) => item?.productId?._id ?? item.productId === action.payload._id
+        (item) => item?.productId?._id ?? item.productId === action.payload?.id
       );
+   
       if (!existing) {
-        state.items.push({ ...action.payload, quantity: 1 });
-      } 
+        state.items.push({
+          productId: { _id: action.payload.id },
+          quantity: 1,
+        });
+      }
     },
     removeFromCartState: (state, action) => {
-      state.items = state.items.filter((item) => item.productId._id !== action.payload);
-     
+      state.items = state.items.filter(
+        (item) => item.productId._id !== action.payload
+      );
     },
     updateStateQuantity: (state, action) => {
       const { id, quantity } = action.payload;
       const item = state.items.find((item) => item.productId._id === id);
       if (item && item.quantity >= 1) {
-         item.quantity += quantity;
+        item.quantity += quantity;
       }
     },
   },
@@ -95,16 +100,21 @@ const cartSlice = createSlice({
         state.error = null;
       })
       .addCase(addToCartAPIThunk.fulfilled, (state, action) => {
-        const existing = state.items.find((i) => i.id === action.payload.id);
+        const newItem = action.payload;
+        const existing = state.items.find(
+          (i) => i.productId._id === newItem.productId
+        );
+
         if (existing) {
-          existing.totalPrice = existing.quantity * existing.price;
+          existing.quantity += newItem.quantity || 1;
         } else {
-          state.items.push({ ...action.payload, quantity: 1 });
+          state.items.push({ productId: {_id:newItem.productId}, quantity: 1 });
         }
+
         state.loading = false;
 
         // Optional: Sync localStorage here if you want persistence
-        localStorage.setItem("cartItems", JSON.stringify(state.items));
+        // localStorage.setItem("cartItems", JSON.stringify(state.items));
       })
       .addCase(addToCartAPIThunk.rejected, (state, action) => {
         state.loading = false;
@@ -135,5 +145,10 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, removeFromCartState, updateStateQuantity, addtoCartState } = cartSlice.actions;
+export const {
+  addToCart,
+  removeFromCartState,
+  updateStateQuantity,
+  addtoCartState,
+} = cartSlice.actions;
 export default cartSlice.reducer;

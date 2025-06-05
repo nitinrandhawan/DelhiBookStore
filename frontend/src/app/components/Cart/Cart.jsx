@@ -72,6 +72,8 @@ export default function Cart() {
     cartItemsValue = cartItems;
   }
 
+  console.log("cartItemsValue:", cartItemsValue);
+  
   const [couponCodeInput, setCouponCode] = useState("");
 
   let newQty = 0;

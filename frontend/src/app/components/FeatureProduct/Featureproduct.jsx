@@ -7,13 +7,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
 import toast from "react-hot-toast";
 import product1 from "../../Images/DBS/1.jpg";
-import axiosInstance from "@/app/redux/features/axiosInstance";
+import axiosInstance, { serverUrl } from "@/app/redux/features/axiosInstance";
 import { usePathname } from "next/navigation";
 import {
   addToCartAPIThunk,
   addtoCartState,
 } from "@/app/redux/AddtoCart/apiCartSlice";
-import { addToWishlistApi, addToWishlistState, removeFromWishlistApi, removeFromWishlistState } from "@/app/redux/wishlistSlice";
+import {
+  addToWishlistApi,
+  addToWishlistState,
+  removeFromWishlistApi,
+  removeFromWishlistState,
+} from "@/app/redux/wishlistSlice";
 const Featureproduct = ({ productlength, btnlength }) => {
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
@@ -25,6 +30,12 @@ const Featureproduct = ({ productlength, btnlength }) => {
   const user = useSelector((state) => state.login.user);
   const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
 
+   let cartItemsValue = [];
+    if (user?.email) {
+    cartItemsValue = apiCartItems;
+  } else {
+    cartItemsValue = cartItems;
+  }
   useEffect(() => {
     const featureProduct = async () => {
       try {
@@ -80,13 +91,13 @@ const Featureproduct = ({ productlength, btnlength }) => {
   const handleAddToCart = async (product) => {
     const exists = cartItems.some((item) => item.id === product._id);
     const insideApiExists = apiCartItems.some(
-      (item) => item.id === product._id
+      (item) => item.productId?._id === product._id
     );
 
     const cartItem = {
       id: product._id,
       name: product.title,
-      image: product1,
+      image: product?.images[0],
       price: product.finalPrice,
       totalPrice: product.finalPrice,
       quantity: 1,
@@ -94,7 +105,7 @@ const Featureproduct = ({ productlength, btnlength }) => {
 
     if (!user && !user?.email) {
       try {
-        await dispatch(addToCart(cartItem))
+        await dispatch(addToCart(cartItem)).unwrap();
 
         toast.success(
           exists
@@ -115,6 +126,7 @@ const Featureproduct = ({ productlength, btnlength }) => {
       );
     }
   };
+
   const handleAddToWishlist = (_id, title, img, finalPrice, price) => {
     if (user?.email) {
       const isAlreadyInWishlist = wishlistItems.some(
@@ -208,7 +220,9 @@ const Featureproduct = ({ productlength, btnlength }) => {
                 <Link href={`/pages/shop/${pro._id}`}>
                   <div className="w-30 h-50 lg:w-40 md:w-35 flex justify-center m-auto p-2 items-center mb-2 bg-white ">
                     <Image
-                      src={product1}
+                      src={`${serverUrl}/public/image/${pro.images[0]}`}
+                      width={300}
+                      height={300}
                       alt={pro.title}
                       className="object-contain h-full"
                     />
@@ -242,14 +256,16 @@ const Featureproduct = ({ productlength, btnlength }) => {
 
                 {/* Add to Cart Button */}
                 <button
-                  className={`mb-2 md:mb-0 ${
-                    cartItems.some((item) => item.id === pro._id)
+                  className={`${
+                  (user?.email ?cartItemsValue.some((item) => item?.productId?._id  === pro._id): cartItemsValue.some((item) => item.id === pro._id))
                       ? "added-to-cart-btn"
                       : "add-to-cart-btn"
                   }`}
-                  onClick={() => handleAddToCart(pro)}
+                  onClick={() =>
+                    handleAddToCart(pro)
+                  }
                 >
-                  {cartItems.some((item) => item.id === pro._id)
+                   {(user?.email ?cartItemsValue.some((item) => item?.productId?._id  === pro._id): cartItemsValue.some((item) => item.id === pro._id))
                     ? "Added"
                     : "Add to cart 🛒"}
                 </button>
