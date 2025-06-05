@@ -238,12 +238,11 @@ const NewArrival = () => {
                   <h3 className="mt-2 text-sm md:text-md font-normal md:font-semibold line-clamp-1 hover:underline">
                     {pro.title}
                   </h3>
+                   <h3 className="mt-1 text-sm text-gray-800 underline font-semibold italic line-clamp-1">
+                    by {pro.author}
+                  </h3>
                 </Link>
-                <div className="flex items-center text-sm gap-1 mb-1">
-                  <div className="text-yellow-400">★ ★ ★ ★ ★</div>
-                  <span className="text-gray-500 text-xs">(3)</span>
-                </div>
-
+              
                 <div className="text-md md:text-lg font-bold text-red-600">
                   ₹{pro.finalPrice}
                 </div>
