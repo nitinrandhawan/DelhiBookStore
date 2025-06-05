@@ -139,23 +139,41 @@ const createOrder = async (req, res) => {
           }
         : {},
     });
+    // if (paymentMethod === "COD") {
+    //   const cart = await Cart.findOne({ user: req?.user?._id });
+    //   cart.items.length > 0 &&
+    //     cart.items.forEach(async (item) => {
+    //       const product = await Product.findById(item.productId);
+    //       if (product) {
+    //         if(product.stock < item.quantity){
+    //           return res.status(400).json({ message: "Quantity exceeds stock" });
+    //         }
+    //         product.stock -= item.quantity;
+    //         await product.save();
+    //       }
+    //     });
+    //   cart.items = [];
+    //   cart.totalAmount = 0;
+    //   await cart.save();
+    // }
     if (paymentMethod === "COD") {
-      const cart = await Cart.findOne({ user: req?.user?._id });
-      cart.items.length > 0 &&
-        cart.items.forEach(async (item) => {
-          const product = await Product.findById(item.productId);
-          if (product) {
-            if(product.stock < item.quantity){
-              return res.status(400).json({ message: "Quantity exceeds stock" });
-            }
-            product.stock -= item.quantity;
-            await product.save();
-          }
-        });
-      cart.items = [];
-      cart.totalAmount = 0;
-      await cart.save();
+  const cart = await Cart.findOne({ user: req?.user?._id });
+
+  for (const item of cart.items) {
+    const product = await Product.findById(item.productId);
+    if (product) {
+      if (product.stock < item.quantity) {
+        return res.status(400).json({ message: "Quantity exceeds stock" });
+      }
+      product.stock -= item.quantity;
+      await product.save();
     }
+  }
+
+  cart.items = [];
+  cart.totalAmount = 0;
+  await cart.save();
+}
     return res.status(200).json({ message: "Order created successfully" });
   } catch (error) {
     console.log("create order error", error);

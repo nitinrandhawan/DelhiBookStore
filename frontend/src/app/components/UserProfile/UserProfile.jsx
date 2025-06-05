@@ -23,6 +23,7 @@ import {
 import Link from "next/link";
 import Cart from "../Cart/Cart";
 import Wishlist from "../Wishlist/Wishlist";
+import CallBackImg from "../../Images/DBS/DBSLOGO.jpg";
 import {
   handleLogout,
   resetState,
@@ -298,7 +299,7 @@ export default function UserProfile() {
                       ? user.profileImage.includes("picsum.photos") || user.profileImage.includes("res.cloudinary.com")
                         ? user.profileImage
                         : `${serverUrl}${user.profileImage}`
-                      : "/placeholder.svg"
+                      : CallBackImg
                   }
                   alt="Profile"
                   width={50}
@@ -718,9 +719,9 @@ export default function UserProfile() {
                       >
                         <div className="flex-shrink-0">
                           <Image
-                            // src={`${serverUrl}${item.productId.images[0]}` || "/placeholder.svg"}
-                            src={item.image || "/placeholder.svg"}
-                            alt={item.name}
+                            src={item?.productId?.images[0] ? `${serverUrl}/public/image/${item.productId.images[0]}` : "/placeholder.svg"}
+                            // src={item.image || "/placeholder.svg"}
+                            alt={item?.name || item?.productId?.title || "Product"}
                             width={80}
                             height={80}
                             className="rounded-md"

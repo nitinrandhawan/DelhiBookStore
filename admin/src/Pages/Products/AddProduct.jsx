@@ -21,7 +21,7 @@ const AddProduct = () => {
     category: "",
     price: 0,
     discount: 0,
-    stock: 0,
+    // stock: 0,
     finalPrice: 0,
     description: "",
     newArrival: "",
@@ -376,7 +376,7 @@ const AddProduct = () => {
               />
             </div>
 
-            <div className="col-md-2">
+            {/* <div className="col-md-2">
               <label className="form-label">Stock</label>
               <input
                 type="text"
@@ -385,7 +385,7 @@ const AddProduct = () => {
                 value={formData.stock}
                 onChange={handleChange}
               />
-            </div>
+            </div> */}
           </div>
           {/* <div className="row" style={{ marginTop: "20px" }}>
             <div className="col-md-3">

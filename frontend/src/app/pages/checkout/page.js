@@ -9,6 +9,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllCartItemsAPI } from "@/app/redux/AddtoCart/apiCartSlice";
 import image from "../../Images/DBS/1.jpg";
 import { createOrder } from "@/app/redux/features/order/orderSlice";
+import toast from "react-hot-toast";
+import CallBackImg from "../../Images/DBS/DBSLOGO.jpg";
+
 export default function Page() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -111,7 +114,7 @@ if(!formData.paymentMethod) newErrors.paymentMethod="Payment method is required"
     router.push("/pages/checkout/success");
      
     } catch (error) {
-      console.error("Checkout failed:", error);
+      console.log("Checkout failed:", error);
       toast.error(error.message || "Something went wrong during checkout.");
     } finally {
       setIsSubmitting(false);
@@ -408,7 +411,7 @@ if(!formData.paymentMethod) newErrors.paymentMethod="Payment method is required"
                   <div key={item.id} className="py-4 flex gap-4">
                     <div className="w-auto h-20 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
                       <Image
-                        src={image || "/placeholder.svg"}
+                        src={item?.productId?.images[0] ? `${serverUrl}/public/image/${item?.productId?.images[0]}` :CallBackImg}
                         alt={item?.name || item?.productId?.title}
                         width={80}
                         height={80}

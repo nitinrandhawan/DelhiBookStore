@@ -11,8 +11,9 @@ import {
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { verifyUser } from "@/app/redux/features/auth/loginSlice";
-import axiosInstance from "@/app/redux/features/axiosInstance";
+import axiosInstance, { serverUrl } from "@/app/redux/features/axiosInstance";
 import image1 from "../../Images/DBS/1.jpg"; // fallback image
+import CallBackImg from "../../Images/DBS/DBSLOGO.jpg";
 
 export default function BottomNavBar() {
   const [bottombar, setBottomBar] = useState("home");
@@ -152,8 +153,8 @@ const apiCartCount = useSelector((state) => state.apiCart.items.length);
                     className="flex items-center gap-3 p-3 hover:bg-gray-100 cursor-pointer"
                   >
                     <Image
-                      // src={product.images?.[0] || image1}
-                      src={image1}
+                      src={product.images?`${serverUrl}/public/image/${product.images?.[0]}` :CallBackImg }
+                      // src={image1}
                       alt={product.title}
                       width={40}
                       height={40}
