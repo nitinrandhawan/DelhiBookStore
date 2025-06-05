@@ -56,13 +56,13 @@ console.log("couponValue",couponValue);
   const user = useSelector((state) => state.login.user);
   let totalCartItems = [];
   if (user?.email) {
-    totalCartItems = apiCartItems.length;
+    totalCartItems = apiCartItems?.length;
   } else {
-    totalCartItems = cartItems.length;
+    totalCartItems = cartItems?.length;
   }
 
   const wishlistCount = useSelector(
-    (state) => state.wishlist.wishlistItems.length
+    (state) => state.wishlist.wishlistItems?.length
   );
 
   const dispatch = useDispatch();

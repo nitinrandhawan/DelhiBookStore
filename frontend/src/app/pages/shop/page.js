@@ -1,11 +1,13 @@
 import Shop from "@/app/components/Shop/Shop";
-import React from "react";
+import React, { Suspense } from "react";
 
 const page = () => {
   return (
     <>
       <div>
-        <Shop />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Shop />
+        </Suspense>
       </div>
     </>
   );

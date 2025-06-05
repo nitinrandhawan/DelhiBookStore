@@ -92,7 +92,7 @@ const Page = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8">
         {/* Main Blog Post */}
         <div className="md:col-span-8">
-          {blogs.length > 0 ? (
+          {blogs?.length > 0 ? (
             blogs.map((blog, index) => (
               <Link key={index} href={blog.Url}>
                 <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">

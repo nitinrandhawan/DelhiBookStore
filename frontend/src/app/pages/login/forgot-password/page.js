@@ -6,7 +6,7 @@ import { Mail } from "lucide-react";
 import stylebanner from "../../../Images/DBS/BOOKSTOREBANNER.jpg";
 import toast from "react-hot-toast";
 import axiosInstance from "@/app/redux/features/axiosInstance";
-const page = () => {
+const Page = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -134,4 +134,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

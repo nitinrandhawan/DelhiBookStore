@@ -5,8 +5,10 @@ const { createSlice, createAsyncThunk } = require("@reduxjs/toolkit");
 // Load wishlist from localStorage
 const loadWishlistFromStorage = () => {
   try {
+     if (typeof window !== 'undefined') {
     const data = localStorage.getItem("wishlistItems");
     return data ? JSON.parse(data) : [];
+     }
   } catch (error) {
     console.error("Error loading wishlist from localStorage:", error);
     return [];
