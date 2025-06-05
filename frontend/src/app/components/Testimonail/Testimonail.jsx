@@ -13,7 +13,7 @@ import testi4 from "../../Images/DowloadImage/testi4.jpg";
 import testi5 from "../../Images/DowloadImage/testi5.jpg";
 import testi6 from "../../Images/DowloadImage/testi6.jpg";
 import testi7 from "../../Images/DowloadImage/testi7.jpg";
-import testi8 from "../../Images/DowloadImage/testi1.jpg";
+import testi8 from "../../Images/DowloadImage/Testi1.jpg";
 import testi9 from "../../Images/DowloadImage/testi9.jpg";
 import testi10 from "../../Images/DowloadImage/testi10.jpg";
 const Testimonial = () => {
