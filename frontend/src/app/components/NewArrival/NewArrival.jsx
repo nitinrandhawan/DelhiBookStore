@@ -23,6 +23,7 @@ import {
 } from "@/app/redux/wishlistSlice";
 import axiosInstance, { serverUrl } from "@/app/redux/features/axiosInstance";
 import { addToCartAPIThunk, addtoCartState, removeFromCartAPI } from "@/app/redux/AddtoCart/apiCartSlice";
+import CallBackImg from "../../Images/DBS/DBSLOGO.jpg";
 
 const NewArrival = () => {
   const dispatch = useDispatch();
@@ -35,7 +36,6 @@ const NewArrival = () => {
   } else {
     cartItemsValue = cartItems;
   }
-
 
   const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
   const handleAddToCart = async (product) => {
@@ -225,7 +225,7 @@ const NewArrival = () => {
                 <Link href={`/pages/shop/${pro._id}`}>
                   <div className="w-50 h-60 flex justify-center m-auto items-center mb-2">
                     <Image
-                      src={`${serverUrl}/public/image/${pro.images[0]}`}
+                      src={pro?.images?.[0] ? `${serverUrl}/public/image/${pro.images[0]}` : CallBackImg}
                       width={300}
                       height={300}
                       alt={pro.title}

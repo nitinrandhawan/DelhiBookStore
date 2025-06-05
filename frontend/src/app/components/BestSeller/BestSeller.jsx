@@ -21,7 +21,7 @@ import {
   removeFromWishlistApi,
   removeFromWishlistState,
 } from "@/app/redux/wishlistSlice";
-
+import CallBackImg from "../../Images/DBS/DBSLOGO.jpg";
 const BestSeller = ({ productlength, btnlength }) => {
   const [product, setProduct] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -226,7 +226,7 @@ const BestSeller = ({ productlength, btnlength }) => {
               <Link href={`/pages/shop/${pro._id}`}>
                 <div className="h-35 flex justify-center m-auto items-center">
                   <Image
-                    src={`${serverUrl}/public/image/${pro.images[0]}`}
+                    src={pro?.images[0] ?`${serverUrl}/public/image/${pro?.images[0]}` : CallBackImg}
                     alt={pro.title}
                     width={112}
                     height={112}

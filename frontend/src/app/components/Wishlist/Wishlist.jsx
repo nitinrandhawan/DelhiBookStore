@@ -12,6 +12,8 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import EmptywishList from "../../Images/DowloadImage/EmptyWishList.jpg";
 import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
+import CallBackImg from "../../Images/DBS/DBSLOGO.jpg";
+
 import Link from "next/link";
 import {
   addToCartAPIThunk,
@@ -21,6 +23,7 @@ import {
   removeFromCartState,
   updateStateQuantity,
 } from "@/app/redux/AddtoCart/apiCartSlice";
+import { serverUrl } from "@/app/redux/features/axiosInstance";
 
 const Wishlist = () => {
   const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
@@ -121,8 +124,14 @@ let cartItemsValue = [];
                 {/* Image */}
                 <td className="py-4 pr-2">
                   <Image
-                    // src={wishItem?.image ?? wishItem.images[0]}
-                    src={EmptywishList}
+                    src={
+  wishItem?.image
+    ? `${serverUrl}/public/image/${wishItem.image}`
+    : wishItem?.images?.[0]
+    ? `${serverUrl}/public/image/${wishItem.images[0]}`
+    : CallBackImg
+}
+                    // src={EmptywishList}
                     alt={wishItem.name ?? wishItem?.productId?.title}
                     width={60}
                     height={60}
