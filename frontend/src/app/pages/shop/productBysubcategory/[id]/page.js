@@ -13,6 +13,7 @@ import { fetchProductsByCategory } from "@/app/redux/features/productByCategory/
 import { addToCartAPIThunk, addtoCartState } from "@/app/redux/AddtoCart/apiCartSlice";
 import { addToWishlist, addToWishlistApi, addToWishlistState, removeFromWishlist, removeFromWishlistApi, removeFromWishlistState } from "@/app/redux/wishlistSlice";
 import { serverUrl } from "@/app/redux/features/axiosInstance";
+import CallBackImg from "../../../../Images/DBS/DBSLOGO.jpg";
 
 const page = () => {
   const dispatch = useDispatch();
@@ -192,7 +193,7 @@ let cartItemsValue = [];
                 <Link href={`/pages/shop/${product._id}`}>
                   <div className="w-30 h-30 lg:w-50 lg:h-45 md:w-45 md:h-40 flex justify-center m-auto items-center py-2 mb-2 bg-white ">
                     <Image
-                      src={`${serverUrl}/public/image/${product.images[0]}` || book1}
+                      src={product.images[0] ? `${serverUrl}/public/image/${product.images[0]}` : CallBackImg}
                       // src={book1}
                       alt={product.title}
                       width={120}

@@ -52,8 +52,7 @@ const EditProduct = () => {
   const fetchProductDetails = async (id) => {
     try {
       const res = await axiosInstance.get(`/api/v1/product/get-product/${id}`);
-      console.log("res", res.data);
-      
+  
       if (res?.data) {
         
         setFormData( res.data.product );
@@ -64,7 +63,7 @@ const EditProduct = () => {
       toast.error("Failed to load product.");
     }
   };
-
+ 
   // const fetchSubcategories = async (categoryId) => {
   //   try {
   //     const res = await axiosInstance.get(`/api/v1/category/get-subcategories-by-category/${categoryId}`);
@@ -337,9 +336,9 @@ const EditProduct = () => {
         className="form-check-input"
         type="checkbox"
         id="newArrival"
-        checked={formData.newArrival === "true"}
+        checked={formData.newArrival}
         onChange={(e) =>
-          setFormData({ ...formData, newArrival: e.target.checked.toString() })
+          setFormData({ ...formData, newArrival: e.target.checked })
         }
       />
       <label className="form-check-label" htmlFor="newArrival">
@@ -353,11 +352,11 @@ const EditProduct = () => {
         className="form-check-input"
         type="checkbox"
         id="featuredBooks"
-        checked={formData.featuredBooks === "true"}
+        checked={formData.featuredBooks}
         onChange={(e) =>
           setFormData({
             ...formData,
-            featuredBooks: e.target.checked.toString(),
+            featuredBooks: e.target.checked,
           })
         }
       />
@@ -372,11 +371,11 @@ const EditProduct = () => {
         className="form-check-input"
         type="checkbox"
         id="bestSellingBooks"
-        checked={formData.bestSellingBooks === "true"}
+        checked={formData.bestSellingBooks }
         onChange={(e) =>
           setFormData({
             ...formData,
-            bestSellingBooks: e.target.checked.toString(),
+            bestSellingBooks: e.target.checked,
           })
         }
       />

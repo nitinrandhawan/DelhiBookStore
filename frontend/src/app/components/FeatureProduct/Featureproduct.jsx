@@ -19,6 +19,8 @@ import {
   removeFromWishlistApi,
   removeFromWishlistState,
 } from "@/app/redux/wishlistSlice";
+import CallBackImg from "../../Images/DBS/DBSLOGO.jpg";
+
 const Featureproduct = ({ productlength, btnlength }) => {
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
@@ -220,7 +222,7 @@ const Featureproduct = ({ productlength, btnlength }) => {
                 <Link href={`/pages/shop/${pro._id}`}>
                   <div className="w-30 h-50 lg:w-40 md:w-35 flex justify-center m-auto p-2 items-center mb-2 bg-white ">
                     <Image
-                      src={`${serverUrl}/public/image/${pro.images[0]}`}
+                      src={ pro.images[0] ?`${serverUrl}/public/image/${pro.images[0]}` : CallBackImg}
                       width={300}
                       height={300}
                       alt={pro.title}

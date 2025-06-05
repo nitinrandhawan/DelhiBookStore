@@ -20,7 +20,8 @@ import {
   removeFromCartState,
   updateStateQuantity,
 } from "@/app/redux/AddtoCart/apiCartSlice";
-import { debounce } from "@/app/redux/features/axiosInstance";
+import { debounce, serverUrl } from "@/app/redux/features/axiosInstance";
+import CallBackImg from "../../Images/DBS/DBSLOGO.jpg";
 
 export default function Cart() {
   const { cartItems, totalAmount, tax, discountAmount, total, couponCode } =
@@ -275,9 +276,14 @@ export default function Cart() {
                   className="flex flex-row flex-wrap justify-between items-center gap-2 md:gap-4 border-b border-gray-300 pb-4"
                 >
                   <div>
-                    {/* src={item?.image || item?.productId?.images[0]} */}
                     <Image
-                      src={product1}
+                   src={
+  item?.image
+    ? `${serverUrl}/public/image/${item.image}`
+    : item?.productId?.images?.[0]
+    ? `${serverUrl}/public/image/${item.productId.images[0]}`
+    : CallBackImg
+}
                       alt={item?.name || item?.productId?.title}
                       width={60}
                       height={60}

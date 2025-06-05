@@ -24,6 +24,7 @@ import {
   removeFromWishlistState,
 } from "@/app/redux/wishlistSlice";
 import { serverUrl } from "@/app/redux/features/axiosInstance";
+import CallBackImg from "../../Images/DBS/DBSLOGO.jpg";
 
 const Shop = () => {
   const dispatch = useDispatch();
@@ -254,7 +255,7 @@ console.log("apiCartItems:", apiCartItems);
                   <Link href={`/pages/shop/${product._id}`}>
                     <div className="w-30 h-30 lg:w-50 lg:h-45 md:w-45 md:h-40 flex justify-center m-auto items-center py-2 mb-2 bg-white ">
                       <Image
-                        src={`${serverUrl}/public/image/${product.images[0]}`}
+                        src={product.images[0] ? `${serverUrl}/public/image/${product.images[0]}` :CallBackImg}
                         // src={book}
                         alt={product.title}
                         width={300}

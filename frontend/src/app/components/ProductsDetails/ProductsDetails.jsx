@@ -20,6 +20,7 @@ import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import axiosInstance, { serverUrl } from "@/app/redux/features/axiosInstance";
 import { useParams } from "next/navigation";
+import CallBackImg from "../../Images/DBS/DBSLOGO.jpg";
 
 export default function ProductDetails() {
   // Api for show ingle prodict data
@@ -135,7 +136,7 @@ export default function ProductDetails() {
           <div className="border border-purple-500 rounded-lg overflow-hidden bg-white p-4 flex items-center justify-center">
             <Image
               // src={book1}
-              src={`${serverUrl}/public/image/${book?.images[0]}` || "/placeholder.svg"}
+              src={book?.images[0] ?`${serverUrl}/public/image/${book?.images[0]}` : CallBackImg}
               width={500}
               height={500}
               alt={book.title}
