@@ -7,10 +7,20 @@ import product1 from "../../Images/DBS/1.jpg";
 import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import axiosInstance from "@/app/redux/features/axiosInstance";
+import axiosInstance, { serverUrl } from "@/app/redux/features/axiosInstance";
 import { usePathname } from "next/navigation";
-import { addToCartAPIThunk, addtoCartState } from "@/app/redux/AddtoCart/apiCartSlice";
-import { addToWishlist, addToWishlistApi, addToWishlistState, removeFromWishlist, removeFromWishlistApi, removeFromWishlistState } from "@/app/redux/wishlistSlice";
+import {
+  addToCartAPIThunk,
+  addtoCartState,
+} from "@/app/redux/AddtoCart/apiCartSlice";
+import {
+  addToWishlist,
+  addToWishlistApi,
+  addToWishlistState,
+  removeFromWishlist,
+  removeFromWishlistApi,
+  removeFromWishlistState,
+} from "@/app/redux/wishlistSlice";
 
 const BestSeller = ({ productlength, btnlength }) => {
   const [product, setProduct] = useState([]);
@@ -22,6 +32,12 @@ const BestSeller = ({ productlength, btnlength }) => {
   const { items: apiCartItems } = useSelector((state) => state.apiCart);
   const user = useSelector((state) => state.login.user);
   const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
+  let cartItemsValue = [];
+  if (user?.email) {
+    cartItemsValue = apiCartItems;
+  } else {
+    cartItemsValue = cartItems;
+  }
 
   const handleAddToCart = async (product) => {
     const exists = cartItems.some((item) => item.id === product._id);
@@ -183,34 +199,34 @@ const BestSeller = ({ productlength, btnlength }) => {
               </div>
 
               {/* Wishlist Icon */}
-               <div
-                                className="bg-white text-black absolute top-2 right-3 shadow-md rounded-2xl p-1 cursor-pointer"
-                                onClick={() =>
-                                  handleAddToWishlist(
-                                    pro._id,
-                                    pro.title,
-                                    pro.img,
-                                    pro.finalPrice,
-                                    pro.oldPrice
-                                  )
-                                }
-                              >
-                                {(
-                                  user?.email
-                                    ? wishlistItems.some((item) => item?._id === pro._id)
-                                    : wishlistItems.some((item) => item.id === pro._id)
-                                ) ? (
-                                  "❤️"
-                                ) : (
-                                  <Heart size={16} />
-                                )}
-                              </div>
+              <div
+                className="bg-white text-black absolute top-2 right-3 shadow-md rounded-2xl p-1 cursor-pointer"
+                onClick={() =>
+                  handleAddToWishlist(
+                    pro._id,
+                    pro.title,
+                    pro.img,
+                    pro.finalPrice,
+                    pro.oldPrice
+                  )
+                }
+              >
+                {(
+                  user?.email
+                    ? wishlistItems.some((item) => item?._id === pro._id)
+                    : wishlistItems.some((item) => item.id === pro._id)
+                ) ? (
+                  "❤️"
+                ) : (
+                  <Heart size={16} />
+                )}
+              </div>
 
               {/* Product Image - Using placeholder */}
               <Link href={`/pages/shop/${pro._id}`}>
                 <div className="h-35 flex justify-center m-auto items-center">
                   <Image
-                    src={product1}
+                    src={`${serverUrl}/public/image/${pro.images[0]}`}
                     alt={pro.title}
                     width={112}
                     height={112}
@@ -251,15 +267,25 @@ const BestSeller = ({ productlength, btnlength }) => {
                 {/* Add to Cart Button */}
                 <button
                   className={`${
-                    cartItems.some((item) => item.id === pro._id)
+                    (
+                      user?.email
+                        ? cartItemsValue.some(
+                            (item) => item?.productId?._id === pro._id
+                          )
+                        : cartItemsValue.some((item) => item.id === pro._id)
+                    )
                       ? "added-to-cart-btn"
                       : "add-to-cart-btn"
                   }`}
-                  onClick={() =>
-                    handleAddToCart(pro)
-                  }
+                  onClick={() => handleAddToCart(pro)}
                 >
-                  {cartItems.some((item) => item.id === pro._id)
+                  {(
+                    user?.email
+                      ? cartItemsValue.some(
+                          (item) => item?.productId?._id === pro._id
+                        )
+                      : cartItemsValue.some((item) => item.id === pro._id)
+                  )
                     ? "Added"
                     : "Add to cart 🛒"}
                 </button>

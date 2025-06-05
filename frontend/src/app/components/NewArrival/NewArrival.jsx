@@ -21,8 +21,8 @@ import {
   removeFromWishlistApi,
   removeFromWishlistState,
 } from "@/app/redux/wishlistSlice";
-import axiosInstance from "@/app/redux/features/axiosInstance";
-import { removeFromCartAPI } from "@/app/redux/AddtoCart/apiCartSlice";
+import axiosInstance, { serverUrl } from "@/app/redux/features/axiosInstance";
+import { addToCartAPIThunk, addtoCartState, removeFromCartAPI } from "@/app/redux/AddtoCart/apiCartSlice";
 
 const NewArrival = () => {
   const dispatch = useDispatch();
@@ -38,20 +38,42 @@ const NewArrival = () => {
 
 
   const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
-  const handleAddToCart = (_id, title, img, finalPrice) => {
-    dispatch(
-      addToCart({
-        id: _id,
-        name: title,
-        image: img,
-        price: finalPrice,
-        totalPrice: finalPrice,
-      })
+  const handleAddToCart = async (product) => {
+    const exists = cartItems.some((item) => item.id === product._id);
+    const insideApiExists = apiCartItems.some(
+      (item) => item.productId?._id === product._id
     );
-    if (cartItems.some((item) => item.id === _id)) {
-      toast.success("Quantity updated in your cart!");
+
+    const cartItem = {
+      id: product._id,
+      name: product.title,
+      image: product?.images[0],
+      price: product.finalPrice,
+      totalPrice: product.finalPrice,
+      quantity: 1,
+    };
+
+    if (!user && !user?.email) {
+      try {
+        await dispatch(addToCart(cartItem)).unwrap();
+
+        toast.success(
+          exists
+            ? "Quantity updated in your cart!"
+            : `Great choice! ${product.title} added.`
+        );
+      } catch (error) {
+        toast.error("Something went wrong. Please try again.");
+        console.error("Cart error:", error);
+      }
     } else {
-      toast.success(`"Great choice! ${title} added."`);
+      dispatch(addtoCartState({ id: product._id }));
+      dispatch(addToCartAPIThunk({ productId: product._id, quantity: 1 }));
+      toast.success(
+        insideApiExists
+          ? "Quantity updated in your cart!"
+          : `Great choice! ${product.title} added.`
+      );
     }
   };
 
@@ -203,7 +225,9 @@ const NewArrival = () => {
                 <Link href={`/pages/shop/${pro._id}`}>
                   <div className="w-50 h-60 flex justify-center m-auto items-center mb-2">
                     <Image
-                      src={product1}
+                      src={`${serverUrl}/public/image/${pro.images[0]}`}
+                      width={300}
+                      height={300}
                       alt={pro.title}
                       className="object-contain h-full"
                     />
@@ -234,7 +258,7 @@ const NewArrival = () => {
                       : "add-to-cart-btn"
                   }`}
                   onClick={() =>
-                    handleAddToCart(pro._id, pro.title, pro.img, pro.finalPrice)
+                    handleAddToCart(pro)
                   }
                 >
                   {(user?.email ?cartItemsValue.some((item) => item?.productId?._id  === pro._id): cartItemsValue.some((item) => item.id === pro._id))
