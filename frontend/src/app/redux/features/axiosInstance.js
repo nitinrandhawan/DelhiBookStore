@@ -1,5 +1,6 @@
 import axios from "axios";
-export const serverUrl="http://localhost:9000"
+export const serverUrl="https://api.wwseals.com"
+// export const serverUrl="http://localhost:9000"
 
 const axiosInstance = axios.create({
   baseURL: `${serverUrl}/api/v1`,

@@ -23,9 +23,10 @@ const getData = async (url) => {
     return null;
   }
 };
+// baseURL: "http://localhost:9000",
 
 const axiosInstance=axios.create({
-  baseURL: "http://localhost:9000",
+  baseURL: "https://api.wwseals.com",
   headers:{
     "Content-Type": "application/json"
   },
