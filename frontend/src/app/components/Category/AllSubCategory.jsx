@@ -1,10 +1,13 @@
 "use client";
+import { serverUrl } from "@/app/redux/features/axiosInstance";
 import { fetchSubCategories } from "@/app/redux/features/getAllCategory/categorySlice";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import CallBackImg from "../../Images/DBS/DBSLOGO.jpg";
+
 export default function AllSubCategory() {
   const dispatch = useDispatch();
   const param = useParams();
@@ -69,18 +72,16 @@ export default function AllSubCategory() {
               className="group block bg-purple-700 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
             >
               {/* Image Container */}
-              <div className="relative overflow-hidden">
+              <div className="relative w-full h-40 sm:h-56 lg:h-55">
                 <Image
                   src={
-                    category.categoryImage &&
-                    category.categoryImage.trim() !== ""
-                      ? category.categoryImage
-                      : "/placeholder.svg"
+                    category.categoryImage
+                      ? `${serverUrl}/public/image/${category.categoryImage}`
+                      : CallBackImg
                   }
                   alt={category.categoryName}
-                  width={400}
-                  height={300}
-                  className="w-full h-40 sm:h-56 lg:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  fill
+                  className="object-fill group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
 
