@@ -27,7 +27,7 @@ const createProduct = async (req, res) => {
       price,
       discount,
       category,
-      stock,
+      // stock,
     } = req.body || {};
     const errorMessages = [];
     if (!title) errorMessages.push("title is required");
@@ -47,7 +47,7 @@ const createProduct = async (req, res) => {
     if (!price) errorMessages.push("price is required");
     if (!discount) errorMessages.push("discount is required");
     if (!category) errorMessages.push("category is required");
-    if (!stock) errorMessages.push("stock is required");
+    // if (!stock) errorMessages.push("stock is required");
     if (errorMessages.length > 0) {
       return res.status(400).json({ message: errorMessages });
     }
@@ -85,7 +85,7 @@ const createProduct = async (req, res) => {
       price: Number(price),
       discount: Number(discount),
       category,
-      stock,
+      // stock,
       images,
       finalPrice,
     });

@@ -22,7 +22,7 @@ import {
 } from "@/app/redux/AddtoCart/apiCartSlice";
 import { debounce, serverUrl } from "@/app/redux/features/axiosInstance";
 import CallBackImg from "../../Images/DBS/DBSLOGO.jpg";
-
+import EmptyWishlist from "../../Images/DowloadImage/EmptyCart.png";
 export default function Cart() {
   const { cartItems, totalAmount, tax, discountAmount, total, couponCode } =
     useSelector((state) => state.cart);
@@ -229,7 +229,7 @@ export default function Cart() {
       <div className="mx-auto px-4 py-12 max-w-7xl">
         <div className="flex flex-col items-center justify-center">
           <Image
-            src={EmptyCart} // ✅ Replace with your image path
+            src={EmptyWishlist} // ✅ Replace with your image path
             alt="Empty Wishlist"
             className="w-60 h-60 object-contain opacity-100"
           />

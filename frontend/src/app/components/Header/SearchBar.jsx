@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { LucideSearch } from "lucide-react";
-import axiosInstance from "@/app/redux/features/axiosInstance";
+import axiosInstance, { serverUrl } from "@/app/redux/features/axiosInstance";
 import Image from "next/image";
 import image1 from "../../Images/DBS/1.jpg";
 import Link from "next/link";
+import CallBackImg from "../../Images/DBS/DBSLOGO.jpg";
 
 export default function ProductSearchBar() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -82,8 +83,8 @@ export default function ProductSearchBar() {
                 <Link href={`/pages/shop/${product._id}`}>
                   <div className="flex items-center gap-3 p-3 hover:bg-gray-100 cursor-pointer">
                     <Image
-                      // src={product.images[0]}
-                      src={image1}
+                      src={product?.images[0] ? `${serverUrl}/public/image/${product?.images[0]}` :  CallBackImg}
+                      // src={image1}
                       alt={product.title}
                       className="w-10 h-10 object-cover rounded"
                       width={10}

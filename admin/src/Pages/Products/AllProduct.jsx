@@ -10,7 +10,7 @@ import axiosInstance, {
 } from "../../services/FetchNodeServices";
 import { Parser } from "html-to-react";
 import { Box, Typography } from "@mui/material";
-
+import fallBackImage from "../../services/DBSLOGO.jpg"
 const AllProduct = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -222,7 +222,7 @@ const AllProduct = () => {
                   <td>{product?.category?.categoryName}</td>
                   <td>
                     <img
-                      src={`${serverURL}/public/image/${product?.images?.[0]}`}
+                      src={product?.images?.[0] ? `${serverURL}/public/image/${product?.images?.[0]}`:fallBackImage}
                     />
                   </td>
                   <td>

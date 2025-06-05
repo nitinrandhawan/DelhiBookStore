@@ -27,18 +27,18 @@ const AddCoupon = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (!formData?.couponCode || !formData?.discount) {
-      toast.error("Please fill all fields");
-      setIsLoading(false);
-      return;
-    }
+    if (!formData?.couponCode || !formData?.discount || !formData?.couponTitle || !formData?.minAmount || !formData?.maxAmount) {
+  toast.error("Please fill all fields");
+  setIsLoading(false);
+  return;
+}
 
     if (formData?.discount < 0) {
       toast.error("Discount should be greater than 0");
       setIsLoading(false);
       return;
     }
-     if(formData?.maxAmount < formData?.minAmount){
+     if (Number(formData.maxAmount) < Number(formData.minAmount)) {
           toast.error("Max amount should be greater than min amount");
           setIsLoading(false);
           return;

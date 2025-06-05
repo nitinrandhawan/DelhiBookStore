@@ -34,9 +34,10 @@ const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [account, setAccount] = useState(false);
-
+  const { coupons } = useSelector((state) => state.products);
   const pathname = usePathname();
   // Dropdown items
+const [couponValue, setCouponValue] = useState([]);
 
   useEffect(() => {
     if (pathname === "/") {
@@ -44,10 +45,11 @@ const Header = () => {
     } else {
       setOpenDropdown(false);
     }
-    dispatch(getAllWishlistItemsApi())
-    dispatch(fetchCoupons())
-    dispatch(getAllCartItemsAPI())
+    dispatch(getAllWishlistItemsApi());
+    dispatch(fetchCoupons());
+    dispatch(getAllCartItemsAPI());
   }, [pathname]);
+console.log("couponValue",couponValue);
 
   const cartItems = useSelector((state) => state.cart.cartItems);
   const apiCartItems = useSelector((state) => state.apiCart.items);
@@ -70,7 +72,12 @@ const Header = () => {
     dispatch(fetchCategories());
     dispatch(verifyUser());
   }, [dispatch]);
-
+useEffect(() => {
+  if (coupons?.length) {
+    const values = coupons.filter((coupon) => coupon.isActive === true).map((coupon) => coupon.title);
+    setCouponValue(values);
+  }
+}, [coupons]);
   if (error) {
     return (
       <div className="text-center py-6 text-red-500">
@@ -90,11 +97,15 @@ const Header = () => {
           <div className="w-full flex flex-col md:flex-row justify-around px-4 text-center md:text-left gap-2 md:gap-0 p2-4">
             <b>
               <Typewriter
-                words={[
-                  "FREE delivery on all orders!",
-                  "40% Discount for next 3 orders!",
-                  "Limited Time Offer — Grab Now!",
-                ]}
+                words={
+                  couponValue
+                    ? couponValue.slice(0, Math.ceil(couponValue?.length / 2))
+                    : [
+                        "FREE delivery on all orders!",
+                        "40% Discount for next 3 orders!",
+                        "Limited Time Offer — Grab Now!",
+                      ]
+                }
                 loop={0} // 0 = infinite loop
                 cursor
                 cursorStyle="|"
@@ -106,7 +117,8 @@ const Header = () => {
 
             <b>
               <Typewriter
-                words={[
+                words={ couponValue
+                    ? couponValue?.slice( Math.ceil(couponValue?.length / 2)) : [
                   "Sale ends in: 13 days 12 hrs 17 mins 48 sec.",
                   "Hurry! Only a few days left!",
                   "Countdown is running fast!",
