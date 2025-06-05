@@ -206,9 +206,9 @@ let cartItemsValue = [];
 
               {/* Product Content */}
               <div>
-                <Link href={`/product/${product._id}`}>
+                <Link href={`/pages/shop/${product._id}`}>
                   <h3
-                    className="my-2 text-sm md:text-md font-bold hover:underline line-clamp-1"
+                    className="my-2 text-sm md:text-md font-bold hover:underline line-clamp-2"
                     style={{
                       background:
                         "linear-gradient(90deg, #e9d5ff 0%, #d8b4fe 50%)",
@@ -219,6 +219,9 @@ let cartItemsValue = [];
                   >
                     {product.title}
                   </h3>
+                   <h3 className="mt-1 text-sm text-gray-800 underline font-semibold italic line-clamp-1">
+                    by {product.author}
+                  </h3>
                 </Link>
                 <p className="text-sm text-gray-700 leading-relaxed line-clamp-3">
                   {
@@ -228,11 +231,6 @@ let cartItemsValue = [];
                     ).body.textContent
                   }
                 </p>
-
-                <div className="flex items-center text-sm gap-1 mt-1">
-                  <div className="text-yellow-400 text-2xl">★ ★ ★ ★ ★</div>
-                  <span className="text-gray-500 text-xs">(3)</span>
-                </div>
 
                 <div className="flex items-baseline gap-2 mt-2">
                   <div className="text-lg font-bold text-red-500">

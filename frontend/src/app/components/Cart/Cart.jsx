@@ -104,9 +104,9 @@ export default function Cart() {
     const newQty = item.quantity + 1;
     addnewQty++;
     if (user?.email) {
-      dispatch(
-        updateStateQuantity({ id: item.productId._id, quantity: 1 })
-      );
+      // dispatch(
+      //   updateStateQuantity({ id: item.productId._id, quantity: 1 })
+      // );
       dispatch(
         addToCartAPIThunk({ productId: item.productId._id, quantity: 1 })
       );
@@ -152,8 +152,10 @@ export default function Cart() {
     if (user?.email) {
       dispatch(removeFromCartState(id));
       dispatch(removeFromCartAPI(id));
+      toast.error("Product removed from cart");
     } else {
       dispatch(removeFromCart(id));
+      toast.error("Product removed from cart");
     }
   };
 
