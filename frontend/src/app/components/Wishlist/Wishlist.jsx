@@ -31,7 +31,7 @@ const Wishlist = () => {
   const { items } = useSelector((state) => state.apiCart);
   const { user } = useSelector((state) => state.login);
   const dispatch = useDispatch();
-let cartItemsValue = [];
+  let cartItemsValue = [];
 
   if (user?.email) {
     cartItemsValue = items;
@@ -42,7 +42,7 @@ let cartItemsValue = [];
   const handleAddToCart = (id, name, image, price) => {
     if (user?.email) {
       dispatch(updateStateQuantity({ id: id, quantity: 1 }));
-      dispatch(addtoCartState({ id: id}));
+      dispatch(addtoCartState({ id: id }));
       dispatch(addToCartAPIThunk({ productId: id, quantity: 1 }));
     } else {
       dispatch(
@@ -74,7 +74,6 @@ let cartItemsValue = [];
     }
   };
 
- 
   return (
     <div className="px-4 py-8 max-w-7xl mx-auto">
       <h2 className="text-2xl font-semibold mb-6">My Wishlist</h2>
@@ -118,21 +117,20 @@ let cartItemsValue = [];
           <tbody>
             {wishlistItems?.map((wishItem) => (
               <tr
-                key={wishItem.id ?? wishItem._id}
+                key={wishItem?._id ?? wishItem?._id}
                 className="hover:bg-gray-100 transition border-b"
               >
                 {/* Image */}
                 <td className="py-4 pr-2">
                   <Image
                     src={
-  wishItem?.image
-    ? `${serverUrl}/public/image/${wishItem.image}`
-    : wishItem?.images?.[0]
-    ? `${serverUrl}/public/image/${wishItem.images[0]}`
-    : CallBackImg
-}
-                    // src={EmptywishList}
-                    alt={wishItem.name ?? wishItem?.productId?.title}
+                      wishItem?.image
+                        ? `${serverUrl}/public/image/${wishItem.image}`
+                        : wishItem?.images?.[0]
+                        ? `${serverUrl}/public/image/${wishItem.images[0]}`
+                        : CallBackImg
+                    }
+                    alt="Product Image"
                     width={60}
                     height={60}
                     className="rounded-md object-contain"

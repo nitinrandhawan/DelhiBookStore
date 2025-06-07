@@ -32,12 +32,13 @@ import { getAllWishlistItemsApi } from "@/app/redux/wishlistSlice";
 const Header = () => {
   const [openDropdown, setOpenDropdown] = useState();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false); // 👈 Safe hydration flag
   const [open, setOpen] = useState(false);
   const [account, setAccount] = useState(false);
   const { coupons } = useSelector((state) => state.products);
   const pathname = usePathname();
   // Dropdown items
-const [couponValue, setCouponValue] = useState([]);
+  const [couponValue, setCouponValue] = useState([]);
 
   useEffect(() => {
     if (pathname === "/") {
@@ -49,7 +50,7 @@ const [couponValue, setCouponValue] = useState([]);
     dispatch(fetchCoupons());
     dispatch(getAllCartItemsAPI());
   }, [pathname]);
-console.log("couponValue",couponValue);
+  console.log("couponValue", couponValue);
 
   const cartItems = useSelector((state) => state.cart.cartItems);
   const apiCartItems = useSelector((state) => state.apiCart.items);
@@ -72,12 +73,14 @@ console.log("couponValue",couponValue);
     dispatch(fetchCategories());
     dispatch(verifyUser());
   }, [dispatch]);
-useEffect(() => {
-  if (coupons?.length) {
-    const values = coupons.filter((coupon) => coupon.isActive === true).map((coupon) => coupon.title);
-    setCouponValue(values);
-  }
-}, [coupons]);
+  useEffect(() => {
+    if (coupons?.length) {
+      const values = coupons
+        .filter((coupon) => coupon.isActive === true)
+        .map((coupon) => coupon.title);
+      setCouponValue(values);
+    }
+  }, [coupons]);
   if (error) {
     return (
       <div className="text-center py-6 text-red-500">
@@ -85,6 +88,12 @@ useEffect(() => {
       </div>
     );
   }
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  if (!hasMounted) return null;
 
   return (
     <>
@@ -98,8 +107,8 @@ useEffect(() => {
             <b>
               <Typewriter
                 words={
-                  couponValue
-                    ? couponValue.slice(0, Math.ceil(couponValue?.length / 2))
+                  Array.isArray(couponValue) && couponValue.length > 0
+                    ? couponValue.slice(0, Math.ceil(couponValue.length / 2))
                     : [
                         "FREE delivery on all orders!",
                         "40% Discount for next 3 orders!",
@@ -117,18 +126,20 @@ useEffect(() => {
 
             <b>
               <Typewriter
-                words={ couponValue
-                    ? couponValue?.slice( Math.ceil(couponValue?.length / 2)) : [
-                  "Sale ends in: 13 days 12 hrs 17 mins 48 sec.",
-                  "Hurry! Only a few days left!",
-                  "Countdown is running fast!",
-                ]}
-                loop={0}
-                cursor
-                cursorStyle="|"
-                typeSpeed={60}
-                deleteSpeed={40}
-                delaySpeed={2000}
+                words={
+                  Array.isArray(couponValue) && couponValue.length > 0
+                    ? couponValue.slice(Math.ceil(couponValue.length / 2))
+                    : [
+                        "Sale ends in: 13 days 12 hrs 17 mins 48 sec.",
+                        "Hurry! Only a few days left!",
+                        "Countdown is running fast!",
+                      ]
+                }
+              
+              loop={0}
+              cursor cursorStyle="|" typeSpeed={60}
+              deleteSpeed={40}
+              delaySpeed={2000}
               />
             </b>
           </div>
@@ -399,49 +410,6 @@ useEffect(() => {
                     </Link>
                   </motion.li>
                 ))}
-
-                {/* Trending Dropdown */}
-                {/* <motion.li
-                  className="relative"
-                  onMouseEnter={() => setOpen(true)}
-                  onMouseLeave={() => setOpen(false)}
-                >
-                  <div className="flex items-center gap-1 text-red-600 font-medium cursor-pointer">
-                    <Link href="/" className="flex items-center gap-1">
-                      Trending <ChevronDown className="w-4 h-4" />
-                    </Link>
-                  </div>
-
-                  <motion.ul
-                    className={`absolute top-full left-0 mt-2 w-40 bg-white shadow-lg rounded-md overflow-hidden transition-all duration-200 z-10 ${
-                      open ? "opacity-100 visible" : "opacity-0 invisible"
-                    }`}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: open ? 1 : 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    {[
-                      {
-                        label: "Editor's Picks",
-                        href: "/trending/editors-picks",
-                      },
-                      {
-                        label: "Award Winners",
-                        href: "/trending/award-winners",
-                      },
-                      { label: "Trending Authors", href: "/trending/authors" },
-                    ].map((item) => (
-                      <motion.li key={item.href}>
-                        <Link
-                          href={item.href}
-                          className="block px-4 py-2 hover:bg-gray-100"
-                        >
-                          {item.label}
-                        </Link>
-                      </motion.li>
-                    ))}
-                  </motion.ul>
-                </motion.li> */}
               </motion.ul>
             </div>
           </motion.nav>

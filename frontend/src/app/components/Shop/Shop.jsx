@@ -4,7 +4,6 @@ import { ChevronsLeft, ChevronsRight, Heart } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import toast from "react-hot-toast";
-import book from "../../Images/DBS/1.jpg";
 import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "@/app/redux/features/shop/shopSlice";
@@ -68,7 +67,7 @@ const Shop = () => {
   const user = useSelector((state) => state.login.user);
   const { cartItems } = useSelector((state) => state.cart);
   const { items: apiCartItems } = useSelector((state) => state.apiCart);
-console.log("apiCartItems:", apiCartItems);
+  console.log("apiCartItems:", apiCartItems);
 
   useEffect(() => {
     dispatch(verifyUser());
@@ -83,15 +82,15 @@ console.log("apiCartItems:", apiCartItems);
     const cartItem = {
       id: product._id,
       name: product.title,
-      image: book,
-      price: product.finalPrice,
-      totalPrice: product.finalPrice,
+      image: product.images[0],
+      price: product.price,
+      finalPrice: product.finalPrice,
       quantity: 1,
     };
 
     if (!user && !user?.email) {
       try {
-        await dispatch(addToCart(cartItem)).unwrap();
+        await dispatch(addToCart(cartItem));
 
         toast.success(
           exists
@@ -113,7 +112,7 @@ console.log("apiCartItems:", apiCartItems);
     }
   };
 
-  const handleAddToWishlist = (_id, title, img, finalPrice, price) => {
+  const handleAddToWishlist = (_id, title, images, finalPrice, price) => {
     if (user?.email) {
       const isAlreadyInWishlist = wishlistItems.some(
         (item) => item._id === _id
@@ -121,21 +120,25 @@ console.log("apiCartItems:", apiCartItems);
       if (isAlreadyInWishlist) {
         dispatch(removeFromWishlistState(_id));
         dispatch(removeFromWishlistApi(_id));
+        toast.error("Remove from wishlist.");
       } else {
         dispatch(addToWishlistState({ _id }));
         dispatch(addToWishlistApi({ productId: _id }));
+        toast.success(`"${title}" added to wishlist.`);
       }
     } else {
-      const isAlreadyInWishlist = wishlistItems.some((item) => item.id === _id);
+      const isAlreadyInWishlist = wishlistItems?.some(
+        (item) => item.id === _id
+      );
       if (isAlreadyInWishlist) {
         dispatch(removeFromWishlist(_id));
-        toast.error(`"${title}" removed from wishlist.`);
+        toast.error("removed from wishlist.");
       } else {
         dispatch(
           addToWishlist({
             id: _id,
             name: title,
-            image: img,
+            image: images,
             price: finalPrice,
             oldPrice: price,
           })
@@ -144,6 +147,7 @@ console.log("apiCartItems:", apiCartItems);
       }
     }
   };
+
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
@@ -233,7 +237,7 @@ console.log("apiCartItems:", apiCartItems);
                       handleAddToWishlist(
                         product._id,
                         product.title,
-                        product.img,
+                        product.images[0],
                         product.finalPrice,
                         product.oldPrice
                       )
@@ -241,10 +245,10 @@ console.log("apiCartItems:", apiCartItems);
                   >
                     {(
                       user?.email
-                        ? wishlistItems.some(
+                        ? wishlistItems?.some(
                             (item) => item?._id === product._id
                           )
-                        : wishlistItems.some((item) => item.id === product._id)
+                        : wishlistItems?.some((item) => item.id === product._id)
                     ) ? (
                       "❤️"
                     ) : (
@@ -255,7 +259,11 @@ console.log("apiCartItems:", apiCartItems);
                   <Link href={`/pages/shop/${product._id}`}>
                     <div className="w-30 h-30 lg:w-50 lg:h-45 md:w-45 md:h-40 flex justify-center m-auto items-center py-2 mb-2 bg-white ">
                       <Image
-                        src={product.images[0] ? `${serverUrl}/public/image/${product.images[0]}` :CallBackImg}
+                        src={
+                          product.images[0]
+                            ? `${serverUrl}/public/image/${product.images[0]}`
+                            : CallBackImg
+                        }
                         // src={book}
                         alt={product.title}
                         width={300}
@@ -267,7 +275,7 @@ console.log("apiCartItems:", apiCartItems);
                 </div>
 
                 <div className="w-full">
-                  <Link href={`/product/${product._id}`}>
+                  <Link href={`/pages/shop/${product._id}`}>
                     <h3
                       style={{
                         background:

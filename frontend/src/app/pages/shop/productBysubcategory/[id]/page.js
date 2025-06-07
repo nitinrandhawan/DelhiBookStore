@@ -10,8 +10,18 @@ import { useParams } from "next/navigation";
 import ShopBanner from "@/app/components/Shop/ShopBanner";
 import book1 from "../../../../Images/DBS/1.jpg";
 import { fetchProductsByCategory } from "@/app/redux/features/productByCategory/productByCategorySlice";
-import { addToCartAPIThunk, addtoCartState } from "@/app/redux/AddtoCart/apiCartSlice";
-import { addToWishlist, addToWishlistApi, addToWishlistState, removeFromWishlist, removeFromWishlistApi, removeFromWishlistState } from "@/app/redux/wishlistSlice";
+import {
+  addToCartAPIThunk,
+  addtoCartState,
+} from "@/app/redux/AddtoCart/apiCartSlice";
+import {
+  addToWishlist,
+  addToWishlistApi,
+  addToWishlistState,
+  removeFromWishlist,
+  removeFromWishlistApi,
+  removeFromWishlistState,
+} from "@/app/redux/wishlistSlice";
 import { serverUrl } from "@/app/redux/features/axiosInstance";
 import CallBackImg from "../../../../Images/DBS/DBSLOGO.jpg";
 
@@ -22,12 +32,12 @@ const Page = () => {
   const { items: apiCartItems } = useSelector((state) => state.apiCart);
 
   const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
-const user = useSelector((state) => state.login.user);
+  const user = useSelector((state) => state.login.user);
   const { products, loading, error } = useSelector(
     (state) => state.productByCategory
   );
-let cartItemsValue = [];
-    if (user?.email) {
+  let cartItemsValue = [];
+  if (user?.email) {
     cartItemsValue = apiCartItems;
   } else {
     cartItemsValue = cartItems;
@@ -101,22 +111,27 @@ let cartItemsValue = [];
     }
   };
 
-   const handleAddToWishlist = (_id, title, img, finalPrice, price) => {
-    
+  const handleAddToWishlist = (_id, title, img, finalPrice, price) => {
     if (user?.email) {
-      const isAlreadyInWishlist = wishlistItems.some((item) => item._id === _id);
+      const isAlreadyInWishlist = wishlistItems?.some(
+        (item) => item._id === _id
+      );
       if (isAlreadyInWishlist) {
         dispatch(removeFromWishlistState(_id));
         dispatch(removeFromWishlistApi(_id));
-      }else{
+                        toast.error("Remove from wishlist.");
+        
+      } else {
         dispatch(addToWishlistState({ _id }));
         dispatch(addToWishlistApi({ productId: _id }));
+                        toast.success(`"${title}" added to wishlist.`);
+
       }
     } else {
       const isAlreadyInWishlist = wishlistItems.some((item) => item.id === _id);
       if (isAlreadyInWishlist) {
         dispatch(removeFromWishlist(_id));
-        toast.error(`"${title}" removed from wishlist.`);
+        toast.error("removed from wishlist.");
       } else {
         dispatch(
           addToWishlist({
@@ -170,7 +185,7 @@ let cartItemsValue = [];
                 )}
 
                 {/* Wishlist icon */}
-                  <div
+                <div
                   className="bg-white text-black absolute top-2 right-3 shadow-md rounded-2xl p-1 cursor-pointer"
                   onClick={() =>
                     handleAddToWishlist(
@@ -182,7 +197,11 @@ let cartItemsValue = [];
                     )
                   }
                 >
-                  {(user?.email ? wishlistItems.some((item) => item?._id === product._id) :wishlistItems.some((item) => item.id === product._id) ) ? (
+                  {(
+                    user?.email
+                      ? wishlistItems?.some((item) => item?._id === product._id)
+                      : wishlistItems?.some((item) => item.id === product._id)
+                  ) ? (
                     "❤️"
                   ) : (
                     <Heart size={16} />
@@ -193,7 +212,11 @@ let cartItemsValue = [];
                 <Link href={`/pages/shop/${product._id}`}>
                   <div className="w-30 h-30 lg:w-50 lg:h-45 md:w-45 md:h-40 flex justify-center m-auto items-center py-2 mb-2 bg-white ">
                     <Image
-                      src={product.images[0] ? `${serverUrl}/public/image/${product.images[0]}` : CallBackImg}
+                      src={
+                        product.images[0]
+                          ? `${serverUrl}/public/image/${product.images[0]}`
+                          : CallBackImg
+                      }
                       // src={book1}
                       alt={product.title}
                       width={120}
@@ -219,7 +242,7 @@ let cartItemsValue = [];
                   >
                     {product.title}
                   </h3>
-                   <h3 className="mt-1 text-sm text-gray-800 underline font-semibold italic line-clamp-1">
+                  <h3 className="mt-1 text-sm text-gray-800 underline font-semibold italic line-clamp-1">
                     by {product.author}
                   </h3>
                 </Link>
@@ -241,17 +264,27 @@ let cartItemsValue = [];
                   </div>
                 </div>
 
-            <button
+                <button
                   className={`${
-                  (user?.email ?cartItemsValue.some((item) => item?.productId?._id  === product._id): cartItemsValue.some((item) => item.id === product._id))
+                    (
+                      user?.email
+                        ? cartItemsValue.some(
+                            (item) => item?.productId?._id === product._id
+                          )
+                        : cartItemsValue.some((item) => item.id === product._id)
+                    )
                       ? "added-to-cart-btn"
                       : "add-to-cart-btn"
                   }`}
-                  onClick={() =>
-                    handleAddToCart(product)
-                  }
+                  onClick={() => handleAddToCart(product)}
                 >
-                   {(user?.email ?cartItemsValue.some((item) => item?.productId?._id  === product._id): cartItemsValue.some((item) => item.id === product._id))
+                  {(
+                    user?.email
+                      ? cartItemsValue.some(
+                          (item) => item?.productId?._id === product._id
+                        )
+                      : cartItemsValue.some((item) => item.id === product._id)
+                  )
                     ? "Added"
                     : "Add to cart 🛒"}
                 </button>

@@ -29,7 +29,7 @@ export default function Cart() {
   const { items, loading } = useSelector((state) => state.apiCart);
   const { coupons } = useSelector((state) => state.products);
   const { user } = useSelector((state) => state.login);
-  const [couponDiscount,setCouponDiscount]=useState(0);
+  const [couponDiscount, setCouponDiscount] = useState(0);
   const debouncedUpdateAPI = useRef(
     debounce((id, quantity) => {
       dispatch(addToCartAPIThunk({ productId: id, quantity }));
@@ -74,7 +74,7 @@ export default function Cart() {
   }
 
   console.log("cartItemsValue:", cartItemsValue);
-  
+
   const [couponCodeInput, setCouponCode] = useState("");
 
   let newQty = 0;
@@ -180,7 +180,8 @@ export default function Cart() {
   const shippingCost = subtotal >= 500 ? 0 : 50;
 
   // Final Total
-  const finalTotal = subtotal - discountAmountValue + shippingCost -couponDiscount;
+  const finalTotal =
+    subtotal - discountAmountValue + shippingCost - couponDiscount;
 
   useEffect(() => {
     dispatch(calculateTotalsLoad());
@@ -272,21 +273,21 @@ export default function Cart() {
             </div>
 
             <div className="space-y-4 pr-2">
-              {cartItemsValue?.map((item,index) => (
+              {cartItemsValue?.map((item, index) => (
                 <div
                   key={index}
                   className="flex flex-row flex-wrap justify-between items-center gap-2 md:gap-4 border-b border-gray-300 pb-4"
                 >
                   <div>
                     <Image
-                   src={
-  item?.image
-    ? `${serverUrl}/public/image/${item.image}`
-    : item?.productId?.images?.[0]
-    ? `${serverUrl}/public/image/${item.productId.images[0]}`
-    : CallBackImg
-}
-                      alt={item?.name || item?.productId?.title}
+                      src={
+                        item?.image
+                          ? `${serverUrl}/public/image/${item.image}`
+                          : item?.productId?.images?.[0]
+                          ? `${serverUrl}/public/image/${item.productId.images[0]}`
+                          : CallBackImg
+                      }
+                      alt="Product Image"
                       width={60}
                       height={60}
                       className="rounded-md object-contain"
@@ -299,7 +300,7 @@ export default function Cart() {
                       : item?.name ?? item?.productId?.title}
                   </div>
                   <div className="text-center">
-                    ₹{item?.price ?? item?.productId?.price}
+                    ₹{item?.finalPrice ?? item?.productId?.finalPrice}
                   </div>
                   <div className="flex items-center justify-center space-x-2">
                     <button
@@ -313,7 +314,8 @@ export default function Cart() {
 
                     <input
                       type="number"
-                      min="1"
+                      // min="1"
+                      min={1}
                       value={item.quantity}
                       readOnly
                       className="w-10 text-center border border-gray-300 rounded"
@@ -329,7 +331,9 @@ export default function Cart() {
                   </div>
                   <div className="text-right flex justify-end items-center space-x-2">
                     <span>
-                      ₹{(item?.price ?? item?.productId?.price) * item.quantity}
+                      ₹
+                      {(item?.price ?? item?.productId?.finalPrice) *
+                        item.quantity}
                     </span>
                     <button
                       onClick={() => {
@@ -373,7 +377,10 @@ export default function Cart() {
               {couponDiscount > 0 && (
                 <div className="flex justify-between text-red-600">
                   <span>Coupon Discount</span>
-                  <span>-{`${couponDiscount > 100 ?"₹"  : "%"}`}{couponDiscount}</span>
+                  <span>
+                    -{`${couponDiscount > 100 ? "₹" : "%"}`}
+                    {couponDiscount}
+                  </span>
                 </div>
               )}
               <div className="border-t border-gray-300 pt-2 flex justify-between font-semibold">
@@ -386,24 +393,24 @@ export default function Cart() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-               
-                const coupon = coupons.find((coupon) => 
-                  coupon.couponCode == couponCodeInput
+
+                const coupon = coupons.find(
+                  (coupon) => coupon.couponCode == couponCodeInput
                 );
-               
+
                 if (!coupon) {
                   toast.error("Please enter a valid coupon code.");
-                  setCouponDiscount(0)
+                  setCouponDiscount(0);
                   return;
                 }
                 if (coupon.minAmount > finalTotal) {
                   toast.error("Minimum amount should be " + coupon.minAmount);
-                  setCouponDiscount(0)
+                  setCouponDiscount(0);
                   return;
                 }
                 if (coupon.maxAmount < finalTotal) {
                   toast.error("Maximum amount should be " + coupon.maxAmount);
-                  setCouponDiscount(0)
+                  setCouponDiscount(0);
                   return;
                 }
                 // dispatch(applyCoupon(couponCodeInput));
@@ -414,7 +421,7 @@ export default function Cart() {
                   return;
                 } else {
                   toast.error("Please enter a valid coupon code.");
-                  setCouponDiscount(0)
+                  setCouponDiscount(0);
                   return;
                 }
               }}

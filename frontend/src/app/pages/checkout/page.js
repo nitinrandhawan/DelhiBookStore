@@ -25,14 +25,14 @@ export default function Page() {
     state: "",
     zipCode: "",
     country: "India",
-    paymentMethod:""
+    paymentMethod: "",
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const user=useSelector((state)=>state.login.user)
-const {items}=useSelector((state)=>state.apiCart)
-const {cartItems}=useSelector((state)=> state.cart)
-const dispatch=useDispatch()
+  const user = useSelector((state) => state.login.user);
+  const { items } = useSelector((state) => state.apiCart);
+  const { cartItems } = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
   // const cartItems = [
   //   {
   //     id: 1,
@@ -50,13 +50,13 @@ const dispatch=useDispatch()
   //   },
   // ];
 
-  let cartItemsValue=[]
-  if(user?.email){
-    cartItemsValue=items
-  }else{
-    cartItemsValue=cartItems
+  let cartItemsValue = [];
+  if (user?.email) {
+    cartItemsValue = items;
+  } else {
+    cartItemsValue = cartItems;
   }
-  
+
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
@@ -80,8 +80,8 @@ const dispatch=useDispatch()
   };
 
   useEffect(() => {
-    dispatch(getAllCartItemsAPI())
-  },[dispatch])
+    dispatch(getAllCartItemsAPI());
+  }, [dispatch]);
   const validateForm = () => {
     const newErrors = {};
 
@@ -90,7 +90,7 @@ const dispatch=useDispatch()
       newErrors.firstName = "First name is required";
     if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
-    const emailRegex=/^\S+@\S+\.\S+$/
+    const emailRegex = /^\S+@\S+\.\S+$/;
     if (!emailRegex.test(formData.email))
       newErrors.email = "Invalid email format";
     if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
@@ -98,7 +98,8 @@ const dispatch=useDispatch()
     if (!formData.city.trim()) newErrors.city = "City is required";
     if (!formData.state.trim()) newErrors.state = "State is required";
     if (!formData.zipCode.trim()) newErrors.zipCode = "ZIP code is required";
-if(!formData.paymentMethod) newErrors.paymentMethod="Payment method is required"
+    if (!formData.paymentMethod)
+      newErrors.paymentMethod = "Payment method is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -111,9 +112,8 @@ if(!formData.paymentMethod) newErrors.paymentMethod="Payment method is required"
     setIsSubmitting(true);
 
     try {
-     await dispatch(createOrder(formData)).unwrap(); 
-    router.push("/pages/checkout/success");
-     
+      await dispatch(createOrder(formData)).unwrap();
+      router.push("/pages/checkout/success");
     } catch (error) {
       console.log("Checkout failed:", error);
       toast.error(error.message || "Something went wrong during checkout.");
@@ -350,30 +350,28 @@ if(!formData.paymentMethod) newErrors.paymentMethod="Payment method is required"
                       <option value="Australia">Australia</option>
                     </select>
                   </div>
-
                 </div>
-                <hr className="my-4 text-gray-400"/>
+                <hr className="my-4 text-gray-400" />
 
-                
-                   <div>
-          <label
-            htmlFor="paymentMethod"
-            className="block text-lg font-semibold text-gray-700 mb-1"
-          >
-            Payment Method
-          </label>
-          <select
-            id="paymentMethod"
-            name="paymentMethod"
-            value={formData.paymentMethod}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-400 rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none"
-          >
-            <option value="">Select Payment Method</option>
-            <option value="COD">Cash on Delivery (COD)</option>
-            <option value="Online">Online Payment</option>
-          </select>
-        </div>
+                <div>
+                  <label
+                    htmlFor="paymentMethod"
+                    className="block text-lg font-semibold text-gray-700 mb-1"
+                  >
+                    Payment Method
+                  </label>
+                  <select
+                    id="paymentMethod"
+                    name="paymentMethod"
+                    value={formData.paymentMethod}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-400 rounded-md focus:ring-2 focus:ring-purple-600 focus:outline-none"
+                  >
+                    <option value="">Select Payment Method</option>
+                    <option value="COD">Cash on Delivery (COD)</option>
+                    <option value="Online">Online Payment</option>
+                  </select>
+                </div>
               </div>
 
               <button
@@ -405,27 +403,38 @@ if(!formData.paymentMethod) newErrors.paymentMethod="Payment method is required"
               </div>
 
               <div className="divide-y">
-                {
-                  cartItemsValue?.length === 0 && <p className="text-gray-500 text-sm">Your cart is empty. </p>
-                }
-                {cartItemsValue?.map((item) => (
-                  <div key={item.id} className="py-4 flex gap-4">
+                {cartItemsValue?.length === 0 && (
+                  <p className="text-gray-500 text-sm">Your cart is empty. </p>
+                )}
+                {cartItemsValue?.map((item, index) => (
+                  <div
+                    key={item?.id || item?._id || index}
+                    className="py-4 flex gap-4"
+                  >
                     <div className="w-auto h-20 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
                       <Image
-                        src={item?.productId?.images[0] ? `${serverUrl}/public/image/${item?.productId?.images[0]}` :CallBackImg}
-                        alt={item?.name || item?.productId?.title}
+                        src={
+                          item?.image
+                            ? `${serverUrl}/public/image/${item.image}`
+                            : item?.productId?.images?.[0]
+                            ? `${serverUrl}/public/image/${item.productId.images[0]}`
+                            : CallBackImg
+                        }
+                        alt={item?.name || item?.productId?.title || "product"}
                         width={80}
                         height={80}
                         className="w-full h-full object-contain"
                       />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-medium text-gray-800">{item.name ?? item.productId?.title}</h3>
+                      <h3 className="font-medium text-gray-800">
+                        {item.name ?? item.productId?.title}
+                      </h3>
                       <p className="text-gray-500 text-sm">
                         Quantity: {item.quantity}
                       </p>
                       <p className="text-gray-900 font-medium mt-1">
-                        ₹{(item.price ?? item.productId?.price).toFixed(2)}
+                        ₹{(item.price ?? item.productId?.price)?.toFixed(2)}
                       </p>
                     </div>
                   </div>
