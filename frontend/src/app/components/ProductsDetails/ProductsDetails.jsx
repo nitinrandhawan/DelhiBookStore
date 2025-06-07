@@ -19,14 +19,21 @@ import toast from "react-hot-toast";
 import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import axiosInstance, { serverUrl } from "@/app/redux/features/axiosInstance";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import CallBackImg from "../../Images/DBS/DBSLOGO.jpg";
 import { Parser } from "html-to-react";
 import {
   addToCartAPIThunk,
   addtoCartState,
 } from "@/app/redux/AddtoCart/apiCartSlice";
-import { Router } from "next/navigation";
+import {
+  addToWishlist,
+  addToWishlistApi,
+  addToWishlistState,
+  removeFromWishlist,
+  removeFromWishlistApi,
+  removeFromWishlistState,
+} from "@/app/redux/wishlistSlice";
 export default function ProductDetails() {
   // Api for show ingle prodict data
 
@@ -44,9 +51,9 @@ export default function ProductDetails() {
   const htmlParser = new Parser();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.login.user);
-const router=Router()
   const { cartItems } = useSelector((state) => state.cart);
   const { items: apiCartItems } = useSelector((state) => state.apiCart);
+  const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
 
   const handleAddToCart = async (product) => {
     const exists = cartItems.some((item) => item.id === product._id);
@@ -59,13 +66,13 @@ const router=Router()
       name: product.title,
       image: product?.images[0],
       price: product.finalPrice,
-      totalPrice: product.finalPrice,
+      finalPrice: product.finalPrice,
       quantity: 1,
     };
 
     if (!user && !user?.email) {
       try {
-        await dispatch(addToCart(cartItem)).unwrap();
+        await dispatch(addToCart(cartItem));
 
         toast.success(
           exists
@@ -87,10 +94,48 @@ const router=Router()
     }
   };
 
-  const handleBuyNow=(product)=>{
+  const handleAddToWishlist = (_id, title, images, finalPrice, price) => {
+    if (user?.email) {
+      const isAlreadyInWishlist = wishlistItems.some(
+        (item) => item._id === _id
+      );
+      if (isAlreadyInWishlist) {
+        dispatch(removeFromWishlistState(_id));
+        dispatch(removeFromWishlistApi(_id));
+        toast.error("Remove from wishlist.");
+      } else {
+        dispatch(addToWishlistState({ _id }));
+        dispatch(addToWishlistApi({ productId: _id }));
+        toast.success(`"${title}" added to wishlist.`);
+      }
+    } else {
+      const isAlreadyInWishlist = wishlistItems?.some(
+        (item) => item.id === _id
+      );
+      if (isAlreadyInWishlist) {
+        dispatch(removeFromWishlist(_id));
+        toast.error("removed from wishlist.");
+      } else {
+        dispatch(
+          addToWishlist({
+            id: _id,
+            name: title,
+            image: images,
+            price: finalPrice,
+            oldPrice: price,
+          })
+        );
+        toast.success(`"${title}" added to wishlist.`);
+      }
+    }
+  };
+
+  const router = useRouter();
+
+  const handleBuyNow = (product) => {
     handleAddToCart(product);
-    router.push("/pages/checkout")
-  }
+    router.push("/pages/checkout");
+  };
   const handleShare = () => {
     if (typeof window !== "undefined" && navigator.share) {
       navigator
@@ -214,8 +259,27 @@ const router=Router()
                 <p className="text-lg text-gray-500">by {book.author}</p>
               </div>
               <div className="flex space-x-2">
-                <button className="p-2 border border-purple-600 rounded-md hover:bg-purple-100">
-                  <Heart />
+                <button
+                  className="p-2 border border-purple-600 rounded-md hover:bg-purple-100"
+                  onClick={() =>
+                    handleAddToWishlist(
+                      book._id,
+                      book.title,
+                      book?.images[0],
+                      book.finalPrice,
+                      book.oldPrice
+                    )
+                  }
+                >
+                  {(
+                    user?.email
+                      ? wishlistItems?.some((item) => item?._id === book._id)
+                      : wishlistItems?.some((item) => item.id === book._id)
+                  ) ? (
+                    "❤️"
+                  ) : (
+                    <Heart size={20} />
+                  )}
                   <span className="sr-only">Add to wishlist</span>
                 </button>
                 <button
@@ -341,11 +405,7 @@ const router=Router()
                   ? "w-full bg-black text-white font-medium py-3 px-4 rounded-md transition-colors flex items-center justify-center"
                   : "w-full bg-purple-700 hover:bg-purple-800 text-white font-medium py-3 px-4 rounded-md transition-colors flex items-center justify-center"
               }`}
-              onClick={() =>
-                handleAddToCart(
-                  book
-                )
-              }
+              onClick={() => handleAddToCart(book)}
             >
               {cartItems.some((item) => item.id === book.id) ? (
                 <>
@@ -358,9 +418,12 @@ const router=Router()
               )}
             </button>
             {/* <Link href={"/pages/checkout"}> */}
-              <button className="w-full border border-gray-500 hover:bg-gray-100 text-gray-800 font-medium py-3 px-4 rounded-md transition-colors" onClick={()=> handleBuyNow(book)}>
-                Buy Now
-              </button>
+            <button
+              className="w-full border border-gray-500 hover:bg-gray-100 text-gray-800 font-medium py-3 px-4 rounded-md transition-colors"
+              onClick={() => handleBuyNow(book)}
+            >
+              Buy Now
+            </button>
             {/* </Link> */}
           </div>
 

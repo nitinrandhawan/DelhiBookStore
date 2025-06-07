@@ -40,7 +40,7 @@ export const getAllCartItemsAPI = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const result = await axiosInstance.get("cart/get-all-carts");
-      return result.data.carts;
+      return result.data?.carts;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -136,7 +136,8 @@ const cartSlice = createSlice({
         state.error = null;
       })
       .addCase(getAllCartItemsAPI.fulfilled, (state, action) => {
-        state.items = action.payload.items;
+        let data=action.payload?.items
+        state.items = data ? data : [];
       })
       .addCase(getAllCartItemsAPI.rejected, (state, action) => {
         state.loading = false;

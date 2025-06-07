@@ -7,7 +7,6 @@ import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import product1 from "../../Images/DBS/1.jpg";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,26 +15,34 @@ import {
   addToWishlist,
   addToWishlistApi,
   addToWishlistState,
-  getAllWishlistItemsApi,
   removeFromWishlist,
   removeFromWishlistApi,
   removeFromWishlistState,
 } from "@/app/redux/wishlistSlice";
 import axiosInstance, { serverUrl } from "@/app/redux/features/axiosInstance";
-import { addToCartAPIThunk, addtoCartState, removeFromCartAPI } from "@/app/redux/AddtoCart/apiCartSlice";
+import {
+  addToCartAPIThunk,
+  addtoCartState,
+} from "@/app/redux/AddtoCart/apiCartSlice";
 import CallBackImg from "../../Images/DBS/DBSLOGO.jpg";
+import { verifyUser } from "@/app/redux/features/auth/loginSlice";
 
 const NewArrival = () => {
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
   const { items: apiCartItems } = useSelector((state) => state.apiCart);
   const user = useSelector((state) => state.login.user);
+
   let cartItemsValue = [];
-    if (user?.email) {
+  if (user?.email) {
     cartItemsValue = apiCartItems;
   } else {
     cartItemsValue = cartItems;
   }
+
+  useEffect(() => {
+    dispatch(verifyUser());
+  }, [dispatch]);
 
   const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
   const handleAddToCart = async (product) => {
@@ -47,15 +54,15 @@ const NewArrival = () => {
     const cartItem = {
       id: product._id,
       name: product.title,
-      image: product?.images[0],
+      image: product.images[0],
       price: product.finalPrice,
-      totalPrice: product.finalPrice,
+      finalPrice: product.finalPrice,
       quantity: 1,
     };
 
     if (!user && !user?.email) {
       try {
-        await dispatch(addToCart(cartItem)).unwrap();
+        await dispatch(addToCart(cartItem));
 
         toast.success(
           exists
@@ -76,29 +83,33 @@ const NewArrival = () => {
       );
     }
   };
-
-  const handleAddToWishlist = (_id, title, img, finalPrice, price) => {
-    
+  const handleAddToWishlist = (_id, title, images, finalPrice, price) => {
     if (user?.email) {
-      const isAlreadyInWishlist = wishlistItems.some((item) => item._id === _id);
+      const isAlreadyInWishlist = wishlistItems.some(
+        (item) => item._id === _id
+      );
       if (isAlreadyInWishlist) {
         dispatch(removeFromWishlistState(_id));
         dispatch(removeFromWishlistApi(_id));
-      }else{
+        toast.error("Remove from wishlist.");
+      } else {
         dispatch(addToWishlistState({ _id }));
         dispatch(addToWishlistApi({ productId: _id }));
+        toast.success(`"${title}" added to wishlist.`);
       }
     } else {
-      const isAlreadyInWishlist = wishlistItems.some((item) => item.id === _id);
+      const isAlreadyInWishlist = wishlistItems?.some(
+        (item) => item.id === _id
+      );
       if (isAlreadyInWishlist) {
         dispatch(removeFromWishlist(_id));
-        toast.error(`"${title}" removed from wishlist.`);
+        toast.error("removed from wishlist.");
       } else {
         dispatch(
           addToWishlist({
             id: _id,
             name: title,
-            image: img,
+            image: images,
             price: finalPrice,
             oldPrice: price,
           })
@@ -107,12 +118,12 @@ const NewArrival = () => {
       }
     }
   };
+
   const swiperRef = useRef(null);
 
-  const [product, setProduct] = useState(null);
+  const [products, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
 
   useEffect(() => {
     const newArrivals = async () => {
@@ -155,7 +166,7 @@ const NewArrival = () => {
     return <div className="text-center text-red-500">{error}</div>;
   }
 
-  if (!product) {
+  if (!products) {
     return (
       <div className="text-center text-gray-500">
         {loading ? "Loading..." : "Product not found."}
@@ -169,12 +180,12 @@ const NewArrival = () => {
         <h2 className="text-xl font-bold text-gray-800">
           New Arrival products
         </h2>
-        <Link href="/">
+        {/* <Link href="/pages/">
           <button className="view-all-btn">
             View All
             <ArrowRight size={16} />
           </button>
-        </Link>
+        </Link> */}
       </div>
 
       <div
@@ -196,77 +207,89 @@ const NewArrival = () => {
             1280: { slidesPerView: 5 },
           }}
         >
-          {product.map((pro) => (
-            <SwiperSlide key={pro._id}>
-              <div className="border border-gray-300 p-2 rounded-lg relative bg-white">
-                <div className="absolute top-2 left-0 bg-red-500 text-white text-xs px-2 py-1 rounded-e-2xl z-10">
-                  {pro.discount}%
-                </div>
+          {products.map((product) => {
+            const isInCart = user?.email
+              ? apiCartItems.some(
+                  (item) => item?.productId?._id === product._id
+                )
+              : cartItems.some((item) => item.id === product._id);
 
-                <div
-                  className="bg-white text-black absolute top-2 right-3 shadow-md rounded-2xl p-1 cursor-pointer"
-                  onClick={() =>
-                    handleAddToWishlist(
-                      pro._id,
-                      pro.title,
-                      pro.img,
-                      pro.finalPrice,
-                      pro.oldPrice
-                    )
-                  }
-                >
-                  {(user?.email ? wishlistItems.some((item) => item?._id === pro._id) :wishlistItems.some((item) => item.id === pro._id) ) ? (
-                    "❤️"
-                  ) : (
-                    <Heart size={16} />
-                  )}
-                </div>
-
-                <Link href={`/pages/shop/${pro._id}`}>
-                  <div className="w-50 h-60 flex justify-center m-auto items-center mb-2">
-                    <Image
-                      src={pro?.images?.[0] ? `${serverUrl}/public/image/${pro.images[0]}` : CallBackImg}
-                      width={300}
-                      height={300}
-                      alt={pro.title}
-                      className="object-contain h-full"
-                    />
+            return (
+              <SwiperSlide key={product._id}>
+                <div className="border border-gray-300 p-2 rounded-lg relative bg-white">
+                  <div className="absolute top-2 left-0 bg-red-500 text-white text-xs px-2 py-1 rounded-e-2xl z-10">
+                    {product.discount}%
                   </div>
-                </Link>
 
-                <Link href={`/pages/shop/${pro._id}`}>
-                  <h3 className="mt-2 text-sm md:text-md font-normal md:font-semibold line-clamp-1 hover:underline">
-                    {pro.title}
-                  </h3>
-                   <h3 className="mt-1 text-sm text-gray-800 underline font-semibold italic line-clamp-1">
-                    by {pro.author}
-                  </h3>
-                </Link>
-              
-                <div className="text-md md:text-lg font-bold text-red-600">
-                  ₹{pro.finalPrice}
-                </div>
-                <div className="text-sm text-gray-400 line-through">
-                  ₹{pro.price}
-                </div>
+                  <div
+                    className="bg-white text-black absolute top-2 right-3 shadow-md rounded-2xl p-1 cursor-pointer"
+                    onClick={() =>
+                      handleAddToWishlist(
+                        product._id,
+                        product.title,
+                        product.images[0],
+                        product.finalPrice,
+                        product.oldPrice
+                      )
+                    }
+                  >
+                    {(
+                      user?.email
+                        ? wishlistItems?.some(
+                            (item) => item?._id === product._id
+                          )
+                        : wishlistItems?.some((item) => item.id === product._id)
+                    ) ? (
+                      "❤️"
+                    ) : (
+                      <Heart size={16} />
+                    )}
+                  </div>
 
-                <button
-                  className={`${
-                  (user?.email ?cartItemsValue.some((item) => item?.productId?._id  === pro._id): cartItemsValue.some((item) => item.id === pro._id))
-                      ? "added-to-cart-btn"
-                      : "add-to-cart-btn"
-                  }`}
-                  onClick={() =>
-                    handleAddToCart(pro)
-                  }
-                >
-                  {(user?.email ?cartItemsValue.some((item) => item?.productId?._id  === pro._id): cartItemsValue.some((item) => item.id === pro._id))
-                    ? "Added"
-                    : "Add to cart 🛒"}
-                </button>
-              </div>
-            </SwiperSlide>
-          ))}
+                  <Link href={`/pages/shop/${product._id}`}>
+                    <div className="w-50 h-60 flex justify-center m-auto items-center mb-2">
+                      <Image
+                        src={
+                          product?.images?.[0]
+                            ? `${serverUrl}/public/image/${product.images[0]}`
+                            : CallBackImg
+                        }
+                        width={300}
+                        height={300}
+                        alt={product.title}
+                        className="object-contain h-full"
+                      />
+                    </div>
+                  </Link>
+
+                  <Link href={`/pages/shop/${product._id}`}>
+                    <h3 className="mt-2 text-sm md:text-md font-normal md:font-semibold line-clamp-1 hover:underline">
+                      {product.title}
+                    </h3>
+                    <h3 className="mt-1 text-sm text-gray-800 underline font-semibold italic line-clamp-1">
+                      by {product.author}
+                    </h3>
+                  </Link>
+
+                  <div className="text-md md:text-lg font-bold text-red-600">
+                    ₹{product.finalPrice}
+                  </div>
+                  <div className="text-sm text-gray-400 line-through">
+                    ₹{product.price}
+                  </div>
+
+                  <button
+                    className={
+                      isInCart ? "added-to-cart-btn" : "add-to-cart-btn"
+                    }
+                    onClick={() => handleAddToCart(product)}
+                  >
+                    {isInCart ? "Added" : "Add to cart 🛒"}
+                  </button>
+                </div>
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
       </div>
     </div>

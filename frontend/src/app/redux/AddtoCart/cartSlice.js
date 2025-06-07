@@ -26,7 +26,7 @@ const initialState = {
 
 export const calculateTotals = (cartItems, couponCode) => {
   const totalAmount = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + item.finalPrice * item.quantity,
     0
   );
   const tax = totalAmount * 0.05;
