@@ -21,7 +21,12 @@ import { useDispatch, useSelector } from "react-redux";
 import axiosInstance, { serverUrl } from "@/app/redux/features/axiosInstance";
 import { useParams } from "next/navigation";
 import CallBackImg from "../../Images/DBS/DBSLOGO.jpg";
-
+import { Parser } from "html-to-react";
+import {
+  addToCartAPIThunk,
+  addtoCartState,
+} from "@/app/redux/AddtoCart/apiCartSlice";
+import { Router } from "next/navigation";
 export default function ProductDetails() {
   // Api for show ingle prodict data
 
@@ -36,28 +41,56 @@ export default function ProductDetails() {
   //   const timer = setTimeout(() => setFade(false), 200); // match transition duration
   //   return () => clearTimeout(timer);
   // }, [selectedImage]);
-
+  const htmlParser = new Parser();
   const dispatch = useDispatch();
-
+  const user = useSelector((state) => state.login.user);
+const router=Router()
   const { cartItems } = useSelector((state) => state.cart);
+  const { items: apiCartItems } = useSelector((state) => state.apiCart);
 
-  const handleAddToCart = (id, title, coverImage, IND) => {
-    dispatch(
-      addToCart({
-        id: id,
-        name: title,
-        image: coverImage,
-        price: IND,
-        totalPrice: IND,
-      })
+  const handleAddToCart = async (product) => {
+    const exists = cartItems.some((item) => item.id === product._id);
+    const insideApiExists = apiCartItems.some(
+      (item) => item.productId?._id === product._id
     );
-    if (cartItems.some((item) => item.id === id)) {
-      toast.success("Quantity updated in your cart!");
+
+    const cartItem = {
+      id: product._id,
+      name: product.title,
+      image: product?.images[0],
+      price: product.finalPrice,
+      totalPrice: product.finalPrice,
+      quantity: 1,
+    };
+
+    if (!user && !user?.email) {
+      try {
+        await dispatch(addToCart(cartItem)).unwrap();
+
+        toast.success(
+          exists
+            ? "Quantity updated in your cart!"
+            : `Great choice! ${product.title} added.`
+        );
+      } catch (error) {
+        toast.error("Something went wrong. Please try again.");
+        console.error("Cart error:", error);
+      }
     } else {
-      toast.success(`"Great choice! ${name} added."`);
+      dispatch(addtoCartState({ id: product._id }));
+      dispatch(addToCartAPIThunk({ productId: product._id, quantity: 1 }));
+      toast.success(
+        insideApiExists
+          ? "Quantity updated in your cart!"
+          : `Great choice! ${product.title} added.`
+      );
     }
   };
 
+  const handleBuyNow=(product)=>{
+    handleAddToCart(product);
+    router.push("/pages/checkout")
+  }
   const handleShare = () => {
     if (typeof window !== "undefined" && navigator.share) {
       navigator
@@ -136,7 +169,11 @@ export default function ProductDetails() {
           <div className="border border-purple-500 rounded-lg overflow-hidden bg-white p-4 flex items-center justify-center">
             <Image
               // src={book1}
-              src={book?.images[0] ?`${serverUrl}/public/image/${book?.images[0]}` : CallBackImg}
+              src={
+                book?.images[0]
+                  ? `${serverUrl}/public/image/${book?.images[0]}`
+                  : CallBackImg
+              }
               width={500}
               height={500}
               alt={book.title}
@@ -226,10 +263,12 @@ export default function ProductDetails() {
             </div> */}
 
             <div className="flex flex-wrap gap-2 mt-3">
-              <Link href={`/pages/shop/productBysubcategory/${book.category._id}`}>
-              <span className="px-2.5 py-0.5 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">
-                {book.category.categoryName}
-              </span>
+              <Link
+                href={`/pages/shop/productBysubcategory/${book.category._id}`}
+              >
+                <span className="px-2.5 py-0.5 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">
+                  {book.category.categoryName}
+                </span>
               </Link>
             </div>
           </div>
@@ -304,10 +343,7 @@ export default function ProductDetails() {
               }`}
               onClick={() =>
                 handleAddToCart(
-                  book.id,
-                  book.title,
-                  book.coverImage,
-                  book.prices.IND
+                  book
                 )
               }
             >
@@ -321,11 +357,11 @@ export default function ProductDetails() {
                 </>
               )}
             </button>
-            <Link href={"/pages/checkout"}>
-              <button className="w-full border border-gray-500 hover:bg-gray-100 text-gray-800 font-medium py-3 px-4 rounded-md transition-colors">
+            {/* <Link href={"/pages/checkout"}> */}
+              <button className="w-full border border-gray-500 hover:bg-gray-100 text-gray-800 font-medium py-3 px-4 rounded-md transition-colors" onClick={()=> handleBuyNow(book)}>
                 Buy Now
               </button>
-            </Link>
+            {/* </Link> */}
           </div>
 
           <div className="text-sm text-gray-700">
@@ -368,7 +404,9 @@ export default function ProductDetails() {
             <div className="mt-4">
               {activeTab === "description" && (
                 <div className="space-y-4">
-                  <p className="text-sm leading-relaxed">{book.description}</p>
+                  <p className="text-sm leading-relaxed">
+                    {htmlParser.parse(book.description)}
+                  </p>
                 </div>
               )}
 
