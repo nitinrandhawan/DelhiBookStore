@@ -33,14 +33,19 @@ const Header = () => {
     { to: "/", label: "Dashboard", icon: "fa-solid fa-gauge" },
     { to: "/all-orders", label: "Manage Orders", icon: "fa-solid fa-truck" },
     {
-      to: "/all-parent-category",
-      label: "All Parent Category",
+      to: "/all-category",
+      label: "All Category",
       icon: "fa-solid fa-sitemap",
     },
     {
-      to: "/all-category",
-      label: "All Category",
+      to: "/all-sub-category",
+      label: "All Sub Category",
       icon: "fa-solid fa-layer-group",
+    },
+     {
+      to: "/all-level-images",
+      label: "All Level Images",
+      icon: "	fa-solid fa-signal",
     },
     { to: "/all-products", label: "All Products", icon: "fa-solid fa-cubes" },
     // { to: "/all-videos", label: "All Videos", icon: "fa-solid fa-video" },
@@ -54,6 +59,7 @@ const Header = () => {
       label: "All Inquiries",
       icon: "fa-solid fa-envelope-open-text",
     },
+    
     // { to: "/all-become-franchise", label: "Franchise Requests", icon: "fa-solid fa-handshake" },
     // { to: "/all-wishlist", label: "manage user wishlist", icon: "fa-solid fa-brain" },
     // { to: "/all-rewardPoint", label: "Manage Reward Point", icon: "fa-solid fa-coins" },

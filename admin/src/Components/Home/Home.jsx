@@ -49,6 +49,7 @@ import AllFranchise from "../../Pages/Franchise/Franchise";
 import ExcelProductUploader from "../../Pages/Products/MultiProduct";
 import ExcelCategoryUploader from "../../Pages/Category/MultiCategory";
 import ImageUploader from "../../Pages/Products/UploadProductsImages";
+import AllLevelImages from "../../Pages/LevelImage/AllLevelImage";
 
 const Home = () => {
   const [login, setLogin] = useState(false);
@@ -103,16 +104,25 @@ const Home = () => {
               <Route path={"/add-product"} element={<AddProduct />} />
               <Route path={"/edit-product/:id"} element={<EditProduct />} />
               {/* Category --  */}
-              <Route path={"/all-parent-category"} element={<AllDieses />} />
-              <Route path={"/add-parent-category"} element={<AddCategory />} />
-              <Route path={"/edit-parent-category/:id"} element={<EditCategory />} />
-              <Route path={"/all-category"} element={<AllSubCategory />} />
-              <Route path={"/add-category"} element={<AddSubCategory />} />
-              <Route path={"/edit-category/:id"} element={<EditSubCategory />} />
+              <Route path={"/all-category"} element={<AllDieses />} />
+              <Route path={"/add-category"} element={<AddCategory />} />
+              <Route path={"/edit-category/:id"} element={<EditCategory />} />
+              <Route path={"/all-sub-category"} element={<AllSubCategory />} />
+              <Route path={"/add-sub-category"} element={<AddSubCategory />} />
+              <Route
+                path={"/add-sub-category/:id"}
+                element={<EditSubCategory />}
+              />
               {/* --- Orders --- */}
               <Route path={"/all-users"} element={<AllUsers />} />
-              <Route path={"/add-multiproduct"} element={<ExcelProductUploader/>}/>
-              <Route path={"/add-multicategory"} element={<ExcelCategoryUploader/>}/>
+              <Route
+                path={"/add-multiproduct"}
+                element={<ExcelProductUploader />}
+              />
+              <Route
+                path={"/add-multicategory"}
+                element={<ExcelCategoryUploader />}
+              />
               {/* --- Vouchers --- */}
               {/* <Route path={"/all-voucher"} element={<AllVoucher />} />{" "} */}
               {/* // All Vouchers */}
@@ -138,7 +148,11 @@ const Home = () => {
               <Route path={"/all-videos"} element={<AllVideios />} />
               <Route path={"edit-videos/:id"} element={<EditVideios />} /> */}
               <Route path={"/all-inquiries"} element={<AllInquiries />} />
-              <Route path={"/upload-multiproducts-images"} element={<ImageUploader />} />
+              <Route path={"/all-level-images"} element={<AllLevelImages />} />
+              <Route
+                path={"/upload-multiproducts-images"}
+                element={<ImageUploader />}
+              />
               {/* <Route path={"/all-become-franchise"} element={<AllFranchise />} /> */}
             </Routes>
           </div>

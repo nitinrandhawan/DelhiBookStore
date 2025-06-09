@@ -10,7 +10,7 @@ import axiosInstance, {
   serverURL,
 } from "../../services/FetchNodeServices";
 
-const AllDieses = () => {
+const AllLevelImages = () => {
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -19,7 +19,7 @@ const AllDieses = () => {
     const fetchCategories = async () => {
       try {
         const response = await axiosInstance.get(
-          "/api/v1/mainCategory/get-all-mainCategories"
+          "/api/v1/category/get-all-categories?level=true"
         );
         if (response) {
           setCategories(response.data?.reverse());
@@ -50,7 +50,7 @@ const AllDieses = () => {
     if (confirmDelete.isConfirmed) {
       try {
         const data = await axiosInstance.delete(
-          `/api/v1/mainCategory/delete-mainCategory/${id}`
+          `/api/v1/category/delete-category/${id}`
         );
 
         if (data.status === 200) {
@@ -70,11 +70,13 @@ const AllDieses = () => {
 
   // Handle Category Status Change
   const handleCheckboxChange = async (e, categoryId) => {
+    console.log("categoryId", categoryId);
+
     const updatedStatus = e.target.checked;
 
     try {
       const response = await axiosInstance.put(
-        `/api/v1/category/update-category/${categoryId}`,
+        `/api/v1/sub-category/update-sub-category/${categoryId}`,
         {
           isCollection: updatedStatus,
         }
@@ -105,13 +107,13 @@ const AllDieses = () => {
       <ToastContainer />
       <div className="bread">
         <div className="head">
-          <h4>All Category</h4>
+          <h4>All Level Images</h4>
         </div>
         <div className="links">
-          <Link to="/add-category" className="add-new">
+          <Link to="/add-sub-category" className="add-new">
             Add New <i className="fa-solid fa-plus"></i>
           </Link>
-          
+         
         </div>
       </div>
 
@@ -129,8 +131,11 @@ const AllDieses = () => {
           <thead>
             <tr>
               <th scope="col">Sr.No.</th>
+              <th scope="col">Level Image</th>
               <th scope="col">Name</th>
-              {/* <th scope="col">Image</th> */}
+              <th scope="col">Category</th>
+              <th scope="col">Level</th>
+              <th scope="col">Image</th>
               {/* <th scope="col">Show in Collection</th> */}
               <th scope="col">Edit</th>
               <th scope="col">Delete</th>
@@ -138,27 +143,31 @@ const AllDieses = () => {
           </thead>
           <tbody>
             {categories?.length > 0 ? (
-              categories?.map((category, index) => (
+              categories?.sort((a, b) => a.level - b.level).map((category, index) => (
                 <tr key={category._id}>
                   <th scope="row">{index + 1}</th>
-                  <td>{category?.Parent_name}</td>
-                  {/* <td>
+                  <td><img src={`${category?.levelImage}`} alt={category?.categoryName} style={{ width: "170px", height: "80px" }} /></td>
+                  <td>{category?.categoryName}</td>
+                  <td>{category?.Parent_name?.Parent_name}</td>
+                  <td>{category?.level}</td>
+                  
+                  <td>
                     <img
                       src={`${category?.categoryImage}`}
                       alt={category?.categoryName}
                       style={{ width: "50px", height: "50px" }}
                     />
-                  </td> */}
+                  </td>
                   {/* <td>
-                    <input
-                      type="checkbox"
-                      checked={category?.isCollection}
-                      onChange={(e) => handleCheckboxChange(e, category._id)}
-                    />
-                  </td> */}
+                                        <input
+                                            type="checkbox"
+                                            checked={category?.isCollection}
+                                            onChange={(e) => handleCheckboxChange(e, category._id)}
+                                        />
+                                    </td> */}
                   <td>
                     <Link
-                      to={`/edit-category/${category?._id}`}
+                      to={`/add-sub-category/${category?._id}`}
                       className="bt edit"
                     >
                       Edit <i className="fa-solid fa-pen-to-square"></i>
@@ -167,6 +176,7 @@ const AllDieses = () => {
                   <td>
                     <button
                       className="bt delete"
+                      title="Delete"
                       onClick={() => handleDelete(category._id)}
                     >
                       Delete <i className="fa-solid fa-trash"></i>
@@ -177,7 +187,7 @@ const AllDieses = () => {
             ) : (
               <tr>
                 <td colSpan="6" className="text-center">
-                  No categories found
+                  No sub categories found
                 </td>
               </tr>
             )}
@@ -188,4 +198,4 @@ const AllDieses = () => {
   );
 };
 
-export default AllDieses;
+export default AllLevelImages;

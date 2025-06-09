@@ -63,7 +63,7 @@ if(!fileLimit(formData?.image)) return;
     const response = await axiosInstance.post("/api/v1/mainCategory/create-mainCategory", uploadData);
       if (response.status === 201) {
         toast.success(response?.message || "Category created successfully");
-        navigate("/all-parent-category");
+        navigate("/category");
       } else {
         toast.error(response?.message || "Error adding category");
       }
@@ -80,10 +80,10 @@ if(!fileLimit(formData?.image)) return;
       <ToastContainer />
       <div className="bread">
         <div className="head">
-          <h4>Add Parent Category</h4>
+          <h4>Add Category</h4>
         </div>
         <div className="links">
-          <Link to="/all-parent-category" className="add-new">
+          <Link to="/all-category" className="add-new">
             Back <i className="fa-regular fa-circle-left"></i>
           </Link>
         </div>

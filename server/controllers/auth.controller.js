@@ -339,7 +339,7 @@ const verifyAdminLoggedIn = async (req, res) => {
     const user = req?.user;
     if (user.role !== "admin") {
       return res.status(403).json({
-        message: "Unauthorized ! Don't try to be smart you are not admin",
+        message: "Access Denied — This feature is restricted to administrators only.",
       });
     }
     return res.status(200).json({ message: "Admin logged in", user });

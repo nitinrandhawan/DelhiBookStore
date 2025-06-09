@@ -120,20 +120,20 @@ const Dashboard = () => {
           </Link>
         </div>
 <div className="dashboard-card">
-          <Link to="/all-parent-category">
+          <Link to="/all-category">
             <i className="fa-solid fa-sitemap"></i>
-            <h3>Manage Parent Category</h3>
-            <p>Add, update, or remove parent category</p>
-            <p>{rewardPoints?.length} Parent Category</p>
+            <h3>Manage Category</h3>
+            <p>Add, update, or remove category</p>
+            <p>{rewardPoints?.length} Category</p>
           </Link>
         </div>
 
         <div className="dashboard-card">
-          <Link to="/all-category">
+          <Link to="/all-sub-category">
             <i className="fa-solid fa-layer-group"></i>
-            <h3>Manage Categorys</h3>
-            <p>Manage Category of your products</p>
-            <p>{categories?.length} Categorys</p>
+            <h3>Manage Sub Category</h3>
+            <p>Manage Sub Category of your products</p>
+            <p>{categories?.length} Sub Category</p>
           </Link>
         </div>
 

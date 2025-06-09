@@ -9,7 +9,7 @@ export const verifyAdmin = (req, res, next) => {
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     if(decoded.role !== "admin") {
-      return res.status(403).json({ message: "Unauthorized ! Don't try to be smart you are not admin" });
+      return res.status(403).json({ message: "Access Denied — This feature is restricted to administrators only." });
     }
     next();
   } catch (error) {

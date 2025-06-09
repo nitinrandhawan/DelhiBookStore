@@ -68,7 +68,7 @@ if(!fileLimit(formData?.image)) return;
       const response = await axiosInstance.put(`/api/v1/mainCategory/update-mainCategory/${id}`, payload);
      if(response.status===200){
       toast.success(response?.data?.message || "Category updated successfully");
-      navigate("/all-parent-category");
+      navigate("/all-category");
      }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Error updating category");
@@ -83,10 +83,10 @@ if(!fileLimit(formData?.image)) return;
       <ToastContainer />
       <div className="bread">
         <div className="head">
-          <h4>Edit Parent Category</h4>
+          <h4>Edit Category</h4>
         </div>
         <div className="links">
-          <Link to="/all-dieses" className="add-new">
+          <Link to="/all-category" className="add-new">
             Back <i className="fa-regular fa-circle-left"></i>
           </Link>
         </div>
@@ -95,7 +95,7 @@ if(!fileLimit(formData?.image)) return;
       <div className="d-form">
         <form className="row g-3" onSubmit={handleSubmit}>
           <div className="col-md-4">
-            <label className="form-label">Parent Category Name</label>
+            <label className="form-label">Category Name</label>
             <input
               type="text"
               name="name"
