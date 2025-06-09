@@ -67,12 +67,11 @@ const AddSubCategory = () => {
     const payload = new FormData();
     payload.append("categoryName", formData.name);
     payload.append("image", formData.image);
-    if (formData.collection)
-      payload.append("levelImage", formData.collection);
+    if (formData.collection) payload.append("levelImage", formData.collection);
     payload.append("isActive", formData.status);
     payload.append("Parent_name", formData.category);
     payload.append("level", formData.level);
-  
+
     try {
       const response = await axiosInstance.post(
         "/api/v1/category/create-category",
@@ -85,7 +84,7 @@ const AddSubCategory = () => {
       );
       if (response.status === 201) {
         toast.success(response?.message || "Category created successfully");
-        navigate("/all-category");
+        navigate("/all-sub-category");
       } else {
         toast.error(response?.message || "Error adding category");
       }
@@ -105,10 +104,10 @@ const AddSubCategory = () => {
       <ToastContainer />
       <div className="bread">
         <div className="head">
-          <h4>Add Category</h4>
+          <h4>Add Sub Category</h4>
         </div>
         <div className="links">
-          <Link to="/all-category" className="add-new">
+          <Link to="/all-sub-category" className="add-new">
             Back <i className="fa-regular fa-circle-left"></i>
           </Link>
         </div>
@@ -118,7 +117,7 @@ const AddSubCategory = () => {
         <form className="row g-3" onSubmit={handleSubmit}>
           <div className="col-md-4">
             <label htmlFor="image" className="form-label">
-              Select Parent Category
+              Select Category
             </label>
             <select
               className="form-control"
@@ -127,7 +126,7 @@ const AddSubCategory = () => {
               onChange={handleSelectChange}
               required
             >
-              <option value="">Select Parent Category</option>
+              <option value="">Select Category</option>
               {categories.map((category) => (
                 <option key={category._id} value={category._id}>
                   {category.Parent_name}
@@ -138,7 +137,7 @@ const AddSubCategory = () => {
 
           <div className="col-md-4">
             <label htmlFor="image" className="form-label">
-             Sub Category Image
+              Sub Category Image
             </label>
             <input
               type="file"
@@ -187,51 +186,49 @@ const AddSubCategory = () => {
               </label>
             </div>
           </div>
-        {formData.status && (
-  <>
-  
-
-    <div className="col-md-4">
-      <label htmlFor="level" className="form-label">
-        Level
-      </label>
-      <select
-        className="form-select"
-        id="level"
-        name="level"
-        value={formData.level || ''}
-        onChange={handleChange}
-        required
-      >
-        <option value="">Select Level</option>
-        <option value="1">Level 1</option>
-        <option value="2">Level 2</option>
-        <option value="3">Level 3</option>
-      </select>
-    </div>
-      <div className="col-md-4">
-      <label htmlFor="collection" className="form-label">
-        Level Image
-      </label>
-      <input
-        type="file"
-        name="collection"
-        className="form-control"
-        id="collection"
-        accept="image/*"
-        onChange={handleChange}
-        required
-      />
-      {formData.collection && (
-        <img
-          src={URL.createObjectURL(formData.collection)}
-          alt="Preview"
-          width="100"
-        />
-      )}
-    </div>
-  </>
-)}
+          {formData.status && (
+            <>
+              <div className="col-md-4">
+                <label htmlFor="level" className="form-label">
+                  Level
+                </label>
+                <select
+                  className="form-select"
+                  id="level"
+                  name="level"
+                  value={formData.level || ""}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select Level</option>
+                  <option value="1">Level 1</option>
+                  <option value="2">Level 2</option>
+                  <option value="3">Level 3</option>
+                </select>
+              </div>
+              <div className="col-md-4">
+                <label htmlFor="collection" className="form-label">
+                  Level Image
+                </label>
+                <input
+                  type="file"
+                  name="collection"
+                  className="form-control"
+                  id="collection"
+                  accept="image/*"
+                  onChange={handleChange}
+                  required
+                />
+                {formData.collection && (
+                  <img
+                    src={URL.createObjectURL(formData.collection)}
+                    alt="Preview"
+                    width="100"
+                  />
+                )}
+              </div>
+            </>
+          )}
 
           <hr />
           {/* <div className="col-md-12">
@@ -240,12 +237,8 @@ const AddSubCategory = () => {
           </div> */}
 
           <div className="col-md-12 mt-3">
-            <button
-              type="submit"
-              className="btn "
-              disabled={isLoading}
-            >
-              {isLoading ? "Saving..." : "Add Category"}
+            <button type="submit" className="btn " disabled={isLoading}>
+              {isLoading ? "Saving..." : "Add Sub Category"}
             </button>
           </div>
         </form>
