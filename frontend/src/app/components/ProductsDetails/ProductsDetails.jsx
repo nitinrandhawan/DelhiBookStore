@@ -331,7 +331,7 @@ export default function ProductDetails() {
                 href={`/pages/shop/productBysubcategory/${book.category._id}`}
               >
                 <span className="px-2.5 py-0.5 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">
-                  {book.category.categoryName}
+                  {book.category.SubCategoryName}
                 </span>
               </Link>
             </div>

@@ -56,7 +56,7 @@ const EditProduct = () => {
       if (res?.data) {
         
         setFormData( res.data.product );
-        setFormData((prev) => ({ ...prev, category: res.data.product.category._id }));
+        setFormData((prev) => ({ ...prev, category: res.data.product?.category?._id }));
         
       }
     } catch (err) {
@@ -243,7 +243,7 @@ const EditProduct = () => {
           <div className="col-md-3">
             <label className="form-label">Publication Date*</label>
             <input
-              type="date"
+              type="text"
               name="publicationDate"
               className="form-control"
               value={formData.publicationDate}

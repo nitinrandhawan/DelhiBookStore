@@ -1,7 +1,7 @@
 import express from "express"
 import { verifyAdmin } from "../middlewares/verifyAdmin.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
-import { createProduct, deleteProduct, getAllProducts, getBestSellingBooks, getFeaturedBooks, getNewArrival, getProductByCategory, getSingleProduct, multipleProducts, searchProducts, updateProduct, uploadMultipleProducts } from "../controllers/product.controller.js";
+import { createProduct, deleteProduct, getAllProducts, getBestSellingBooks, getFeaturedBooks, getNewArrival, getProductByCategory, getSingleProduct, multipleProducts, multipleSubcategoryToProduct, searchProducts, updateProduct, uploadMultipleProducts } from "../controllers/product.controller.js";
 import { multerErrorHandler } from "../middlewares/multerErrorHadler.middleware.js";
 const router = express.Router();
 
@@ -17,5 +17,6 @@ router.get("/product-by-category/:id", getProductByCategory);
 router.delete("/delete-product/:id",verifyAdmin,deleteProduct)
 router.get("/search-products",searchProducts)
 router.post("/upload-multiple-products",verifyAdmin,upload.array("images"),multerErrorHandler,uploadMultipleProducts)
+router.post("/multiple-subcategory-to-product",verifyAdmin,multipleSubcategoryToProduct)
 
 export default router

@@ -79,7 +79,7 @@ export default function AllSubCategory() {
                       ? `${serverUrl}/public/image/${category.categoryImage}`
                       : CallBackImg
                   }
-                  alt={category.categoryName}
+                  alt={category.SubCategoryName}
                   fill
                   className="object-fill group-hover:scale-105 transition-transform duration-300"
                 />
@@ -88,7 +88,7 @@ export default function AllSubCategory() {
               {/* Category Name */}
               <div className="p-4">
                 <h3 className="text-sm md:text-md font-semibold text-white text-center">
-                  {category.categoryName}
+                  {category.SubCategoryName}
                 </h3>
               </div>
             </Link>

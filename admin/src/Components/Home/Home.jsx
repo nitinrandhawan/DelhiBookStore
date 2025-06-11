@@ -50,6 +50,8 @@ import ExcelProductUploader from "../../Pages/Products/MultiProduct";
 import ExcelCategoryUploader from "../../Pages/Category/MultiCategory";
 import ImageUploader from "../../Pages/Products/UploadProductsImages";
 import AllLevelImages from "../../Pages/LevelImage/AllLevelImage";
+import ExcelSubToProductUploader from "../../Pages/Products/SubcategoryToProduct";
+import ExcelMultipleSubcategory from "../../Pages/SubCategory/MultipleSubcategory";
 
 const Home = () => {
   const [login, setLogin] = useState(false);
@@ -120,9 +122,10 @@ const Home = () => {
                 element={<ExcelProductUploader />}
               />
               <Route
-                path={"/add-multicategory"}
-                element={<ExcelCategoryUploader />}
+                path={"/multiple-subcategory-to-product"}
+                element={<ExcelSubToProductUploader />}
               />
+              <Route path={"/all-products-images"} element={<ImageUploader />} />
               {/* --- Vouchers --- */}
               {/* <Route path={"/all-voucher"} element={<AllVoucher />} />{" "} */}
               {/* // All Vouchers */}
@@ -153,6 +156,7 @@ const Home = () => {
                 path={"/upload-multiproducts-images"}
                 element={<ImageUploader />}
               />
+              <Route path="/multiple-subcategory" element={<ExcelMultipleSubcategory />} />
               {/* <Route path={"/all-become-franchise"} element={<AllFranchise />} /> */}
             </Routes>
           </div>
