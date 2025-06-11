@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use("/public/image", express.static("public/images"));
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json({ limit: "1000mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 

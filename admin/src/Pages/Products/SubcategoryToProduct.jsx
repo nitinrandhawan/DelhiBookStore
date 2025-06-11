@@ -3,7 +3,7 @@ import * as XLSX from "xlsx";
 import axiosInstance from "../../services/FetchNodeServices";
 import { toast } from "react-toastify";
 
-const ExcelProductUploader = () => {
+const ExcelSubToProductUploader = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -50,8 +50,8 @@ const ExcelProductUploader = () => {
 
     try {
       setLoading(true);
-      const res = await axiosInstance.post("/api/v1/product/multiple-product", {
-        products,
+      const res = await axiosInstance.post("/api/v1/product/multiple-subcategory-to-product", {
+       subCategories: products,
       });
 
       console.log("Server response:", res.data);
@@ -69,7 +69,7 @@ const ExcelProductUploader = () => {
     <div className="container mt-5">
       <div className="card shadow">
         <div className="card-body text-center">
-          <h4 className="card-title mb-4">Bulk Product Upload</h4>
+          <h4 className="card-title mb-4">Upload Subcategory for Products</h4>
 
           <input
             type="file"
@@ -80,7 +80,7 @@ const ExcelProductUploader = () => {
 
           {products.length > 0 && (
             <div className="alert alert-success" role="alert">
-              {products.length} products ready to upload
+              {products.length} Subcategory's product ready to upload
             </div>
           )}
 
@@ -97,4 +97,4 @@ const ExcelProductUploader = () => {
   );
 };
 
-export default ExcelProductUploader;
+export default ExcelSubToProductUploader;

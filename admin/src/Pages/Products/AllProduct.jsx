@@ -1,31 +1,37 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axiosInstance, {
-  getData,
-  postData,
-  serverURL,
-} from "../../services/FetchNodeServices";
+import axiosInstance, { serverURL } from "../../services/FetchNodeServices";
 import { Parser } from "html-to-react";
-import { Box, Typography } from "@mui/material";
-import fallBackImage from "../../services/DBSLOGO.jpg"
+import { Box, Typography, Pagination } from "@mui/material";
+import fallBackImage from "../../services/DBSLOGO.jpg";
+
+const LIMIT = 50;
+
 const AllProduct = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pageFromQuery = parseInt(searchParams.get("page")) || 1;
 
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
         const response = await axiosInstance.get(
-          `/api/v1/product/get-all-products`
+          `/api/v1/product/get-all-products?limit=${LIMIT}&page=${pageFromQuery}`
         );
-        if (response) {
-          setProducts(response?.data?.products);
+
+        const data = response?.data;
+        if (data) {
+          setProducts(data.products || []);
+          setTotalPages(data.totalPages || 1);
+          setCurrentPage(data.currentPage || 1);
         }
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -36,7 +42,7 @@ const AllProduct = () => {
     };
 
     fetchProducts();
-  }, [currentPage]);
+  }, [pageFromQuery]);
 
   const handleDelete = async (productId) => {
     const confirm = await Swal.fire({
@@ -50,11 +56,13 @@ const AllProduct = () => {
 
     if (confirm.isConfirmed) {
       try {
-        const data = await axiosInstance.delete(
+        const res = await axiosInstance.delete(
           `/api/v1/product/delete-product/${productId}`
         );
-        if (data.status === 200) {
-          setProducts(products?.filter((product) => product._id !== productId));
+        if (res.status === 200) {
+          setProducts((prev) =>
+            prev.filter((product) => product._id !== productId)
+          );
           toast.success("Product deleted successfully!");
         }
       } catch (error) {
@@ -64,86 +72,9 @@ const AllProduct = () => {
     }
   };
 
-  const handleTypeChange = async (e, productId) => {
-    const Type = e.target.value;
-
-    try {
-      const response = await postData("api/product/change-type", {
-        productId,
-        type: Type,
-      });
-
-      if (response.success) {
-        const updatedProducts = products.map((product) =>
-          product._id === productId ? { ...product, type: Type } : product
-        );
-        setProducts(updatedProducts);
-        toast.success("Product Type status updated successfully");
-      }
-    } catch (error) {
-      console.error("Error updating category status:", error);
-      toast.error("Error updating category status");
-    }
+  const handlePageChange = (event, value) => {
+    setSearchParams({ page: value });
   };
-
-  const handleCheckboxChange = async (e, productId) => {
-    const updatedStatus = e.target.checked;
-
-    try {
-      const response = await postData("api/product/change-status", {
-        productId,
-        status: updatedStatus,
-      });
-
-      if (response.success) {
-        const updatedProducts = products.map((product) =>
-          product._id === productId
-            ? { ...product, status: updatedStatus }
-            : product
-        );
-        setProducts(updatedProducts);
-        toast.success("Product status updated successfully");
-      }
-    } catch (error) {
-      console.error("Error updating status:", error);
-      toast.error("Error updating product status");
-    }
-  };
-  const handleCheckboxActiveChange = async (e, productId) => {
-    const updatedStatus = e.target.checked;
-
-    try {
-      const response = await axiosInstance.put(
-        `/api/v1/product/update-product/${productId}`,
-        {
-          isFeaturedProduct: updatedStatus.toString(),
-        }
-      );
-
-      if (response.status === 200) {
-        const updatedProducts = products.map((product) =>
-          product._id === productId
-            ? { ...product, isFeaturedProduct: updatedStatus }
-            : product
-        );
-        setProducts(updatedProducts);
-        toast.success("Product Status updated successfully");
-      }
-    } catch (error) {
-      console.error("Error updating status:", error);
-      toast.error("Error updating product status");
-    }
-  };
-
-  // const filteredProducts = products?.filter(product =>
-  //     product.productName.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
-
-  const typeOptions = [
-    { _id: "new", type: "New Arrival" },
-    { _id: "featured", type: "Featured Product" },
-    { _id: "best", type: "Best Seller" },
-  ];
 
   return (
     <>
@@ -160,7 +91,7 @@ const AllProduct = () => {
             className="add-new"
             style={{ marginRight: "10px" }}
           >
-            upload Product Images <i className="fa-solid fa-plus"></i>
+            Upload Product Images <i className="fa-solid fa-plus"></i>
           </Link>
           <Link to="/add-product" className="add-new">
             Add New <i className="fa-solid fa-plus"></i>
@@ -172,84 +103,80 @@ const AllProduct = () => {
           >
             Add Multiple Products <i className="fa-solid fa-plus"></i>
           </Link>
+           <Link
+                      to="/multiple-subcategory-to-product"
+                      className="add-new"
+                      style={{ marginLeft: "10px" }}
+                    >
+                   Multiple product's Subcategory <i className="fa-solid fa-plus"></i>
+                    </Link>
         </div>
       </div>
-     <Box mb={2} mt={2}>
-  <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-    🔼 Please upload images first before uploading multiple products.
-  </Typography>
-  <Typography variant="body2">
-    Total Products: {products?.length}
-  </Typography>
-</Box>
+
+      <Box mb={2} mt={2}>
+        <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+          🔼 Please upload images first before uploading multiple products.
+        </Typography>
+        <Typography variant="body2">
+          Page {currentPage} of {totalPages} | Products on this page:{" "}
+          {products.length}
+        </Typography>
+      </Box>
+
       <section className="main-table">
         <table className="table table-bordered table-striped table-hover">
           <thead>
             <tr>
               <th>S No.</th>
-              <th>Product Name</th>
-              <th>Category Name</th>
-              <th>Product Image</th>
-              <th>Product Description</th>
+              <th>Title</th>
+              <th>Image</th>
               <th>Author</th>
               <th>ISBN</th>
               <th>Price</th>
-              <th>Stock</th>
+              {/* <th>Stock</th> */}
               <th>Discount</th>
               <th>Final Price</th>
-              {/* <th>Tax</th> */}
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan="11" className="text-center">
+                <td colSpan="10" className="text-center">
                   Loading...
                 </td>
               </tr>
             ) : products?.length === 0 ? (
               <tr>
-                <td colSpan="11" className="text-center">
+                <td colSpan="10" className="text-center">
                   No products found.
                 </td>
               </tr>
             ) : (
-              products?.map((product, index) => (
+              products.map((product, index) => (
                 <tr key={product._id}>
-                  <td>{index + 1}</td>
+                  <td>{(currentPage - 1) * LIMIT + index + 1}</td>
                   <td>{product?.title}</td>
-                  <td>{product?.category?.categoryName}</td>
                   <td>
                     <img
-                      src={product?.images?.[0] ? `${serverURL}/public/image/${product?.images?.[0]}`:fallBackImage}
+                      src={
+                        product?.images?.[0]
+                          ? `${serverURL}/public/image/${product.images[0]}`
+                          : fallBackImage
+                      }
+                      alt={product.title}
+                      style={{ width: "60px", height: "auto" }}
                     />
                   </td>
-                  <td>
-                    {Parser().parse(product?.description?.slice(0, 25))}...
-                  </td>
-                  {/* <td>
-                                        <input
-                                            type="checkbox"
-                                            checked={product?.status}
-                                            onChange={(e) => handleCheckboxChange(e, product._id)}
-                                        />
-                                    </td> */}
-
-                  {/* <td>
-                                       
-                                        {product?.type?.map((t) => <div>{t} ,</div>)}
-                                    </td> */}
                   <td>{product?.author}</td>
                   <td>{product?.ISBN}</td>
                   <td>{product?.price}</td>
-                  <td>{product?.stock || "-"}</td>
+                  {/* <td>{product?.stock}</td> */}
                   <td>
-                    {product?.discount}
+                    {product?.discount || "-"}
                     {product?.discount > 100 ? " ₹" : "%"}
                   </td>
-                  <td>{product?.finalPrice?.toFixed(0)}</td>
-                  {/* <td>{product?.Variant?.map((v, i) => <div key={i}>{v?.tax}</div>)}</td> */}
+                  <td>{product?.finalPrice?.toFixed(2)}</td>
                   <td>
                     <Link
                       to={`/edit-product/${product._id}`}
@@ -270,6 +197,20 @@ const AllProduct = () => {
             )}
           </tbody>
         </table>
+
+        <div
+          className="pagination-container"
+          style={{ marginTop: 20, display: "flex", justifyContent: "center" }}
+        >
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={handlePageChange}
+            color="primary"
+            variant="outlined"
+            shape="rounded"
+          />
+        </div>
       </section>
     </>
   );

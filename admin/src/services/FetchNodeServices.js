@@ -1,6 +1,6 @@
 import axios from "axios";
-// const serverURL = "http://localhost:9000";
-const serverURL = "https://api.wwseals.com";
+const serverURL = "http://localhost:9000";
+// const serverURL = "https://api.wwseals.com";
 
 const postData = async (url, body) => {
   try {
@@ -27,7 +27,7 @@ const getData = async (url) => {
 // baseURL: "http://localhost:9000",
 
 const axiosInstance=axios.create({
-  baseURL: "https://api.wwseals.com",
+  baseURL: serverURL,
   headers:{
     "Content-Type": "application/json"
   },

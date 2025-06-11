@@ -108,8 +108,6 @@ export const getCategoryById = async (req, res) => {
 
 export const updateCategory = async (req, res) => {
   try {
-    console.log("req.body", req.body);
-
     const { categoryName, level, isActive } = req.body;
     const category = await Category.findById(req.params.id);
     if (!category)

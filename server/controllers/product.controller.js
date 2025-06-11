@@ -1,3 +1,4 @@
+import fetch from "node-fetch";
 import { Category } from "../models/category.model.js";
 import { Product } from "../models/product.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.util.js";
@@ -106,9 +107,26 @@ const multipleProducts = async (req, res) => {
     if (!products || !Array.isArray(products) || products.length === 0) {
       return res.status(400).json({ message: "No products provided" });
     }
+    let DollarPrice;
+    let eurRate;
+    try {
+      const response = await fetch(
+        "https://api.frankfurter.app/latest?from=USD&to=INR,EUR"
+      );
+      const data = await response.json();
+
+      const rate = data.rates?.INR;
+       eurRate = data.rates?.EUR;
+      DollarPrice = Number(rate);
+    } catch (error) {
+      console.error("Error fetching conversion rate:", error.message);
+      return res
+        .status(500)
+        .json({ message: "Error fetching conversion rate" });
+    }
 
     const updatedProducts = await Promise.all(
-      products.map(async (product) => {
+      products.map(async (product, i) => {
         if (product.images) {
           product.images = product.images ? [product.images] : [];
           product.images = product.images.map((img) => {
@@ -122,15 +140,59 @@ const multipleProducts = async (req, res) => {
               product.category = existedCategory._id;
             }
           }
+          if (product.PRODUCTS_ID) {
+            product.PRODUCTS_ID = Number(product.PRODUCTS_ID);
+          }
+          if (
+            product.PRODUCTS_MRP_IN_DOLLAR &&
+            !isNaN(Number(product.PRODUCTS_MRP_IN_DOLLAR))
+          ) {
+            product.priceInDollors = Number(product.PRODUCTS_MRP_IN_DOLLAR);
+            const priceInInrInString = (
+              Number(product.PRODUCTS_MRP_IN_DOLLAR) * DollarPrice
+            ).toFixed(2);
+            const priceInInr = parseFloat(priceInInrInString);
+            product.priceInEuros = priceInInr * eurRate;
+            product.price = priceInInr;
+            if (product.discount) {
+              product.finalPrice =
+                Number(priceInInr) -
+                  (Number(priceInInr) * Number(product.discount)) / 100 ??
+                10000;
+            } else {
+              product.finalPrice = priceInInr;
+            }
+          } else {
+            product.priceInDollors = 1111110;
+            product.price = 1111110;
+            product.finalPrice = 888880;
+          }
+
+          product.title = product?.PRODUCTS_NAME || "Untitled Product";
+          if (product.PRODUCTS_PUBLISHER_NAME) {
+            product.publisher = product.PRODUCTS_PUBLISHER_NAME;
+          }
+          if (product.PRODUCTS_PAGES) {
+            product.pages = Number(product.PRODUCTS_PAGES) || 0;
+          }
+          if (product.PRODUCTS_AUTH_NAME) {
+            product.author = product.PRODUCTS_AUTH_NAME;
+          }
+          if (product.PRODUCTS_PUBLISH_DATE) {
+            product.publicationDate = product.PRODUCTS_PUBLISH_DATE;
+          }
         }
         return product;
       })
     );
+
     const insertedProducts = await Product.insertMany(updatedProducts);
 
-    return res
-      .status(201)
-      .json({ message: "Products created", products: insertedProducts });
+    return res.status(201).json({
+      message: "Products created",
+      products: insertedProducts,
+      updatedProducts,
+    });
   } catch (error) {
     console.log("create product error", error);
     return res
@@ -345,6 +407,50 @@ const uploadMultipleProducts = async (req, res) => {
       .json({ message: "upload multiple products server error" });
   }
 };
+
+const multipleSubcategoryToProduct = async (req, res) => {
+  try {
+    const { subCategories } = req.body || {};
+
+    if (
+      !subCategories ||
+      !Array.isArray(subCategories) ||
+      subCategories.length === 0
+    ) {
+      return res.status(400).json({ message: "No subcategories provided" });
+    }
+
+    const bulkOps = await Promise.all(
+      subCategories.map(async (subCategory) => {
+        const subCategoryDoc = await Category.findOne({
+          Sub_CATEGORIES_ID: subCategory.Sub_CATEGORIES_ID,
+        });
+
+        if (!subCategoryDoc) return null;
+
+        return {
+          updateOne: {
+            filter: { PRODUCTS_ID: subCategory.PRODUCTS_ID },
+            update: { $set: { category: subCategoryDoc._id } },
+          },
+        };
+      })
+    );
+
+    const validOps = bulkOps.filter(Boolean);
+
+    if (validOps.length > 0) {
+      await Product.bulkWrite(validOps);
+    }
+
+    return res.status(200).json({ message: "multiple subcategory to product" });
+  } catch (error) {
+    console.log("multiple subcategory to product error", error);
+    return res
+      .status(500)
+      .json({ message: "multiple subcategory to product server error" });
+  }
+};
 export {
   createProduct,
   updateProduct,
@@ -358,4 +464,5 @@ export {
   getProductByCategory,
   searchProducts,
   uploadMultipleProducts,
+  multipleSubcategoryToProduct,
 };

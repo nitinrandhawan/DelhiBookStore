@@ -4,7 +4,9 @@ const productSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
+    },
+    PRODUCTS_ID: {
+      type: String,
     },
     images: {
       type: [String],
@@ -12,44 +14,33 @@ const productSchema = new mongoose.Schema(
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
-      // required: true,
     },
-
     description: {
       type: String,
-      required: true,
     },
     highlights: {
       type: String,
-      // required: true,
     },
     details: {
       type: String,
-      // required: true,
     },
     author: {
       type: String,
-      required: true,
     },
     pages: {
       type: Number,
-      required: true,
     },
     ISBN: {
       type: String,
-      required: true,
     },
     publisher: {
       type: String,
-      required: true,
     },
     publicationDate: {
       type: String,
-      required: true,
     },
     language: {
       type: String,
-      // required: true,
     },
     newArrival: {
       type: Boolean,
@@ -68,27 +59,22 @@ const productSchema = new mongoose.Schema(
     },
     priceInDollors: {
       type: Number,
-      // required: true,
     },
     priceInEuros: {
       type: Number,
-      // required: true,
     },
     price: {
       type: Number,
-      required: true,
     },
     finalPrice: {
       type: Number,
-      // required: true,
     },
     discount: {
       type: Number,
-      required: true,
     },
     stock: {
       type: Number,
-      // required: true,
+      default: 99999999,
     },
   },
   {

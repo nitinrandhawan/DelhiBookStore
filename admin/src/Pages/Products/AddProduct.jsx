@@ -272,7 +272,7 @@ const AddProduct = () => {
           <div className="col-md-3">
             <label className="form-label">Publication Date*</label>
             <input
-              type="date"
+              type="text"
               name="publicationDate"
               className="form-control"
               value={formData.publicationDate}

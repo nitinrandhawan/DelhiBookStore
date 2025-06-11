@@ -114,11 +114,11 @@ const AllSubCategory = () => {
             Add New <i className="fa-solid fa-plus"></i>
           </Link>
           <Link
-            to="/add-multicategory"
+            to="/multiple-subcategory"
             className="add-new"
             style={{ marginLeft: "10px" }}
           >
-            Add Multiple Sub Category <i className="fa-solid fa-plus"></i>
+            Multiple Sub Category <i className="fa-solid fa-plus"></i>
           </Link>
         </div>
       </div>
@@ -150,12 +150,12 @@ const AllSubCategory = () => {
               categories?.map((category, index) => (
                 <tr key={category._id}>
                   <th scope="row">{index + 1}</th>
-                  <td>{category?.categoryName}</td>
+                  <td>{category?.SubCategoryName}</td>
                   <td>{category?.Parent_name?.Parent_name}</td>
                   <td>
                     <img
                       src={`${category?.categoryImage}`}
-                      alt={category?.categoryName}
+                      alt={category?.SubCategoryName}
                       style={{ width: "50px", height: "50px" }}
                     />
                   </td>

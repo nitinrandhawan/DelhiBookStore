@@ -165,7 +165,7 @@ const apiCartCount = useSelector((state) => state.apiCart.items?.length);
                         {product.title}
                       </p>
                       <p className="text-gray-500 text-xs">
-                        {product.category?.categoryName || "Unknown"} ·{" "}
+                        {product.category?.SubCategoryName || "Unknown"} ·{" "}
                         {product.author || "Unknown Author"}
                       </p>
                     </div>
