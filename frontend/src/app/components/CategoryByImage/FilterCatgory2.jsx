@@ -6,6 +6,7 @@ import { MoveRight } from "lucide-react";
 import { motion } from "framer-motion"; // Import motion from framer-motion
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBannerByCategory } from "@/app/redux/features/BannerByCategory/BannerByCategory";
+import { serverUrl } from "@/app/redux/features/axiosInstance";
 
 const FilterCatgory2 = () => {
   const dispatch = useDispatch();
@@ -39,7 +40,7 @@ const FilterCatgory2 = () => {
             transition={{ duration: 0.6 }} // Animation duration
           >
             <Image
-              src={category.levelImage}
+              src={`${serverUrl}/public/image/${category.levelImage}`}
               alt={category.Parent_name.Parent_name}
               width={400}
               height={250}

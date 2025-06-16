@@ -132,7 +132,7 @@ const AllLevelImages = () => {
             <tr>
               <th scope="col">Sr.No.</th>
               <th scope="col">Level Image</th>
-              <th scope="col">Name</th>
+              <th scope="col">Sub Category Name</th>
               <th scope="col">Category</th>
               <th scope="col">Level</th>
               <th scope="col">Image</th>
@@ -146,14 +146,14 @@ const AllLevelImages = () => {
               categories?.sort((a, b) => a.level - b.level).map((category, index) => (
                 <tr key={category._id}>
                   <th scope="row">{index + 1}</th>
-                  <td><img src={`${category?.levelImage}`} alt={category?.SubCategoryName} style={{ width: "170px", height: "80px" }} /></td>
+                  <td><img src={`${serverURL}/public/image/${category?.levelImage}`} alt={category?.SubCategoryName} style={{ width: "170px", height: "80px" }} /></td>
                   <td>{category?.SubCategoryName}</td>
                   <td>{category?.Parent_name?.Parent_name}</td>
                   <td>{category?.level}</td>
                   
                   <td>
                     <img
-                      src={`${category?.categoryImage}`}
+                      src={`${serverURL}/public/image/${category?.categoryImage}`}
                       alt={category?.SubCategoryName}
                       style={{ width: "50px", height: "50px" }}
                     />

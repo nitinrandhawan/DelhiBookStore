@@ -5,35 +5,36 @@ import { uploadOnCloudinary } from "../utils/cloudinary.util.js";
 
 export const createCategory = async (req, res) => {
   try {
-    const { categoryName, level, isActive,Parent_name } = req.body;
-
-    if (!categoryName) {
+    const { SubCategoryName, Parent_name } = req.body;
+    const level = Number(req.body.level);
+    const isActive = req.body.isActive === "true";
+    if (!SubCategoryName) {
       return res.status(400).json({ message: "Category name is required" });
     }
 
-    const localPath = req.files?.["image"]?.[0]?.path;
+    const localPath = req.files?.["image"]?.[0]?.filename;
     if (!localPath) {
       return res.status(400).json({ message: "Image is required" });
     }
-    const imageUrl = await uploadOnCloudinary(localPath);
 
-    if (!imageUrl) {
-      return res.status(500).json({ message: "Image upload failed" });
-    }
     let levelImageUrl;
     if (isActive && level) {
-      const levelImageLocalPath = req.files?.["levelImage"]?.[0]?.path;
-      levelImageUrl = await uploadOnCloudinary(levelImageLocalPath);
+      console.log("isActive and level", isActive, level);
+
+      const levelImageLocalPath = req.files?.["levelImage"]?.[0]?.filename;
+      levelImageUrl = levelImageLocalPath;
+      console.log("levelImageLocalPath", levelImageLocalPath);
+
       if (!levelImageUrl)
         return res.status(500).json({ message: "Image upload failed" });
     }
     const newCategory = await Category.create({
-      categoryName,
-      categoryImage: imageUrl,
+      SubCategoryName,
+      categoryImage: localPath,
       level,
       isActive,
       levelImage: levelImageUrl,
-      Parent_name
+      Parent_name,
     });
 
     return res
@@ -78,10 +79,10 @@ export const multipleCategory = async (req, res) => {
 };
 export const getAllCategories = async (req, res) => {
   try {
-    const {level}=req.query || {};
-    const query={}
-    if(level){
-      query.$or=[{level:1},{level:2},{level:3}]
+    const { level } = req.query || {};
+    const query = {};
+    if (level) {
+      query.$or = [{ level: 1 }, { level: 2 }, { level: 3 }];
     }
     const categories = await Category.find(query).populate("Parent_name");
     return res.status(200).json(categories);
@@ -108,27 +109,27 @@ export const getCategoryById = async (req, res) => {
 
 export const updateCategory = async (req, res) => {
   try {
-    const { categoryName, level, isActive } = req.body;
+    const { SubCategoryName } = req.body;
+    const level = Number(req.body.level);
+    const isActive = req.body.isActive === "true";
     const category = await Category.findById(req.params.id);
     if (!category)
       return res.status(404).json({ message: "Category not found" });
 
     if (req.files?.["image"]?.[0]?.path) {
-      const localPath = req.files?.["image"]?.[0]?.path;
-      const imageUrl = await uploadOnCloudinary(localPath);
+      const imageUrl = req.files?.["image"]?.[0]?.filename;
       if (imageUrl) category.categoryImage = imageUrl;
     } else {
       category.categoryImage = category.categoryImage;
     }
 
     if (req.files?.["levelImage"]?.[0]?.path && isActive && level) {
-      const levelImageLocalPath = req.files?.["levelImage"]?.[0]?.path;
-      const levelImageUrl = await uploadOnCloudinary(levelImageLocalPath);
+      const levelImageUrl = req.files?.["levelImage"]?.[0]?.filename;
       if (levelImageUrl) category.levelImage = levelImageUrl;
     } else {
       category.levelImage = category.levelImage;
     }
-    category.categoryName = categoryName ?? category.categoryName;
+    category.SubCategoryName = SubCategoryName ?? category.SubCategoryName;
     category.level = level ?? category.level;
     category.isActive = isActive ?? category.isActive;
 
@@ -157,10 +158,11 @@ export const deleteCategory = async (req, res) => {
   }
 };
 
-
 export const getCategoryByMainCategory = async (req, res) => {
   try {
-    const category = await Category.find({ Parent_name: req.params.id }).populate("Parent_name");
+    const category = await Category.find({
+      Parent_name: req.params.id,
+    }).populate("Parent_name");
     return res.status(200).json(category);
   } catch (error) {
     console.error("Get Category by ID Error:", error);

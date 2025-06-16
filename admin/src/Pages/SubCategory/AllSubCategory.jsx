@@ -154,7 +154,7 @@ const AllSubCategory = () => {
                   <td>{category?.Parent_name?.Parent_name}</td>
                   <td>
                     <img
-                      src={`${category?.categoryImage}`}
+                      src={`${serverURL}/public/image/${category?.categoryImage}`}
                       alt={category?.SubCategoryName}
                       style={{ width: "50px", height: "50px" }}
                     />
