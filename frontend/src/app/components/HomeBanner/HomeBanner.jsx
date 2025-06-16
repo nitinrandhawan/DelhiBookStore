@@ -62,7 +62,7 @@ const HomeBanner = () => {
                     transition={{ delay: 0.3, duration: 0.8 }}
                   >
                     <Image
-                      src={`${serverUrl}${slide.bannerImage}`}
+                      src={`${serverUrl}/public/image/${slide.bannerImage}`}
                       alt={"banners"}
                       fill
                       className="object-fill md:object-cover"
