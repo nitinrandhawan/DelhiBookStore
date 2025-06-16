@@ -27,7 +27,7 @@ const EditSubCategory = () => {
       if (res.status === 200) {
         const data = res.data;
         setFormData({
-          name: data.categoryName,
+          name: data.SubCategoryName,
           image: null,
           status: data.isActive,
           collection: null,
@@ -70,7 +70,7 @@ const EditSubCategory = () => {
     e.preventDefault();
     setIsLoading(true);
     const payload = new FormData();
-    payload.append("subCategoryName", formData.name);
+    payload.append("SubCategoryName", formData.name);
     payload.append("isActive", formData.status);
     payload.append("category", formData.category);
     payload.append("level", formData.level);

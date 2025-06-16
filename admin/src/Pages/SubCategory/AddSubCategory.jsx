@@ -65,7 +65,7 @@ const AddSubCategory = () => {
     setIsLoading(true);
     if (!fileLimit(formData?.image)) return;
     const payload = new FormData();
-    payload.append("categoryName", formData.name);
+    payload.append("SubCategoryName", formData.name);
     payload.append("image", formData.image);
     if (formData.collection) payload.append("levelImage", formData.collection);
     payload.append("isActive", formData.status);

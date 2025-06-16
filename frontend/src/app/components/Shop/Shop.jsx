@@ -266,6 +266,10 @@ const Shop = () => {
                         }
                         // src={book}
                         alt={product.title}
+                        // onError={(e) => {
+                        //   e.target.onerror = null;
+                        //   e.target.src = CallBackImg;
+                        // }}
                         width={300}
                         height={300}
                         className="object-contain h-full"

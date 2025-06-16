@@ -252,7 +252,7 @@ const AddProduct = () => {
                 <option value="">Select Category</option>
                 {categoryList?.map((category) => (
                   <option key={category?._id} value={category?._id}>
-                    {category?.categoryName}
+                    {category?.SubCategoryName}
                   </option>
                 ))}
               </select>
