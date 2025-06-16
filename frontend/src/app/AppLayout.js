@@ -6,11 +6,18 @@ import { Toaster } from "react-hot-toast";
 import ReduxProvider from "./redux/ReduxProvider";
 
 export default function AppLayout({ children }) {
+  
   return (
     <ReduxProvider>
       <Toaster position="top-center" reverseOrder={false} />
       <Header />
-      {children}
+      {typeof children === "object" && !(children instanceof Error) ? (
+        children
+      ) : (
+        <p style={{ color: "red" }}>
+          Something went wrong while rendering this page.
+        </p>
+      )}
       <Footer />
     </ReduxProvider>
   );

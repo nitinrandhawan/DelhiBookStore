@@ -26,30 +26,30 @@ const Page = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const result = await dispatch(loginUser({ email, password }))
+      const result = await dispatch(loginUser({ email, password }));
       toast.success("Login successful!");
-     await dispatch(
-        addToCartAPIThunk({
-          items: cartItems.map((item) => ({
-            productId: item.id,
-            quantity: item.quantity,
-          })),
-        })
-      );
 
-     await dispatch(
-        addToWishlistApi(
-          wishlistItems.map((item) => 
-           item.id,
-          ),
-        )
-      );
-      dispatch();
+      if (cartItems.length > 0) {
+        await dispatch(
+          addToCartAPIThunk({
+            items: cartItems.map((item) => ({
+              productId: item.id,
+              quantity: item.quantity,
+            })),
+          })
+        );
+      }
+      if (wishlistItems?.length > 0) {
+        await dispatch(addToWishlistApi(wishlistItems.map((item) => item.id)));
+      }
+
       setEmail("");
       setPassword("");
       router.push("/");
     } catch (err) {
-      toast.error(err || "Login failed");
+      console.log("Login error:", err);
+
+      toast.error(err?.response?.data?.message || "Login failed");
     }
   };
 
