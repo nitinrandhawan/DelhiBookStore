@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MoveRight } from "lucide-react";
 import { fetchBannerByCategory } from "@/app/redux/features/BannerByCategory/BannerByCategory";
 import { useDispatch, useSelector } from "react-redux";
+import { serverUrl } from "@/app/redux/features/axiosInstance";
 
 const FilterCatgory3 = () => {
   const dispatch = useDispatch();
@@ -31,7 +32,7 @@ const FilterCatgory3 = () => {
         >
           <div className="relative overflow-hidden rounded-xl shadow-lg">
             <Image
-              src={category.levelImage}
+              src={`${serverUrl}/public/image/${category.levelImage}`}
               alt={category.Parent_name.Parent_name}
               width={400}
               height={250}

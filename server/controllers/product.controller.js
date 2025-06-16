@@ -280,6 +280,7 @@ const getAllProducts = async (req, res) => {
   try {
     const page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 0;
+    const createdNew = req?.query?.createdNew || false; 
     const skip = (page - 1) * limit;
     const query = {};
     if (req?.query?.newArrival) {
@@ -294,7 +295,8 @@ const getAllProducts = async (req, res) => {
     const products = await Product.find(query)
       .populate("category")
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .sort({ createdAt: createdNew ? -1 : 1 });
 
     const totalCount = await Product.countDocuments();
 

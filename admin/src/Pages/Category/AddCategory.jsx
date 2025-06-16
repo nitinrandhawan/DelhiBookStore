@@ -63,7 +63,7 @@ if(!fileLimit(formData?.image)) return;
     const response = await axiosInstance.post("/api/v1/mainCategory/create-mainCategory", uploadData);
       if (response.status === 201) {
         toast.success(response?.message || "Category created successfully");
-        navigate("/category");
+        navigate("/all-category");
       } else {
         toast.error(response?.message || "Error adding category");
       }

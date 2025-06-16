@@ -140,7 +140,7 @@ const AllSBanner = () => {
                   {/* <td>{banner?.name}</td> */}
                   <td>
                     <img
-                      src={`${serverURL}${banner?.bannerImage}`}
+                      src={`${serverURL}/public/image/${banner?.bannerImage}`}
                       alt={banner?.bannerName}
                       style={{ width: "100px", height: "auto" }}
                     />

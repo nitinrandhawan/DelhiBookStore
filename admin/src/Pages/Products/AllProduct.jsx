@@ -8,7 +8,7 @@ import { Parser } from "html-to-react";
 import { Box, Typography, Pagination } from "@mui/material";
 import fallBackImage from "../../services/DBSLOGO.jpg";
 
-const LIMIT = 50;
+const LIMIT = 100;
 
 const AllProduct = () => {
   const [products, setProducts] = useState([]);
@@ -24,7 +24,7 @@ const AllProduct = () => {
       setIsLoading(true);
       try {
         const response = await axiosInstance.get(
-          `/api/v1/product/get-all-products?limit=${LIMIT}&page=${pageFromQuery}`
+          `/api/v1/product/get-all-products?limit=${LIMIT}&page=${pageFromQuery}&createdNew=true`
         );
 
         const data = response?.data;
@@ -103,13 +103,13 @@ const AllProduct = () => {
           >
             Add Multiple Products <i className="fa-solid fa-plus"></i>
           </Link>
-           <Link
-                      to="/multiple-subcategory-to-product"
-                      className="add-new"
-                      style={{ marginLeft: "10px" }}
-                    >
-                   Multiple product's Subcategory <i className="fa-solid fa-plus"></i>
-                    </Link>
+          <Link
+            to="/multiple-subcategory-to-product"
+            className="add-new"
+            style={{ marginLeft: "10px" }}
+          >
+            Multiple product's Subcategory <i className="fa-solid fa-plus"></i>
+          </Link>
         </div>
       </div>
 

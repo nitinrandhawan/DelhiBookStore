@@ -109,7 +109,7 @@ const EditSubCategory = () => {
       <ToastContainer />
       <div className="bread">
         <div className="head">
-          <h4>Edit Category</h4>
+          <h4>Edit Sub Category</h4>
         </div>
         <div className="links">
           <Link to="/all-sub-category" className="add-new">
