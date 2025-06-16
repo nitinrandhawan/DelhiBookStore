@@ -222,7 +222,7 @@ const EditProduct = () => {
               <option value="">Select Category</option>
               {categoryList.map((cat) => (
                 <option key={cat._id} value={cat._id}>
-                  {cat.categoryName}
+                  {cat.SubCategoryName}
                 </option>
               ))}
             </select>
