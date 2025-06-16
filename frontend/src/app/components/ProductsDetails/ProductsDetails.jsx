@@ -325,16 +325,20 @@ export default function ProductDetails() {
                 </span>
               ))}
             </div> */}
-
-            <div className="flex flex-wrap gap-2 mt-3">
+{
+  book?.category && book?.category?.SubCategoryName &&(
+ <div className="flex flex-wrap gap-2 mt-3">
               <Link
-                href={`/pages/shop/productBysubcategory/${book.category._id}`}
+                href={`/pages/shop/productBysubcategory/${book?.category?._id}`}
               >
                 <span className="px-2.5 py-0.5 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">
-                  {book.category.SubCategoryName}
+                  {book?.category?.SubCategoryName }
                 </span>
               </Link>
             </div>
+  )
+}
+           
           </div>
 
           <hr className="border-purple-400" />

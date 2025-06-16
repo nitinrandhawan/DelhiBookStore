@@ -1,5 +1,5 @@
 "use client";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import stylebanner from "../../Images/DBS/BOOKSTOREBANNER.jpg";
 
 import Image from "next/image";
@@ -39,6 +39,9 @@ const Page = () => {
     setEmail("");
     setPassword("");
     setConfirmPassword("");
+  };
+
+  useEffect(() => {
     if (success) {
       toast.success("Account created successfully!");
       setTimeout(() => {
@@ -47,8 +50,7 @@ const Page = () => {
     } else if (error) {
       toast.error(error);
     }
-  };
-
+  }, [success, error]);
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Banner */}

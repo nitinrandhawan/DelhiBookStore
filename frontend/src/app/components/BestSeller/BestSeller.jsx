@@ -183,8 +183,8 @@ const BestSeller = ({ productlength = 4, btnlength = 8 }) => {
             : cartItemsValue.some((item) => item.id === product._id);
 
           const inWishlist = user?.email
-            ? wishlistItems.some((item) => item?._id === product._id)
-            : wishlistItems.some((item) => item.id === product._id);
+            ? wishlistItems?.some((item) => item?._id === product._id)
+            : wishlistItems?.some((item) => item.id === product._id);
 
           return (
             <div

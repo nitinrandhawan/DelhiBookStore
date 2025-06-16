@@ -102,11 +102,11 @@ const Footer = () => {
             </li>
             <li className="hover:underline hover:text-black">
               {" "}
-              <Link href="#">New Arrivals</Link>
+              <Link href="/pages/featurebook">Feature Books</Link>
             </li>
             <li className="hover:underline hover:text-black">
               {" "}
-              <Link href="#">Best Sellers</Link>
+              <Link href="/pages/bestSellerbook">Best Sellers</Link>
             </li>
             {/* <li className="hover:underline hover:text-black">
               {" "}
