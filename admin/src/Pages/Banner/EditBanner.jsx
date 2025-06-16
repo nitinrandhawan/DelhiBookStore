@@ -79,7 +79,7 @@ const EditBanner = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!fileLimit(formData?.bannerImage)) return;
+    // if (!fileLimit(formData?.bannerImage)) return;
     const submitData = new FormData();
     if (formData?.bannerImage)
       submitData.append("image", formData?.bannerImage);

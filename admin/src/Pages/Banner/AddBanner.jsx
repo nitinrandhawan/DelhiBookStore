@@ -51,7 +51,7 @@ const AddBanner = () => {
       toast.error("Please select a banner image");
       return;
     }
-    if (!fileLimit(bannerImage)) return;
+    // if (!fileLimit(bannerImage)) return;
     try {
       setIsLoading(true);
       const submitData = new FormData();
