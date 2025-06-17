@@ -22,7 +22,7 @@ const page = () => {
           </h2>
         </div>
       </div>
-      <BestSeller />
+      <BestSeller productlength={10000} btnlength={10000} />
     </div>
   );
 };

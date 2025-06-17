@@ -6,7 +6,7 @@ const page = () => {
   return (
     <>
       <ShopBanner />
-      <Featureproduct productlength={1000} btnlength={1000} />
+      <Featureproduct productlength={10000} btnlength={10000} />
       
     </>
   );
