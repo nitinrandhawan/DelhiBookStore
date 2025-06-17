@@ -355,19 +355,19 @@ export default function ProductDetails() {
               <div className="rounded-lg p-2 border-2  cursor-pointer border-purple-600 ransition-colors">
                 <div className="text-center">
                   <div className="font-medium">INR</div>
-                  <div className="text-2xl font-bold mt-1">₹{book.price}</div>
+                  <div className="text-2xl font-bold mt-1">₹{book.price?.toFixed()}</div>
                 </div>
               </div>
               <div className=" border-2  rounded-lg p-2  cursor-pointer border-purple-600 ransition-colors">
                 <div className="text-center">
                   <div className="font-medium">USD</div>
-                  <div className="text-2xl font-bold mt-1">${book.price}</div>
+                  <div className="text-2xl font-bold mt-1">${book?.priceInDollors?.toFixed() || "N/A"}</div>
                 </div>
               </div>
               <div className="border-2  rounded-lg p-2 cursor-pointer border-purple-600 ransition-colors">
                 <div className="text-center">
                   <div className="font-medium">EURO</div>
-                  <div className="text-2xl font-bold mt-1">£{book.price}</div>
+                  <div className="text-2xl font-bold mt-1">£{book?.priceInEuros?.toFixed() || "N/A" }</div>
                 </div>
               </div>
             </div>
