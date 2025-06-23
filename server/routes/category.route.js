@@ -7,6 +7,7 @@ import {
   deleteCategory,
   multipleCategory,
   getCategoryByMainCategory,
+  addCategoryAndSubcategory,
 } from "../controllers/category.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyAdmin } from "../middlewares/verifyAdmin.middleware.js";
@@ -39,4 +40,6 @@ router.put(
 );
 router.delete("/delete-category/:id", verifyAdmin, deleteCategory);
 router.get("/category-by-main-category/:id", getCategoryByMainCategory);
+router.post("/add-category-and-subcategory", verifyAdmin, addCategoryAndSubcategory);
+
 export default router;

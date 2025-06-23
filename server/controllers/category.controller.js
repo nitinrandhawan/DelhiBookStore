@@ -2,8 +2,9 @@ import { Category } from "../models/category.model.js";
 import { MainCategory } from "../models/mainCategory.model.js";
 import { Product } from "../models/product.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.util.js";
+import { SubCategory } from "../models/subCategory.model.js";
 
-export const createCategory = async (req, res) => {
+const createCategory = async (req, res) => {
   try {
     const { SubCategoryName, Parent_name } = req.body;
     const level = Number(req.body.level);
@@ -48,7 +49,7 @@ export const createCategory = async (req, res) => {
   }
 };
 
-export const multipleCategory = async (req, res) => {
+const multipleCategory = async (req, res) => {
   try {
     const { categories } = req.body || {};
     if (!Array.isArray(categories) || categories.length === 0) {
@@ -77,7 +78,7 @@ export const multipleCategory = async (req, res) => {
     });
   }
 };
-export const getAllCategories = async (req, res) => {
+const getAllCategories = async (req, res) => {
   try {
     const { level } = req.query || {};
     const query = {};
@@ -94,7 +95,7 @@ export const getAllCategories = async (req, res) => {
   }
 };
 
-export const getCategoryById = async (req, res) => {
+const getCategoryById = async (req, res) => {
   try {
     const category = await Category.findById(req.params.id);
     if (!category)
@@ -107,7 +108,7 @@ export const getCategoryById = async (req, res) => {
   }
 };
 
-export const updateCategory = async (req, res) => {
+const updateCategory = async (req, res) => {
   try {
     const { SubCategoryName } = req.body;
     const level = Number(req.body.level);
@@ -143,7 +144,7 @@ export const updateCategory = async (req, res) => {
   }
 };
 
-export const deleteCategory = async (req, res) => {
+const deleteCategory = async (req, res) => {
   try {
     const category = await Category.findByIdAndDelete(req.params.id);
     if (!category)
@@ -158,7 +159,7 @@ export const deleteCategory = async (req, res) => {
   }
 };
 
-export const getCategoryByMainCategory = async (req, res) => {
+const getCategoryByMainCategory = async (req, res) => {
   try {
     const category = await Category.find({
       Parent_name: req.params.id,
@@ -168,4 +169,69 @@ export const getCategoryByMainCategory = async (req, res) => {
     console.error("Get Category by ID Error:", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
+};
+
+const addCategoryAndSubcategory = async (req, res) => {
+  try {
+    const { categories } = req.body || {};
+    console.log("categories", categories);
+
+    if (categories.length === 0) {
+      return res.status(400).json({ error: "Categories are required" });
+    }
+    const mainCategories = await MainCategory.find();
+
+    const mainCategoryMap = new Map();
+    mainCategories.forEach((main) => {
+      mainCategoryMap.set(String(main.Parent_id), main._id.toString());
+    });
+
+    const savedCategoryMap = new Map();
+
+    for (const category of categories) {
+      const { Categories_id, Categories_name, Parent_id } = category;
+
+      if (mainCategoryMap.has(String(Parent_id))) {
+        const newCategory = new Category({
+          SubCategoryName: Categories_name,
+          Parent_name: mainCategoryMap.get(String(Parent_id)),
+          Sub_CATEGORIES_ID: Categories_id,
+        });
+        const savedCategory = await newCategory.save();
+        savedCategoryMap.set(String(Categories_id), savedCategory);
+      }
+    }
+
+    for (const category of categories) {
+      const { Categories_id, Categories_name, Parent_id } = category;
+
+      if (savedCategoryMap.has(String(Parent_id))) {
+        const parentCategory = savedCategoryMap.get(String(Parent_id));
+        const subCategory = new SubCategory({
+          Sub_CATEGORIES_ID: Categories_id,
+          subCategoryName: Categories_name,
+          category: parentCategory._id,
+        });
+        await subCategory.save();
+      }
+    }
+
+    return res.status(200).json({
+      message: "Categories and subcategories processed successfully.",
+    });
+  } catch (error) {
+    console.log("addCategoryAndSubcategory error", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export {
+  createCategory,
+  multipleCategory,
+  getAllCategories,
+  getCategoryById,
+  updateCategory,
+  deleteCategory,
+  getCategoryByMainCategory,
+  addCategoryAndSubcategory,
 };

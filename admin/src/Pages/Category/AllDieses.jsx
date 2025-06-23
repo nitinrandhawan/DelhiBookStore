@@ -130,6 +130,7 @@ const AllDieses = () => {
             <tr>
               <th scope="col">Sr.No.</th>
               <th scope="col">Name</th>
+              <th scope="col">Parent Id</th>
               {/* <th scope="col">Image</th> */}
               {/* <th scope="col">Show in Collection</th> */}
               <th scope="col">Edit</th>
@@ -142,6 +143,7 @@ const AllDieses = () => {
                 <tr key={category._id}>
                   <th scope="row">{index + 1}</th>
                   <td>{category?.Parent_name}</td>
+                  <td>{category?.Parent_id}</td>
                   {/* <td>
                     <img
                       src={`${category?.categoryImage}`}
