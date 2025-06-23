@@ -2,10 +2,10 @@ import { MainCategory } from "../models/mainCategory.model.js";
 
 export const createMainCategory = async (req, res) => {
   try {
-    const { Parent_name,Parent_id } = req.body || {};
+    const { Parent_name, Parent_id } = req.body || {};
     if (!Parent_name)
       return res.status(400).json({ error: "Parent name is required" });
-    const category = new MainCategory({ Parent_name,Parent_id });
+    const category = new MainCategory({ Parent_name, Parent_id });
     await category.save();
     res.status(201).json(category);
   } catch (err) {

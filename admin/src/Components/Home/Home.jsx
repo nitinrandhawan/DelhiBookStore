@@ -52,6 +52,7 @@ import ImageUploader from "../../Pages/Products/UploadProductsImages";
 import AllLevelImages from "../../Pages/LevelImage/AllLevelImage";
 import ExcelSubToProductUploader from "../../Pages/Products/SubcategoryToProduct";
 import ExcelMultipleSubcategory from "../../Pages/SubCategory/MultipleSubcategory";
+import ExcelCategoryAndSubcategory from "../../Pages/SubCategory/ExcelCategoryAndSubcategory";
 
 const Home = () => {
   const [login, setLogin] = useState(false);
@@ -157,6 +158,7 @@ const Home = () => {
                 element={<ImageUploader />}
               />
               <Route path="/multiple-subcategory" element={<ExcelMultipleSubcategory />} />
+              <Route path="/multiple-category-and-subcategory" element={<ExcelCategoryAndSubcategory />} />
               {/* <Route path={"/all-become-franchise"} element={<AllFranchise />} /> */}
             </Routes>
           </div>
