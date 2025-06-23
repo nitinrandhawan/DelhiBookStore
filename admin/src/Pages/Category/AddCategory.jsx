@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axiosInstance, { getData, postData } from "../../services/FetchNodeServices";
+import axiosInstance, {
+  getData,
+  postData,
+} from "../../services/FetchNodeServices";
 import JoditEditor from "jodit-react";
 import { Autocomplete, TextField } from "@mui/material";
 import { fileLimit } from "../../services/fileLimit";
@@ -10,8 +13,11 @@ import { fileLimit } from "../../services/fileLimit";
 const AddCategory = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: "", image: null, status: false,
-    description: ""
+    name: "",
+    image: null,
+    status: false,
+    description: "",
+    Parent_id: "",
   });
   // const [productList, setProductList] = useState([]);
   const navigate = useNavigate();
@@ -47,20 +53,24 @@ const AddCategory = () => {
   };
 
   const handleCheckboxChange = () => {
-    setFormData((prevData) => ({ ...prevData, status: !prevData.status, }));
+    setFormData((prevData) => ({ ...prevData, status: !prevData.status }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-if(!fileLimit(formData?.image)) return;
-    const uploadData = new FormData();
-    uploadData.append("Parent_name", formData.name);
+    // if (!fileLimit(formData?.image)) return;
     // uploadData.append("image", formData.image);
     // uploadData.append("isCollection", formData.status);
-  
+    const uploadData = {
+      Parent_name: formData.name,
+      Parent_id: formData.Parent_id,
+    };
     try {
-    const response = await axiosInstance.post("/api/v1/mainCategory/create-mainCategory", uploadData);
+      const response = await axiosInstance.post(
+        "/api/v1/mainCategory/create-mainCategory",
+        uploadData
+      );
       if (response.status === 201) {
         toast.success(response?.message || "Category created successfully");
         navigate("/all-category");
@@ -104,11 +114,32 @@ if(!fileLimit(formData?.image)) return;
 
           <div className="col-md-4">
             <label htmlFor="name" className="form-label">
-              Category Name
+              Category Name *
             </label>
-            <input type="text" name="name" className="form-control" id="name" value={formData.name} onChange={handleChange} required />
+            <input
+              type="text"
+              name="name"
+              className="form-control"
+              id="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
           </div>
 
+          <div className="col-md-4">
+            <label htmlFor="name" className="form-label">
+              Parent Id
+            </label>
+            <input
+              type="number"
+              name="Parent_id"
+              className="form-control"
+              id="name"
+              value={formData.Parent_id}
+              onChange={handleChange}
+            />
+          </div>
           {/* <div className="col-md-4" style={{ marginTop: "10px" }}>
             <label className="form-label">Select Product</label>
             <Autocomplete
@@ -121,7 +152,7 @@ if(!fileLimit(formData?.image)) return;
               renderInput={(params) => <TextField {...params} label="Select Product" />}
             />
           </div> */}
-{/* 
+          {/* 
           <div className="col-12">
             <div className="form-check">
               <input className="form-check-input" type="checkbox" id="status" checked={formData.status} onChange={handleCheckboxChange} />
