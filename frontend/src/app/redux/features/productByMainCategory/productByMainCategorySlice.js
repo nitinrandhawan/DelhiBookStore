@@ -21,6 +21,7 @@ const productByMainCategorySlice = createSlice({
   name: "productByCategory",
   initialState: {
     products: [],
+    totalPages: 0,
     loading: false,
     error: null,
   },
@@ -34,6 +35,7 @@ const productByMainCategorySlice = createSlice({
       .addCase(fetchProductsByMainCategory.fulfilled, (state, action) => {
         state.loading = false;
         state.products = action.payload?.products;
+        state.totalPages = action.payload?.totalPages;
       })
       .addCase(fetchProductsByMainCategory.rejected, (state, action) => {
         state.loading = false;

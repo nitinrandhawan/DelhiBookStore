@@ -1,12 +1,12 @@
 "use client";
-import React, { useEffect } from "react";
-import { Heart } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { ChevronsLeft, ChevronsRight, Heart } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { addToCart } from "@/app/redux/AddtoCart/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import ShopBanner from "@/app/components/Shop/ShopBanner";
 import book1 from "../../../../app/Images/DBS/1.jpg";
 import { fetchProductsByCategory } from "@/app/redux/features/productByCategory/productByCategorySlice";
@@ -29,12 +29,18 @@ import { fetchProductsByMainCategory } from "@/app/redux/features/productByMainC
 const Page = () => {
   const dispatch = useDispatch();
   const { id: subcategoryId } = useParams();
+  const searchParams = useSearchParams();
+  const initialPage = parseInt(searchParams.get("page")) || 1;
+  const initialLimit = parseInt(searchParams.get("limit")) || 50;
+  const [page, setPage] = useState(initialPage);
+  const [limit, setLimit] = useState(initialLimit);
   const { cartItems } = useSelector((state) => state.cart);
   const { items: apiCartItems } = useSelector((state) => state.apiCart);
+  const router = useRouter();
 
   const wishlistItems = useSelector((state) => state.wishlist.wishlistItems);
   const user = useSelector((state) => state.login.user);
-  const { products, loading, error } = useSelector(
+  const { products, loading, error, totalPages } = useSelector(
     (state) => state.productByMainCategory
   );
   let cartItemsValue = [];
@@ -43,11 +49,20 @@ const Page = () => {
   } else {
     cartItemsValue = cartItems;
   }
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    router.push(`?page=${newPage}`);
+  };
+  const visiblePages = 8;
+  const pageGroupStart =
+    Math.floor((page - 1) / visiblePages) * visiblePages + 1;
+  const pageGroupEnd = Math.min(pageGroupStart + visiblePages - 1, totalPages);
+
   useEffect(() => {
     if (subcategoryId) {
-      dispatch(fetchProductsByMainCategory({subcategoryId}));
+      dispatch(fetchProductsByMainCategory({ subcategoryId, limit, page }));
     }
-  }, [dispatch, subcategoryId]);
+  }, [dispatch, subcategoryId, limit, page]);
 
   if (loading) {
     return (
@@ -120,13 +135,11 @@ const Page = () => {
       if (isAlreadyInWishlist) {
         dispatch(removeFromWishlistState(_id));
         dispatch(removeFromWishlistApi(_id));
-                        toast.error("Remove from wishlist.");
-        
+        toast.error("Remove from wishlist.");
       } else {
         dispatch(addToWishlistState({ _id }));
         dispatch(addToWishlistApi({ productId: _id }));
-                        toast.success(`"${title}" added to wishlist.`);
-
+        toast.success(`"${title}" added to wishlist.`);
       }
     } else {
       const isAlreadyInWishlist = wishlistItems.some((item) => item.id === _id);
@@ -292,6 +305,57 @@ const Page = () => {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+      <div className="max-w-6xl mx-auto py-6 overflow-auto">
+        <div className="flex justify-center space-x-2 mt-4">
+          {/* Prev Group Button */}
+          <button
+            onClick={() =>
+              handlePageChange(Math.max(pageGroupStart - visiblePages, 1))
+            }
+            disabled={page === 1}
+            className={`px-4 flex items-center py-2 border rounded-full ${
+              page === 1
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                : "bg-purple-600 text-white hover:bg-purple-700"
+            }`}
+          >
+            <ChevronsLeft size={20} /> Prev
+          </button>
+
+          {/* Page Buttons */}
+          {Array.from(
+            { length: pageGroupEnd - pageGroupStart + 1 },
+            (_, i) => pageGroupStart + i
+          ).map((pageNum) => (
+            <button
+              key={pageNum}
+              onClick={() => handlePageChange(pageNum)}
+              className={`px-4 py-2 border rounded ${
+                pageNum === page ? "bg-purple-600 text-white" : "bg-white"
+              }`}
+            >
+              {pageNum}
+            </button>
+          ))}
+
+          {/* Next Group Button */}
+          <button
+            onClick={() =>
+              handlePageChange(
+                Math.min(page + 1, totalPages - visiblePages + 1)
+              )
+            }
+            disabled={pageGroupEnd === totalPages}
+            className={`px-4 py-1 flex items-center border rounded-full ${
+              pageGroupEnd === totalPages
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                : "bg-purple-600 text-white hover:bg-purple-700"
+            }`}
+          >
+            Next <ChevronsRight size={25} />
+          </button>
         </div>
       </div>
     </>

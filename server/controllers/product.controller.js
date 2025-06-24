@@ -395,10 +395,15 @@ const getProductsByMainCategory = async (req, res) => {
       .populate("category")
       .populate("subCategory")
       .populate("mainCategory");
+      
+    const totalCount = await Product.countDocuments();
 
     return res.status(200).json({
       message: "Products under mainCategory",
       products,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page,
     });
   } catch (error) {
     res.status(500).json({ message: "Aggregation failed", error });
