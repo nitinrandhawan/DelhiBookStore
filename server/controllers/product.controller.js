@@ -6,6 +6,8 @@ import {
   deleteLocalImage,
   findImageWithExtension,
 } from "../utils/image.util.js";
+import { SubCategory } from "../models/subCategory.model.js";
+import { MainCategory } from "../models/mainCategory.model.js";
 
 const createProduct = async (req, res) => {
   try {
@@ -116,7 +118,7 @@ const multipleProducts = async (req, res) => {
       const data = await response.json();
 
       const rate = data.rates?.INR;
-       eurRate = data.rates?.EUR;
+      eurRate = data.rates?.EUR;
       DollarPrice = Number(rate);
     } catch (error) {
       console.error("Error fetching conversion rate:", error.message);
@@ -152,7 +154,8 @@ const multipleProducts = async (req, res) => {
               Number(product.PRODUCTS_MRP_IN_DOLLAR) * DollarPrice
             ).toFixed(2);
             const priceInInr = parseFloat(priceInInrInString);
-            product.priceInEuros = priceInInr * eurRate;
+            product.priceInEuros =
+              Number(product.PRODUCTS_MRP_IN_DOLLAR) * eurRate;
             product.price = priceInInr;
             if (product.discount) {
               product.finalPrice =
@@ -280,7 +283,7 @@ const getAllProducts = async (req, res) => {
   try {
     const page = parseInt(req?.query?.page) || 1;
     const limit = parseInt(req?.query?.limit) || 0;
-    const createdNew = req?.query?.createdNew || false; 
+    const createdNew = req?.query?.createdNew || false;
     const skip = (page - 1) * limit;
     const query = {};
     if (req?.query?.newArrival) {
@@ -365,6 +368,43 @@ const getProductByCategory = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+const getProductsByMainCategory = async (req, res) => {
+  const { id: mainCategoryId } = req.params;
+  const limit = parseInt(req.query.limit) || 50;
+  const page = parseInt(req.query.page) || 1;
+  try {
+    const categories = await Category.find(
+      { mainCategory: mainCategoryId },
+      "_id"
+    );
+    const categoryIds = categories.map((cat) => cat._id);
+    const subCategories = await SubCategory.find(
+      { category: { $in: categoryIds } },
+      "_id"
+    );
+    const subCategoryIds = subCategories.map((sub) => sub._id);
+    const products = await Product.find({
+      $or: [
+        { mainCategory: mainCategoryId },
+        { category: { $in: categoryIds } },
+        { subCategory: { $in: subCategoryIds } },
+      ],
+    })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate("category")
+      .populate("subCategory")
+      .populate("mainCategory");
+
+    return res.status(200).json({
+      message: "Products under mainCategory",
+      products,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Aggregation failed", error });
+  }
+};
+
 const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
@@ -410,10 +450,69 @@ const uploadMultipleProducts = async (req, res) => {
   }
 };
 
+// const multipleSubcategoryToProduct = async (req, res) => {
+//   try {
+//     const { subCategories } = req.body || {};
+//     if (
+//       !subCategories ||
+//       !Array.isArray(subCategories) ||
+//       subCategories.length === 0
+//     ) {
+//       return res.status(400).json({ message: "No subcategories provided" });
+//     }
+
+//     const bulkOps = await Promise.all(
+//       subCategories.map(async (subCategory) => {
+//         const updatedData = {};
+//         const CategoryDoc = await Category.findOne({
+//           Sub_CATEGORIES_ID: String(subCategory.Sub_CATEGORIES_ID),
+//         });
+//         if (CategoryDoc) {
+//           updatedData.category = CategoryDoc._id;
+//         }
+//         const SubCategoryDoc = await SubCategory.findOne({
+//           Sub_CATEGORIES_ID: String(subCategory.Sub_CATEGORIES_ID),
+//         });
+//         if (SubCategoryDoc) {
+//           updatedData.subCategory = SubCategoryDoc._id;
+//         }
+//         const MainCategoryDoc = await MainCategory.findOne({
+//           Parent_id: String(subCategory.Sub_CATEGORIES_ID),
+//         });
+//         if (MainCategoryDoc) {
+//           updatedData.mainCategory = MainCategoryDoc._id;
+//         }
+
+//         if (Object.keys(updatedData).length === 0) {
+//           return null;
+//         }
+//         return {
+//           updateOne: {
+//             filter: { PRODUCTS_ID: subCategory.PRODUCTS_ID },
+//             update: { $set: updatedData },
+//           },
+//         };
+//       })
+//     );
+
+//     const validOps = bulkOps.filter(Boolean);
+
+//     if (validOps.length > 0) {
+//       await Product.bulkWrite(validOps);
+//     }
+
+//     return res.status(200).json({ message: "multiple subcategory to product" });
+//   } catch (error) {
+//     console.log("multiple subcategory to product error", error);
+//     return res
+//       .status(500)
+//       .json({ message: "multiple subcategory to product server error" });
+//   }
+// };
+
 const multipleSubcategoryToProduct = async (req, res) => {
   try {
     const { subCategories } = req.body || {};
-
     if (
       !subCategories ||
       !Array.isArray(subCategories) ||
@@ -421,38 +520,70 @@ const multipleSubcategoryToProduct = async (req, res) => {
     ) {
       return res.status(400).json({ message: "No subcategories provided" });
     }
+    const subCategoryIds = subCategories.map((sc) =>
+      String(sc.Sub_CATEGORIES_ID)
+    );
+    const [categoryDocs, subCategoryDocs, mainCategoryDocs] = await Promise.all(
+      [
+        Category.find({ Sub_CATEGORIES_ID: { $in: subCategoryIds } }),
+        SubCategory.find({ Sub_CATEGORIES_ID: { $in: subCategoryIds } }),
+        MainCategory.find({ Parent_id: { $in: subCategoryIds } }),
+      ]
+    );
 
-    const bulkOps = await Promise.all(
-      subCategories.map(async (subCategory) => {
-        const subCategoryDoc = await Category.findOne({
-          Sub_CATEGORIES_ID: subCategory.Sub_CATEGORIES_ID,
-        });
+    const categoryMap = new Map(
+      categoryDocs.map((doc) => [doc.Sub_CATEGORIES_ID, doc._id])
+    );
+    const subCategoryMap = new Map(
+      subCategoryDocs.map((doc) => [doc.Sub_CATEGORIES_ID, doc._id])
+    );
+    const mainCategoryMap = new Map(
+      mainCategoryDocs.map((doc) => [doc.Parent_id, doc._id])
+    );
 
-        if (!subCategoryDoc) return null;
+    const bulkOps = subCategories
+      .map((subCategory) => {
+        const updatedData = {};
+        const subCatId = String(subCategory.Sub_CATEGORIES_ID);
+
+        if (categoryMap.has(subCatId)) {
+          updatedData.category = categoryMap.get(subCatId);
+        }
+        if (subCategoryMap.has(subCatId)) {
+          updatedData.subCategory = subCategoryMap.get(subCatId);
+        }
+        if (mainCategoryMap.has(subCatId)) {
+          updatedData.mainCategory = mainCategoryMap.get(subCatId);
+        }
+
+        if (Object.keys(updatedData).length === 0) {
+          return null;
+        }
 
         return {
           updateOne: {
             filter: { PRODUCTS_ID: subCategory.PRODUCTS_ID },
-            update: { $set: { category: subCategoryDoc._id } },
+            update: { $set: updatedData },
           },
         };
       })
-    );
+      .filter(Boolean);
 
-    const validOps = bulkOps.filter(Boolean);
-
-    if (validOps.length > 0) {
-      await Product.bulkWrite(validOps);
+    if (bulkOps.length > 0) {
+      await Product.bulkWrite(bulkOps);
     }
 
-    return res.status(200).json({ message: "multiple subcategory to product" });
+    return res.status(200).json({
+      message: "Multiple subcategories mapped to products successfully.",
+    });
   } catch (error) {
-    console.log("multiple subcategory to product error", error);
+    console.error("multiple subcategory to product error", error);
     return res
       .status(500)
-      .json({ message: "multiple subcategory to product server error" });
+      .json({ message: "Multiple subcategory to product server error" });
   }
 };
+
 export {
   createProduct,
   updateProduct,
@@ -467,4 +598,5 @@ export {
   searchProducts,
   uploadMultipleProducts,
   multipleSubcategoryToProduct,
+  getProductsByMainCategory,
 };

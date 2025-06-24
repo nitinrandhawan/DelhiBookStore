@@ -110,7 +110,7 @@ const AllLevelImages = () => {
           <h4>All Level Images</h4>
         </div>
         <div className="links">
-          <Link to="/add-sub-category" className="add-new">
+          <Link to="/add-category" className="add-new">
             Add New <i className="fa-solid fa-plus"></i>
           </Link>
          
@@ -167,7 +167,7 @@ const AllLevelImages = () => {
                                     </td> */}
                   <td>
                     <Link
-                      to={`/add-sub-category/${category?._id}`}
+                      to={`/add-category/${category?._id}`}
                       className="bt edit"
                     >
                       Edit <i className="fa-solid fa-pen-to-square"></i>

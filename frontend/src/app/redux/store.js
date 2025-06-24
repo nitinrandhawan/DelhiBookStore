@@ -6,6 +6,7 @@ import signupReducer from "./features/auth/signupSlice";
 import loginReducer from "./features/auth/loginSlice";
 import productReducer from "./features/shop/shopSlice";
 import productByCategoryReducer from "./features/productByCategory/productByCategorySlice";
+import productByMainCategoryReducer from "./features/productByMainCategory/productByMainCategorySlice";
 import localCartReducer from "./AddtoCart/cartSlice";
 import apiCartReducer from "./AddtoCart/apiCartSlice";
 import bannerByCategoryReducer from "./features/BannerByCategory/BannerByCategory";
@@ -22,6 +23,7 @@ export const store = configureStore({
     login: loginReducer,
     products: productReducer,
     productByCategory: productByCategoryReducer,
+    productByMainCategory: productByMainCategoryReducer,
     bannerByCategory: bannerByCategoryReducer,
     order:orderReducer
   },

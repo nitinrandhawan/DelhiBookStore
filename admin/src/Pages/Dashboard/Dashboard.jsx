@@ -120,7 +120,7 @@ const Dashboard = () => {
           </Link>
         </div>
 <div className="dashboard-card">
-          <Link to="/all-category">
+          <Link to="/all-maincategory">
             <i className="fa-solid fa-sitemap"></i>
             <h3>Manage Category</h3>
             <p>Add, update, or remove category</p>
@@ -129,7 +129,7 @@ const Dashboard = () => {
         </div>
 
         <div className="dashboard-card">
-          <Link to="/all-sub-category">
+          <Link to="/all-category">
             <i className="fa-solid fa-layer-group"></i>
             <h3>Manage Sub Category</h3>
             <p>Manage Sub Category of your products</p>
