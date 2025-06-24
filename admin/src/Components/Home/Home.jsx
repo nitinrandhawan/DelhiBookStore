@@ -23,9 +23,9 @@ import AddBanner from "../../Pages/Banner/AddBanner";
 import EditBanner from "../../Pages/Banner/EditBanner";
 import EditProduct from "../../Pages/Products/EditProduct ";
 import Login from "../auth/Login";
-import AllDieses from "../../Pages/Category/AllDieses";
-import AddCategory from "../../Pages/Category/AddCategory";
-import EditCategory from "../../Pages/Category/EditCategory";
+import AllDieses from "../../Pages/MainCategory/AllDieses";
+import AddCategory from "../../Pages/MainCategory/AddCategory";
+import EditCategory from "../../Pages/MainCategory/EditCategory";
 import AddCoupen from "../../Pages/Coupon/AddCoupon";
 import AllCoupen from "../../Pages/Coupon/AllCoupon";
 import EditCoupen from "../../Pages/Coupon/EditCoupon";
@@ -42,17 +42,18 @@ import EditVideios from "../../Pages/VideoUrl/EditVideios";
 import axiosInstance from "../../services/FetchNodeServices";
 import { toast } from "react-toastify";
 import AllInquiries from "../../Pages/Inquiry/Inquiry";
-import EditSubCategory from "../../Pages/SubCategory/EditSubCategory";
-import AddSubCategory from "../../Pages/SubCategory/AddSubCategory";
-import AllSubCategory from "../../Pages/SubCategory/AllSubCategory";
+import EditSubCategory from "../../Pages/Category/EditSubCategory";
+import AddSubCategory from "../../Pages/Category/AddSubCategory";
+import AllCategory from "../../Pages/Category/AllSubCategory";
 import AllFranchise from "../../Pages/Franchise/Franchise";
 import ExcelProductUploader from "../../Pages/Products/MultiProduct";
-import ExcelCategoryUploader from "../../Pages/Category/MultiCategory";
+import ExcelCategoryUploader from "../../Pages/MainCategory/MultiCategory";
 import ImageUploader from "../../Pages/Products/UploadProductsImages";
 import AllLevelImages from "../../Pages/LevelImage/AllLevelImage";
 import ExcelSubToProductUploader from "../../Pages/Products/SubcategoryToProduct";
-import ExcelMultipleSubcategory from "../../Pages/SubCategory/MultipleSubcategory";
-import ExcelCategoryAndSubcategory from "../../Pages/SubCategory/ExcelCategoryAndSubcategory";
+import ExcelMultipleSubcategory from "../../Pages/Category/MultipleSubcategory";
+import ExcelCategoryAndSubcategory from "../../Pages/Category/ExcelCategoryAndSubcategory";
+import AllSubCategory from "../../Pages/SubCategory/AllSubCategory";
 
 const Home = () => {
   const [login, setLogin] = useState(false);
@@ -107,13 +108,14 @@ const Home = () => {
               <Route path={"/add-product"} element={<AddProduct />} />
               <Route path={"/edit-product/:id"} element={<EditProduct />} />
               {/* Category --  */}
-              <Route path={"/all-category"} element={<AllDieses />} />
-              <Route path={"/add-category"} element={<AddCategory />} />
-              <Route path={"/edit-category/:id"} element={<EditCategory />} />
+              <Route path={"/all-maincategory"} element={<AllDieses />} />
+              <Route path={"/add-maincategory"} element={<AddCategory />} />
+              <Route path={"/edit-maincategory/:id"} element={<EditCategory />} />
+              <Route path={"/all-category"} element={<AllCategory />} />
+              <Route path={"/add-category"} element={<AddSubCategory />} />
               <Route path={"/all-sub-category"} element={<AllSubCategory />} />
-              <Route path={"/add-sub-category"} element={<AddSubCategory />} />
               <Route
-                path={"/add-sub-category/:id"}
+                path={"/edit-category/:id"}
                 element={<EditSubCategory />}
               />
               {/* --- Orders --- */}

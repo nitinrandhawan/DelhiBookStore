@@ -44,11 +44,13 @@ import cartRoute from "./routes/cart.route.js";
 import orderRoute from "./routes/order.route.js";
 import contactFormRoute from "./routes/contactForm.route.js";
 import mainCategoryRoute from "./routes/mainCategory.route.js";
+import subCategoryRoute from "./routes/subCategory.route.js";
 
 app.use("/api/v1/auth", userRouter);
 app.use("/api/v1/banner", bannerRoute);
 app.use("/api/v1/mainCategory", mainCategoryRoute);
 app.use("/api/v1/category", categoryRoute);
+app.use("/api/v1/subcategory", subCategoryRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/wishlist", wishlistRoute);
 app.use("/api/v1/coupon", couponRoute);

@@ -48,11 +48,22 @@ const ExcelSubToProductUploader = () => {
       return;
     }
 
+    if (!products[0]?.Sub_CATEGORIES_ID) {
+      alert("Subcategory ID is missing. The field name must be Sub_CATEGORIES_ID");
+      return;
+    }
+    if (!products[0]?.PRODUCTS_ID) {
+      alert("Product ID is missing. The field name must be PRODUCTS_ID");
+      return;
+    }
     try {
       setLoading(true);
-      const res = await axiosInstance.post("/api/v1/product/multiple-subcategory-to-product", {
-       subCategories: products,
-      });
+      const res = await axiosInstance.post(
+        "/api/v1/product/multiple-subcategory-to-product",
+        {
+          subCategories: products,
+        }
+      );
 
       console.log("Server response:", res.data);
       alert("✅ Products uploaded successfully.");
@@ -69,7 +80,9 @@ const ExcelSubToProductUploader = () => {
     <div className="container mt-5">
       <div className="card shadow">
         <div className="card-body text-center">
-          <h4 className="card-title mb-4">Upload Subcategory for Products</h4>
+          <h4 className="card-title mb-4">
+            Upload Subcategory for Products (Excel)
+          </h4>
 
           <input
             type="file"

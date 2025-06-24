@@ -88,7 +88,7 @@ const EditSubCategory = () => {
         );
       if (res.status === 200) {
         toast.success("SubCategory updated successfully");
-        navigate("/all-sub-category");
+        navigate("/all-category");
       } else {
         toast.error(res?.message || "Error updating subcategory");
       }
@@ -112,7 +112,7 @@ const EditSubCategory = () => {
           <h4>Edit Sub Category</h4>
         </div>
         <div className="links">
-          <Link to="/all-sub-category" className="add-new">
+          <Link to="/all-category" className="add-new">
             Back <i className="fa-regular fa-circle-left"></i>
           </Link>
         </div>

@@ -33,14 +33,19 @@ const Header = () => {
     { to: "/", label: "Dashboard", icon: "fa-solid fa-gauge" },
     { to: "/all-orders", label: "Manage Orders", icon: "fa-solid fa-truck" },
     {
+      to: "/all-maincategory",
+      label: "All Main Category",
+      icon: "fa-solid fa-sitemap",
+    },
+    {
       to: "/all-category",
       label: "All Category",
-      icon: "fa-solid fa-sitemap",
+      icon: "fa-solid fa-layer-group",
     },
     {
       to: "/all-sub-category",
       label: "All Sub Category",
-      icon: "fa-solid fa-layer-group",
+      icon: "fa-solid fa-th-large",
     },
      {
       to: "/all-level-images",

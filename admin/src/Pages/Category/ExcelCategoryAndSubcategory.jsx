@@ -85,7 +85,7 @@ const ExcelCategoryAndSubcategory = () => {
     <div className="container mt-5">
       <div className="card shadow">
         <div className="card-body text-center">
-          <h4 className="card-title mb-4">Upload Category with Subcategory</h4>
+          <h4 className="card-title mb-4">Upload Category with Subcategory (Excel)</h4>
 
           <input
             type="file"
@@ -105,7 +105,7 @@ const ExcelCategoryAndSubcategory = () => {
             disabled={loading || products.length === 0}
             className="btn btn-primary"
           >
-            {loading ? "Uploading..." : "Submit Products"}
+            {loading ? "Uploading..." : "Submit Categories"}
           </button>
         </div>
       </div>

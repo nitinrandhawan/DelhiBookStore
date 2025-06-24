@@ -73,7 +73,7 @@ const AddCategory = () => {
       );
       if (response.status === 201) {
         toast.success(response?.message || "Category created successfully");
-        navigate("/all-category");
+        navigate("/all-maincategory");
       } else {
         toast.error(response?.message || "Error adding category");
       }
@@ -93,7 +93,7 @@ const AddCategory = () => {
           <h4>Add Category</h4>
         </div>
         <div className="links">
-          <Link to="/all-category" className="add-new">
+          <Link to="/all-maincategory" className="add-new">
             Back <i className="fa-regular fa-circle-left"></i>
           </Link>
         </div>

@@ -105,10 +105,10 @@ const AllDieses = () => {
       <ToastContainer />
       <div className="bread">
         <div className="head">
-          <h4>All Category</h4>
+          <h4>All Main Category</h4>
         </div>
         <div className="links">
-          <Link to="/add-category" className="add-new">
+          <Link to="/add-maincategory" className="add-new">
             Add New <i className="fa-solid fa-plus"></i>
           </Link>
           
@@ -130,7 +130,6 @@ const AllDieses = () => {
             <tr>
               <th scope="col">Sr.No.</th>
               <th scope="col">Name</th>
-              <th scope="col">Parent Id</th>
               {/* <th scope="col">Image</th> */}
               {/* <th scope="col">Show in Collection</th> */}
               <th scope="col">Edit</th>
@@ -143,7 +142,6 @@ const AllDieses = () => {
                 <tr key={category._id}>
                   <th scope="row">{index + 1}</th>
                   <td>{category?.Parent_name}</td>
-                  <td>{category?.Parent_id}</td>
                   {/* <td>
                     <img
                       src={`${category?.categoryImage}`}
@@ -160,7 +158,7 @@ const AllDieses = () => {
                   </td> */}
                   <td>
                     <Link
-                      to={`/edit-category/${category?._id}`}
+                      to={`/edit-maincategory/${category?._id}`}
                       className="bt edit"
                     >
                       Edit <i className="fa-solid fa-pen-to-square"></i>

@@ -10,7 +10,7 @@ import axiosInstance, {
   serverURL,
 } from "../../services/FetchNodeServices";
 
-const AllSubCategory = () => {
+const AllCategory = () => {
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -19,10 +19,9 @@ const AllSubCategory = () => {
     const fetchCategories = async () => {
       try {
         const response = await axiosInstance.get(
-          "/api/v1/subcategory/get-all-sub-categories"
+          "/api/v1/category/get-all-categories"
         );
-        console.log("response", response.data);
-        
+       
         if (response) {
           setCategories(response.data?.reverse());
         }
@@ -109,18 +108,25 @@ const AllSubCategory = () => {
       <ToastContainer />
       <div className="bread">
         <div className="head">
-          <h4>All Sub Category</h4>
+          <h4>All Category</h4>
         </div>
         <div className="links">
           <Link to="/add-category" className="add-new">
             Add New <i className="fa-solid fa-plus"></i>
           </Link>
-          <Link
+          {/* <Link
             to="/multiple-subcategory"
             className="add-new"
             style={{ marginLeft: "10px" }}
           >
             Multiple Sub Category <i className="fa-solid fa-plus"></i>
+          </Link> */}
+          <Link
+            to="/multiple-category-and-subcategory"
+            className="add-new"
+            style={{ marginLeft: "10px" }}
+          >
+            Add Multiple Category (Excel) <i className="fa-solid fa-plus"></i>
           </Link>
         </div>
       </div>
@@ -139,7 +145,7 @@ const AllSubCategory = () => {
           <thead>
             <tr>
               <th scope="col">Sr.No.</th>
-              <th scope="col">Sub Category Name</th>
+              <th scope="col">Name</th>
               <th scope="col">Main Category</th>
               <th scope="col">Image</th>
               {/* <th scope="col">Show in Collection</th> */}
@@ -152,12 +158,12 @@ const AllSubCategory = () => {
               categories?.map((category, index) => (
                 <tr key={category._id}>
                   <th scope="row">{index + 1}</th>
-                  <td>{category?.subCategoryName}</td>
-                  <td>{category?.category?.SubCategoryName || "N/A"}</td>
+                  <td>{category?.SubCategoryName}</td>
+                  <td>{category?.Parent_name?.Parent_name}</td>
                   <td>
                     <img
                       src={`${serverURL}/public/image/${category?.categoryImage}`}
-                      alt={category?.subCategoryName}
+                      alt={category?.SubCategoryName}
                       style={{ width: "50px", height: "50px" }}
                     />
                   </td>
@@ -201,4 +207,4 @@ const AllSubCategory = () => {
   );
 };
 
-export default AllSubCategory;
+export default AllCategory;
