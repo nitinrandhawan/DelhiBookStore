@@ -174,8 +174,6 @@ const getCategoryByMainCategory = async (req, res) => {
 const addCategoryAndSubcategory = async (req, res) => {
   try {
     const { categories } = req.body || {};
-    console.log("categories", categories);
-
     if (categories.length === 0) {
       return res.status(400).json({ error: "Categories are required" });
     }
