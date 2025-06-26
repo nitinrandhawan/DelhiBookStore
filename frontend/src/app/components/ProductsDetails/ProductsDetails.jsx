@@ -215,7 +215,7 @@ export default function ProductDetails() {
             <Image
               // src={book1}
               src={
-                book?.images[0]
+                book?.images?.[0]
                   ? `${serverUrl}/public/image/${book?.images[0]}`
                   : CallBackImg
               }

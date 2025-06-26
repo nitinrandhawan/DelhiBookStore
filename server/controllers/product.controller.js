@@ -593,7 +593,7 @@ const multipleSubcategoryToProduct = async (req, res) => {
 
 const updateCurrencyPrice = async (req, res) => {
   try {
-    const { UsdToInr, UsdToEur,UsdToPound } = req.body || {};
+    const { UsdToInr, UsdToEur, UsdToPound } = req.body || {};
     if (!UsdToInr || !UsdToEur) {
       return res
         .status(400)
@@ -606,17 +606,20 @@ const updateCurrencyPrice = async (req, res) => {
     }
     const products = await Product.find({}, "_id priceInDollors").lean();
     const bulkOps = [];
-      for (const product of products) {
+    for (const product of products) {
       const priceInDollars = Number(product.priceInDollors);
-
+      const priceInINR = priceInDollars * Number(UsdToInr);
       if (isNaN(priceInDollars)) {
         console.warn(
           `Skipping product ${product._id} due to invalid priceInDollors`
         );
         continue;
       }
-
+      let productDiscount = product.discount ?? 0;
       const updatedData = {
+        finalPrice: Math.floor(
+          priceInINR - (priceInINR * productDiscount) / 100
+        ),
         price: Math.floor(priceInDollars * Number(UsdToInr)),
         priceInEuros: Math.floor(priceInDollars * Number(UsdToEur)),
         priceInPounds: Math.floor(priceInDollars * Number(UsdToPound)),
