@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 const UpdateProductCurrency = () => {
   const [usd, setUsd] = useState("");
   const [eur, setEur] = useState("");
+  const [pound,setPound]=useState("")
   const [loading, setLoading] = useState(false);
 const [currencyLoading, setCurrencyLoading] = useState(false);
   const fetchRatesFromAPI = async () => {
@@ -18,6 +19,8 @@ const [currencyLoading, setCurrencyLoading] = useState(false);
 
       setUsd(rateData.INR);
       setEur(rateData.EUR.toFixed(2));
+      setPound(rateData.GBP.toFixed(2));
+
     } catch (error) {
       console.error("API error:", error);
       alert("Failed to fetch currency rates.");
@@ -34,6 +37,7 @@ const [currencyLoading, setCurrencyLoading] = useState(false);
         {
           UsdToInr: parseFloat(usd),
           UsdToEur: parseFloat(eur),
+          UsdToPound: parseFloat(pound),
         }
       );
       Swal.fire({
@@ -83,6 +87,16 @@ const [currencyLoading, setCurrencyLoading] = useState(false);
               type="number"
               value={eur}
               onChange={(e) => setEur(e.target.value)}
+              className="form-control"
+              placeholder="Enter EUR to INR"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="form-label">USD to Pound</label>
+            <input
+              type="number"
+              value={pound}
+              onChange={(e) => setPound(e.target.value)}
               className="form-control"
               placeholder="Enter EUR to INR"
             />

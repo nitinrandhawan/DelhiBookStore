@@ -593,7 +593,7 @@ const multipleSubcategoryToProduct = async (req, res) => {
 
 const updateCurrencyPrice = async (req, res) => {
   try {
-    const { UsdToInr, UsdToEur } = req.body || {};
+    const { UsdToInr, UsdToEur,UsdToPound } = req.body || {};
     if (!UsdToInr || !UsdToEur) {
       return res
         .status(400)
@@ -619,6 +619,7 @@ const updateCurrencyPrice = async (req, res) => {
       const updatedData = {
         price: Math.floor(priceInDollars * Number(UsdToInr)),
         priceInEuros: Math.floor(priceInDollars * Number(UsdToEur)),
+        priceInPounds: Math.floor(priceInDollars * Number(UsdToPound)),
       };
 
       bulkOps.push({
