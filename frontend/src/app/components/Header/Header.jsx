@@ -371,7 +371,7 @@ const Header = () => {
                           animate={{ opacity: 1 }}
                           transition={{ delay: 0.3 }}
                         >
-                          <Link href={`/pages/categories/${item._id}`}>
+                          <Link href={`/pages/product-by-maincategory/${item._id}`}>
                             <p className="font-medium w-full">
                               {item.Parent_name}
                             </p>

@@ -54,6 +54,7 @@ import ExcelSubToProductUploader from "../../Pages/Products/SubcategoryToProduct
 import ExcelMultipleSubcategory from "../../Pages/Category/MultipleSubcategory";
 import ExcelCategoryAndSubcategory from "../../Pages/Category/ExcelCategoryAndSubcategory";
 import AllSubCategory from "../../Pages/SubCategory/AllSubCategory";
+import UpdateProductCurrency from "../../Pages/Products/UpdateProductCurrency";
 
 const Home = () => {
   const [login, setLogin] = useState(false);
@@ -107,6 +108,7 @@ const Home = () => {
               <Route path={"/all-products"} element={<AllProduct />} />
               <Route path={"/add-product"} element={<AddProduct />} />
               <Route path={"/edit-product/:id"} element={<EditProduct />} />
+              <Route path={"/update-product-currency"} element={<UpdateProductCurrency />} />
               {/* Category --  */}
               <Route path={"/all-maincategory"} element={<AllDieses />} />
               <Route path={"/add-maincategory"} element={<AddCategory />} />

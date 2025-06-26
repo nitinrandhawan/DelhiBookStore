@@ -1,7 +1,7 @@
 import express from "express"
 import { verifyAdmin } from "../middlewares/verifyAdmin.middleware.js";
 import { upload, uploadImages } from "../middlewares/multer.middleware.js";
-import { createProduct, deleteProduct, getAllProducts, getBestSellingBooks, getFeaturedBooks, getNewArrival, getProductByCategory, getProductsByMainCategory, getSingleProduct, multipleProducts, multipleSubcategoryToProduct, searchProducts, updateProduct, uploadMultipleProducts } from "../controllers/product.controller.js";
+import { createProduct, deleteProduct, getAllProducts, getBestSellingBooks, getFeaturedBooks, getNewArrival, getProductByCategory, getProductsByMainCategory, getSingleProduct, multipleProducts, multipleSubcategoryToProduct, searchProducts, updateCurrencyPrice, updateProduct, uploadMultipleProducts } from "../controllers/product.controller.js";
 import { multerErrorHandler } from "../middlewares/multerErrorHadler.middleware.js";
 const router = express.Router();
 
@@ -19,5 +19,5 @@ router.delete("/delete-product/:id",verifyAdmin,deleteProduct)
 router.get("/search-products",searchProducts)
 router.post("/upload-multiple-products",verifyAdmin,uploadImages.array("images"),multerErrorHandler,uploadMultipleProducts)
 router.post("/multiple-subcategory-to-product",verifyAdmin,multipleSubcategoryToProduct)
-
+router.post("/update-product-currency-price",verifyAdmin,updateCurrencyPrice)
 export default router

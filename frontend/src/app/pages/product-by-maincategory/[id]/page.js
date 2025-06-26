@@ -43,6 +43,8 @@ const Page = () => {
   const { products, loading, error, totalPages } = useSelector(
     (state) => state.productByMainCategory
   );
+  console.log("prodcut page", totalPages);
+  
   let cartItemsValue = [];
   if (user?.email) {
     cartItemsValue = apiCartItems;

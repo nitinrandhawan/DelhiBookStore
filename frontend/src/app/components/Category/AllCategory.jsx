@@ -61,7 +61,7 @@ const AllCategory = () => {
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {categories.map((cat) => (
-          <Link href={`/pages/categories/${cat._id}`} key={cat._id}>
+          <Link href={`/pages/product-by-maincategory/${cat._id}`} key={cat._id}>
             <div
               className="shadow-md border border-purple-400 p-4 rounded-lg hover:shadow-lg transition"
               style={{
