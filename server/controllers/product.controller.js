@@ -383,20 +383,21 @@ const getProductsByMainCategory = async (req, res) => {
       "_id"
     );
     const subCategoryIds = subCategories.map((sub) => sub._id);
-    const products = await Product.find({
+
+    const filter = {
       $or: [
         { mainCategory: mainCategoryId },
         { category: { $in: categoryIds } },
         { subCategory: { $in: subCategoryIds } },
       ],
-    })
+    };
+    const totalCount = await Product.countDocuments(filter);
+    const products = await Product.find(filter)
       .skip((page - 1) * limit)
       .limit(limit)
       .populate("category")
       .populate("subCategory")
       .populate("mainCategory");
-      
-    const totalCount = await Product.countDocuments();
 
     return res.status(200).json({
       message: "Products under mainCategory",
@@ -406,6 +407,7 @@ const getProductsByMainCategory = async (req, res) => {
       currentPage: page,
     });
   } catch (error) {
+    console.log("get products by main category error", error);
     res.status(500).json({ message: "Aggregation failed", error });
   }
 };
@@ -589,6 +591,53 @@ const multipleSubcategoryToProduct = async (req, res) => {
   }
 };
 
+const updateCurrencyPrice = async (req, res) => {
+  try {
+    const { UsdToInr, UsdToEur } = req.body || {};
+    if (!UsdToInr || !UsdToEur) {
+      return res
+        .status(400)
+        .json({ message: "UsdToInr or UsdToEur not provided" });
+    }
+    if (isNaN(UsdToInr) || isNaN(UsdToEur)) {
+      return res
+        .status(400)
+        .json({ message: "UsdToInr or UsdToEur is not a number" });
+    }
+    const products = await Product.find({}, "_id priceInDollors").lean();
+    const bulkOps = [];
+      for (const product of products) {
+      const priceInDollars = Number(product.priceInDollors);
+
+      if (isNaN(priceInDollars)) {
+        console.warn(
+          `Skipping product ${product._id} due to invalid priceInDollors`
+        );
+        continue;
+      }
+
+      const updatedData = {
+        price: Math.floor(priceInDollars * Number(UsdToInr)),
+        priceInEuros: Math.floor(priceInDollars * Number(UsdToEur)),
+      };
+
+      bulkOps.push({
+        updateOne: {
+          filter: { _id: product._id },
+          update: { $set: updatedData },
+        },
+      });
+    }
+    await Product.bulkWrite(bulkOps);
+    return res.status(200).json({ message: "update currency price" });
+  } catch (error) {
+    console.log("update currency price error", error);
+    return res
+      .status(500)
+      .json({ message: "update currency price server error" });
+  }
+};
+
 export {
   createProduct,
   updateProduct,
@@ -604,4 +653,5 @@ export {
   uploadMultipleProducts,
   multipleSubcategoryToProduct,
   getProductsByMainCategory,
+  updateCurrencyPrice,
 };

@@ -115,13 +115,13 @@ const AllSubCategory = () => {
           <Link to="/add-category" className="add-new">
             Add New <i className="fa-solid fa-plus"></i>
           </Link>
-          <Link
+          {/* <Link
             to="/multiple-subcategory"
             className="add-new"
             style={{ marginLeft: "10px" }}
           >
             Multiple Sub Category <i className="fa-solid fa-plus"></i>
-          </Link>
+          </Link> */}
         </div>
       </div>
 

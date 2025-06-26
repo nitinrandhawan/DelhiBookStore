@@ -91,7 +91,7 @@ const AllProduct = () => {
             className="add-new"
             style={{ marginRight: "10px" }}
           >
-            Upload Product Images <i className="fa-solid fa-plus"></i>
+            Upload Images <i className="fa-solid fa-plus"></i>
           </Link>
           <Link to="/add-product" className="add-new">
             Add New <i className="fa-solid fa-plus"></i>
@@ -109,6 +109,13 @@ const AllProduct = () => {
             style={{ marginLeft: "10px" }}
           >
             Multiple product's Subcategory <i className="fa-solid fa-plus"></i>
+          </Link>
+          <Link
+            to="/update-product-currency"
+            className="add-new"
+            style={{ marginLeft: "10px" }}
+          >
+            Update Currency Rate <i className="fa-solid fa-plus"></i>
           </Link>
         </div>
       </div>
