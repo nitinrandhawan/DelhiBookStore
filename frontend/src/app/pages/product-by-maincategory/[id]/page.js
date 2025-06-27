@@ -24,7 +24,7 @@ import {
 } from "@/app/redux/wishlistSlice";
 import { serverUrl } from "@/app/redux/features/axiosInstance";
 import CallBackImg from "../../../../app/Images/DBS/DBSLOGO.jpg";
-import { fetchProductsByMainCategory } from "@/app/redux/features/productByMainCategory/productByMainCategorySlice";
+import { fetchProductsByMainCategory, highToLow, latest, lowToHigh } from "@/app/redux/features/productByMainCategory/productByMainCategorySlice";
 
 const Page = () => {
   const dispatch = useDispatch();
@@ -43,8 +43,7 @@ const Page = () => {
   const { products, loading, error, totalPages } = useSelector(
     (state) => state.productByMainCategory
   );
-  console.log("prodcut page", totalPages);
-  
+
   let cartItemsValue = [];
   if (user?.email) {
     cartItemsValue = apiCartItems;
@@ -162,6 +161,18 @@ const Page = () => {
       }
     }
   };
+
+  const handleSort = (e) => {
+    const selectedValue = e.target.value;
+    if (selectedValue === "latest") {
+     dispatch(latest())
+    } else if (selectedValue === "lowToHigh") {
+      dispatch(lowToHigh())
+    } else if (selectedValue === "highToLow") {
+      dispatch(highToLow())
+    }
+    
+  };
   return (
     <>
       <ShopBanner />
@@ -174,9 +185,9 @@ const Page = () => {
           </div>
           <div>
             <span>Sort by:</span>
-            <select className="p-2 text-black focus:outline-none">
+            <select className="p-2 text-black focus:outline-none" onClick={handleSort}>
               <option value="latest">Latest</option>
-              <option value="popularity">Popularity</option>
+              {/* <option value="popularity">Popularity</option> */}
               <option value="lowToHigh">Price: Low to High</option>
               <option value="highToLow">Price: High to Low</option>
             </select>

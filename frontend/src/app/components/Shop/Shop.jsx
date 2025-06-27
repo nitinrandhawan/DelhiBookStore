@@ -35,7 +35,7 @@ const Shop = () => {
   const router = useRouter();
 
   const initialPage = parseInt(searchParams.get("page")) || 1;
-  const initialLimit = parseInt(searchParams.get("limit")) || 30;
+  const initialLimit = parseInt(searchParams.get("limit")) || 50;
 
   const [page, setPage] = useState(initialPage);
   const [limit, setLimit] = useState(initialLimit);
@@ -114,7 +114,7 @@ const Shop = () => {
 
   const handleAddToWishlist = (_id, title, images, finalPrice, price) => {
     if (user?.email) {
-      const isAlreadyInWishlist = wishlistItems.some(
+      const isAlreadyInWishlist = wishlistItems?.some(
         (item) => item._id === _id
       );
       if (isAlreadyInWishlist) {

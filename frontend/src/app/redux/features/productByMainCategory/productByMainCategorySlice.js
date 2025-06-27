@@ -25,7 +25,23 @@ const productByMainCategorySlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    latest: (state) => {
+      state.products = state.products.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+    },
+    highToLow: (state) => {
+      state.products = state.products.sort(
+        (a, b) => b.price - a.price
+      );
+    },
+    lowToHigh: (state) => {
+      state.products = state.products.sort(
+        (a, b) => a.price - b.price
+      );
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchProductsByMainCategory.pending, (state) => {
@@ -43,5 +59,11 @@ const productByMainCategorySlice = createSlice({
       });
   },
 });
+
+export const {
+  latest,
+  highToLow,
+  lowToHigh,
+} = productByMainCategorySlice.actions;
 
 export default productByMainCategorySlice.reducer;

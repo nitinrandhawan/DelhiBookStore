@@ -34,11 +34,15 @@ const Page = () => {
       password,
     };
 
-    dispatch(signupUser(userData));
-    setfullName("");
-    setEmail("");
-    setPassword("");
-    setConfirmPassword("");
+    try {
+      dispatch(signupUser(userData)).unwrap();
+      setfullName("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      toast.error(error || "Something went wrong. Please try again.");
+    }
   };
 
   useEffect(() => {

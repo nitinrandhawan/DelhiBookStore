@@ -298,7 +298,7 @@ export default function UserProfile() {
                       : user?.profileImage
                       ? user.profileImage.includes("picsum.photos") || user.profileImage.includes("res.cloudinary.com")
                         ? user.profileImage
-                        : `${serverUrl}${user.profileImage}`
+                        : `${serverUrl}/public/image/${user.profileImage}`
                       : CallBackImg
                   }
                   alt="Profile"
@@ -443,7 +443,7 @@ export default function UserProfile() {
                       : user?.profileImage
                       ? user.profileImage.includes("picsum.photos")|| user.profileImage.includes("res.cloudinary.com")
                         ? user.profileImage
-                        : `${serverUrl}${user.profileImage}`
+                        : `${serverUrl}/public/image/${user.profileImage}`
                       : "/placeholder.svg"
                   }
                     alt="Profile"
