@@ -10,6 +10,7 @@ import {
   applyCoupon,
   calculateTotalsLoad,
   removeFromCart,
+  setApplyCoupon,
   updateQuantity,
 } from "@/app/redux/AddtoCart/cartSlice";
 import Link from "next/link";
@@ -167,27 +168,34 @@ export default function Cart() {
   let discountAmountValue = 0;
   if (user?.email) {
     discountAmountValue = cartItemsValue.reduce((acc, item) => {
-      const price =
-        item?.price ??
-        item?.productId?.price - item?.productId?.finalPrice ??
-        0;
-      return acc + price * item.quantity;
+      const price = item.productId?.price;
+      const finalPrice = item.productId?.finalPrice;
+      const discountPrice = price - finalPrice;
+      return acc + discountPrice * item.quantity;
     }, 0);
   } else {
-    discountAmountValue = discountAmount;
+    discountAmountValue = cartItemsValue.reduce((acc, item) => {
+      const price = item.price;
+      const finalPrice = item.finalPrice;
+      const discountPrice = price - finalPrice;
+      return acc + discountPrice * item.quantity;
+    }, 0);
   }
   // Shipping logic
   const shippingCost = subtotal >= 500 ? 0 : 50;
 
   // Final Total
-  const finalTotal =
-    subtotal - discountAmountValue + shippingCost - couponDiscount;
+const baseAmount = subtotal - discountAmountValue;
 
+const adjustedCouponDiscount =
+  couponDiscount < 100 ? (baseAmount * couponDiscount) / 100 : couponDiscount;
+
+const finalTotal = baseAmount + shippingCost - adjustedCouponDiscount;
   useEffect(() => {
     dispatch(calculateTotalsLoad());
     dispatch(getAllCartItemsAPI());
   }, [dispatch, cartItems]);
-console.log("cartitems:", cartItems);
+  console.log("cartitems:", cartItems);
 
   // useEffect(() => {
   //   if(!loading) return
@@ -284,19 +292,25 @@ console.log("cartitems:", cartItems);
                   className="flex flex-row flex-wrap justify-between items-center gap-2 md:gap-4 border-b border-gray-300 pb-4"
                 >
                   <div>
-                    <Image
-                      src={
-                        item?.image
-                          ? `${serverUrl}/public/image/${item?.image}`
-                          : `${serverUrl}/public/image/${item?.productId?.images?.[0] ?? item.productId?.image}`
-                          // ? `${serverUrl}/public/image/${item.productId.images[0]}`
-                          // : CallBackImg
-                      }
-                      alt="Product Image"
-                      width={60}
-                      height={60}
-                      className="rounded-md object-contain"
-                    />
+                    <Link
+                      href={`/pages/shop/${item?.productId?._id ?? item?.id}`}
+                    >
+                      <Image
+                        src={
+                          item?.image
+                            ? `${serverUrl}/public/image/${item.image}`
+                            : item?.productId?.images?.[0]
+                            ? `${serverUrl}/public/image/${item.productId.images[0]}`
+                            : item?.productId?.image
+                            ? `${serverUrl}/public/image/${item.productId.image}`
+                            : CallBackImg
+                        }
+                        alt="Product Image"
+                        width={60}
+                        height={60}
+                        className="rounded-md object-contain"
+                      />
+                    </Link>
                   </div>
                   <div className="font-medium">
                     {(item?.name ?? item?.productId?.title)?.length > 30
@@ -376,21 +390,22 @@ console.log("cartitems:", cartItems);
               {discountAmountValue > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span>Discount</span>
-                  <span>-₹{discountAmountValue}</span>
+                  <span>-₹{Number(discountAmountValue.toFixed(2))}</span>
                 </div>
               )}
               {couponDiscount > 0 && (
                 <div className="flex justify-between text-red-600">
                   <span>Coupon Discount</span>
                   <span>
-                    -{`${couponDiscount > 100 ? "₹" : "%"}`}
+                    -{`${couponDiscount > 100 ? "₹" : ""}`}
                     {couponDiscount}
+                    {couponDiscount < 100 ? "%" : ""}
                   </span>
                 </div>
               )}
               <div className="border-t border-gray-300 pt-2 flex justify-between font-semibold">
                 <span>Total</span>
-                <span>₹{finalTotal}</span>
+                <span>₹{Math.floor(finalTotal)}</span>
               </div>
             </div>
 
@@ -422,6 +437,9 @@ console.log("cartitems:", cartItems);
 
                 if (couponCodeInput === coupon.couponCode) {
                   setCouponDiscount(coupon.discount);
+                  dispatch(setApplyCoupon({
+                    couponCode: coupon.couponCode,
+                    discount: coupon.discount}))
                   toast.success("Coupon Applied Successfully!");
                   return;
                 } else {
