@@ -197,6 +197,7 @@ export default function ProductDetails() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Back Button */}
+     
       <div className="mb-6">
         <Link
           href="/pages/shop"
@@ -211,7 +212,9 @@ export default function ProductDetails() {
         {/* Left Column - Images */}
         <div className="space-y-4">
           {/* Main Image */}
+           
           <div className="border border-purple-500 rounded-lg overflow-hidden bg-white p-4 flex items-center justify-center">
+           
             <Image
               // src={book1}
               src={

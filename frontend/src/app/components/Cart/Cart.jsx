@@ -187,6 +187,7 @@ export default function Cart() {
     dispatch(calculateTotalsLoad());
     dispatch(getAllCartItemsAPI());
   }, [dispatch, cartItems]);
+console.log("cartitems:", cartItems);
 
   // useEffect(() => {
   //   if(!loading) return
@@ -250,6 +251,10 @@ export default function Cart() {
     );
   }
 
+  cartItemsValue.map((item) => {
+    console.log("item", item.image ? "IMAGE NOT" : item.productId.images);
+  });
+
   return (
     <div className="mx-auto px-4 py-8 max-w-7xl">
       <h1 className="text-xl font-bold mb-4">Your Shopping Cart</h1>
@@ -282,10 +287,10 @@ export default function Cart() {
                     <Image
                       src={
                         item?.image
-                          ? `${serverUrl}/public/image/${item.image}`
-                          : item?.productId?.images?.[0]
-                          ? `${serverUrl}/public/image/${item.productId.images[0]}`
-                          : CallBackImg
+                          ? `${serverUrl}/public/image/${item?.image}`
+                          : `${serverUrl}/public/image/${item?.productId?.images?.[0] ?? item.productId?.image}`
+                          // ? `${serverUrl}/public/image/${item.productId.images[0]}`
+                          // : CallBackImg
                       }
                       alt="Product Image"
                       width={60}

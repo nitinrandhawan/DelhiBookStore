@@ -172,7 +172,10 @@ const Shop = () => {
       </div>
     );
   }
-
+products?.map((product) => {
+  console.log("product images", product.images[0]);
+  
+})
   return (
     <>
       <ShopBanner />
@@ -222,10 +225,12 @@ const Shop = () => {
               : cartItems.some((item) => item.id === product._id);
 
             return (
+              
               <div
                 key={product._id}
                 className="grid md:flex-row flex-col border border-gray-200 bg-white px-2 py-2"
               >
+                
                 <div className="relative">
                   <div className="absolute top-2 left-0 bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-e-2xl z-10">
                     {product.discount}%
@@ -255,7 +260,7 @@ const Shop = () => {
                       <Heart size={16} />
                     )}
                   </div>
-
+              
                   <Link href={`/pages/shop/${product._id}`}>
                     <div className="w-30 h-30 lg:w-50 lg:h-45 md:w-45 md:h-40 flex justify-center m-auto items-center py-2 mb-2 bg-white ">
                       <Image
