@@ -27,7 +27,10 @@ import UserLocation from "../UserLocation/UserLocation";
 import ProductSearchBar from "./SearchBar";
 import { getAllCartItemsAPI } from "@/app/redux/AddtoCart/apiCartSlice";
 import { fetchCoupons } from "@/app/redux/features/shop/shopSlice";
-import { getAllWishlistItemsApi } from "@/app/redux/wishlistSlice";
+import {
+  getAllWishlistItemsApi,
+  loadWishlistFromStorage,
+} from "@/app/redux/wishlistSlice";
 
 const Header = () => {
   const [openDropdown, setOpenDropdown] = useState();
@@ -39,18 +42,6 @@ const Header = () => {
   const pathname = usePathname();
   // Dropdown items
   const [couponValue, setCouponValue] = useState([]);
-
-  useEffect(() => {
-    if (pathname === "/") {
-      setOpenDropdown(true);
-    } else {
-      setOpenDropdown(false);
-    }
-    dispatch(getAllWishlistItemsApi());
-    dispatch(fetchCoupons());
-    dispatch(getAllCartItemsAPI());
-  }, [pathname]);
-  console.log("couponValue", couponValue);
 
   const cartItems = useSelector((state) => state.cart.cartItems);
   const apiCartItems = useSelector((state) => state.apiCart.items);
@@ -81,6 +72,23 @@ const Header = () => {
       setCouponValue(values);
     }
   }, [coupons]);
+
+  
+  useEffect(() => {
+    if (pathname === "/") {
+      setOpenDropdown(true);
+    } else {
+      setOpenDropdown(false);
+    }
+    if (user?.email) {
+      dispatch(getAllWishlistItemsApi());
+    } else {
+      dispatch(loadWishlistFromStorage());
+    }
+    dispatch(fetchCoupons());
+    dispatch(getAllCartItemsAPI());
+  }, [pathname]);
+
   if (error) {
     return (
       <div className="text-center py-6 text-red-500">
@@ -135,11 +143,12 @@ const Header = () => {
                         "Countdown is running fast!",
                       ]
                 }
-              
-              loop={0}
-              cursor cursorStyle="|" typeSpeed={60}
-              deleteSpeed={40}
-              delaySpeed={2000}
+                loop={0}
+                cursor
+                cursorStyle="|"
+                typeSpeed={60}
+                deleteSpeed={40}
+                delaySpeed={2000}
               />
             </b>
           </div>
@@ -371,7 +380,9 @@ const Header = () => {
                           animate={{ opacity: 1 }}
                           transition={{ delay: 0.3 }}
                         >
-                          <Link href={`/pages/product-by-maincategory/${item._id}`}>
+                          <Link
+                            href={`/pages/product-by-maincategory/${item._id}`}
+                          >
                             <p className="font-medium w-full">
                               {item.Parent_name}
                             </p>

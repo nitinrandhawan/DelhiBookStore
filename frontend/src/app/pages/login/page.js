@@ -26,7 +26,7 @@ const Page = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const result = await dispatch(loginUser({ email, password }));
+      const result = await dispatch(loginUser({ email, password })).unwrap();;
       toast.success("Login successful!");
 
       if (cartItems.length > 0) {
@@ -49,7 +49,7 @@ const Page = () => {
     } catch (err) {
       console.log("Login error:", err);
 
-      toast.error(err?.response?.data?.message || "Login failed");
+      toast.error(err || err?.response?.data?.message || "Login failed");
     }
   };
 
