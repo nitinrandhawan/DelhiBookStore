@@ -73,22 +73,26 @@ const Header = () => {
     }
   }, [coupons]);
 
-  
   useEffect(() => {
     if (pathname === "/") {
       setOpenDropdown(true);
     } else {
       setOpenDropdown(false);
     }
+    dispatch(getAllCartItemsAPI());
+    dispatch(fetchCoupons());
+  }, [pathname]);
+
+  useEffect(() => {
+    if (user === undefined || user === null) return;
+
     if (user?.email) {
       dispatch(getAllWishlistItemsApi());
     } else {
       dispatch(loadWishlistFromStorage());
     }
-    dispatch(fetchCoupons());
-    dispatch(getAllCartItemsAPI());
-  }, [pathname]);
-
+  }, [user]);
+  
   if (error) {
     return (
       <div className="text-center py-6 text-red-500">

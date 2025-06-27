@@ -9,7 +9,10 @@ import { Eye, EyeOff, Mail } from "lucide-react";
 import stylebanner from "../../Images/DBS/BOOKSTOREBANNER.jpg";
 import Link from "next/link";
 import Image from "next/image";
-import { addToWishlistApi } from "@/app/redux/wishlistSlice";
+import {
+  addToWishlistApi,
+  MultipleAddToWishlist,
+} from "@/app/redux/wishlistSlice";
 import { addToCartAPIThunk } from "@/app/redux/AddtoCart/apiCartSlice";
 // import '../../pages/login/forgot-password/page'
 const Page = () => {
@@ -26,21 +29,24 @@ const Page = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const result = await dispatch(loginUser({ email, password })).unwrap();;
+      const result = await dispatch(loginUser({ email, password })).unwrap();
       toast.success("Login successful!");
 
       if (cartItems.length > 0) {
-        await dispatch(
-          addToCartAPIThunk({
-            items: cartItems.map((item) => ({
-              productId: item.id,
-              quantity: item.quantity,
-            })),
-          })
-        );
+        const cartItemsWithQuantity = cartItems.map((item) => ({
+          productId: item.productId ?? item.id,
+          quantity: item.quantity,
+        }));
+        await dispatch(addToCartAPIThunk(...cartItemsWithQuantity));
+        localStorage.removeItem("cartItems");
       }
       if (wishlistItems?.length > 0) {
-        await dispatch(addToWishlistApi(wishlistItems.map((item) => item.id)));
+        console.log("wishlistItems:", wishlistItems);
+
+        await dispatch(
+          MultipleAddToWishlist(wishlistItems.map((item) => item.id))
+        );
+        localStorage.removeItem("wishlistItems");
       }
 
       setEmail("");

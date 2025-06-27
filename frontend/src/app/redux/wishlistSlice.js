@@ -34,7 +34,7 @@ export const MultipleAddToWishlist = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/wishlist/add-to-wishlist", {
-        productIds: data,
+        productIds:data,
       });
       return response.data;
     } catch (error) {
