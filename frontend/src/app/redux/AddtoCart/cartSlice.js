@@ -18,6 +18,8 @@ function loadCart() {
 const initialState = {
   cartItems: loadCart(),
   couponCode: "SAVE10",
+  appliedCoupon:{},
+  isCouponApplied: false,
   discountAmount: 0,
   tax: 0,
   totalAmount: 0,
@@ -96,6 +98,10 @@ const cartSlice = createSlice({
       state.couponCode = action.payload;
       Object.assign(state, calculateTotals(state.cartItems, action.payload));
     },
+    setApplyCoupon(state,action){
+      state.appliedCoupon = action.payload;
+      state.isCouponApplied = true
+    }
   },
   // extraReducers: (builder) => {
   //   builder
@@ -126,6 +132,7 @@ export const {
   updateQuantity,
   applyCoupon,
   calculateTotalsLoad,
+  setApplyCoupon
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

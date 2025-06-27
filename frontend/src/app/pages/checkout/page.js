@@ -33,6 +33,10 @@ export default function Page() {
   const { items } = useSelector((state) => state.apiCart);
   const { cartItems } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
+  const appiedCoupon = useSelector((state) => state.cart.appliedCoupon);
+  const couponDiscount = appiedCoupon?.discount;
+console.log("appiedCoupon:", appiedCoupon);
+
   // const cartItems = [
   //   {
   //     id: 1,
@@ -57,13 +61,22 @@ export default function Page() {
     cartItemsValue = cartItems;
   }
 
-  const subtotal = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+  const subtotal = cartItemsValue && cartItemsValue.length > 0 
+  ? cartItemsValue.reduce((total, item) => {
+    const price = item?.productId?.finalPrice ?? item.price;
+    console.log("price:", price);
+
+    return total + price * item.quantity;
+  }, 0) : 0
+console.log("couponDiscount:", couponDiscount);
+
+    const adjustedCouponDiscount =
+  couponDiscount < 100 ? (subtotal * couponDiscount) / 100 : couponDiscount;
+console.log("adjustedCouponDiscount:", adjustedCouponDiscount);
+
   const tax = subtotal * 0.08;
   const shipping = subtotal > 500 ? 0 : 50;
-  const total = subtotal + shipping + tax;
+  const total = subtotal + shipping - Number(adjustedCouponDiscount ?? 0);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -445,22 +458,34 @@ export default function Page() {
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Subtotal</span>
                   <span className="text-gray-900 font-medium">
-                    ₹{subtotal.toFixed(2)}
+                    ₹{subtotal?.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Shipping</span>
                   <span className="text-gray-900 font-medium">
-                    ₹{shipping.toFixed(2)}
+                    ₹{shipping?.toFixed(2)}
+                  </span>
+                 
+                </div>
+                 {couponDiscount > 0 && (
+                <div className="flex justify-between text-red-600 ">
+                  <span>Coupon Discount</span>
+                  <span>
+                    -{`${couponDiscount > 100 ? "₹" : ""}`}
+                    {couponDiscount}
+                    {couponDiscount < 100 ? "%" : ""}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm">
+              )}
+                {/* <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Tax</span>
                   <span className="text-gray-900 font-medium">
                     ₹{tax.toFixed(2)}
                   </span>
-                </div>
+                </div> */}
                 <div className="flex justify-between pt-2 border-t border-gray-200 text-base font-medium">
+                  
                   <span className="text-gray-900">Total</span>
                   <span className="text-gray-900">₹{total.toFixed(2)}</span>
                 </div>
