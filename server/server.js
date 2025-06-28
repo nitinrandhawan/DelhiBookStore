@@ -17,7 +17,7 @@ app.use(express.json({ limit: "1000mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const allowedOrigins = ["http://localhost:3000", "http://localhost:3001","https://wwseals.com","https://admin.wwseals.com","https://www.wwseals.com"];
+const allowedOrigins = ["http://localhost:3000", "http://localhost:3001","https://iscindiasales.co.in","https://admin.iscindiasales.co.in","https://www.iscindiasales.co.in"];
 app.use(
   cors({
     origin: function (origin, callback) {
