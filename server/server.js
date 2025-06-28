@@ -45,6 +45,7 @@ import orderRoute from "./routes/order.route.js";
 import contactFormRoute from "./routes/contactForm.route.js";
 import mainCategoryRoute from "./routes/mainCategory.route.js";
 import subCategoryRoute from "./routes/subCategory.route.js";
+import currencyRoute from "./routes/currency.route.js";
 
 app.use("/api/v1/auth", userRouter);
 app.use("/api/v1/banner", bannerRoute);
@@ -57,6 +58,7 @@ app.use("/api/v1/coupon", couponRoute);
 app.use("/api/v1/cart", cartRoute);
 app.use("/api/v1/order", orderRoute);
 app.use("/api/v1/contact-form", contactFormRoute);
+app.use("/api/v1/currency",currencyRoute);
 
 app.get("/", (req, res) => {
   res.send("Server is running");
